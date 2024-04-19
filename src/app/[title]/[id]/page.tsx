@@ -46,7 +46,7 @@ export default async function Page({ params }: Props) {
 	let data = (await getPage(params.id))[0]
 
 	return (
-		<div className="flex min-h-dvh flex-col items-center md:pt-16">
+		<div className="flex min-h-dvh flex-col items-center md:pt-16 bg-slate-100 dark:bg-slate-900">
 			<News data={data} />
 		</div>
 	)

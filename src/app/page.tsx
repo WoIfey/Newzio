@@ -9,7 +9,7 @@ export default async function Home() {
 	let news = await getNews()
 
 	return (
-		<main className="flex min-h-dvh flex-col items-center">
+		<main className="flex min-h-dvh flex-col items-center bg-slate-100 dark:bg-slate-900">
 			<div className="flex flex-col md:flex-row-reverse md:pt-16 gap-4">
 				{session ? (
 					<Files news={news} />

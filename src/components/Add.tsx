@@ -143,9 +143,9 @@ export default function Add() {
 
 	return (
 		<div className="flex justify-center items-center flex-col gap-2 pt-4">
-			<form onSubmit={handleSubmit} className="flex flex-col gap-4">
+			<form onSubmit={handleSubmit} className="flex flex-col gap-4 max-w-[764px]">
 				<div className="grid grid-cols-1 gap-6 flex-col">
-					<div className="flex flex-col gap-2 sm:w-1/3">
+					<div className="flex flex-col gap-2">
 						<Label htmlFor="tag">Tag</Label>
 						<Popover open={open} onOpenChange={setOpen}>
 							<PopoverTrigger id="tag" asChild>
@@ -192,7 +192,7 @@ export default function Add() {
 						</Popover>
 					</div>
 
-					<div className="sm:w-1/2 flex flex-col gap-2">
+					<div className="flex flex-col gap-2">
 						<Label htmlFor="title">
 							Title <span className="text-red-600">*</span>
 						</Label>
@@ -233,11 +233,11 @@ export default function Add() {
 							{description.length}/4096
 						</span>
 					</div>
+					<Upload onUploadComplete={handleUploadComplete} />
 				</div>
 
 				{/* <Editor /> */}
 
-				<Upload onUploadComplete={handleUploadComplete} />
 				{/* <Button type="submit">Submit</Button> */}
 			</form>
 		</div>

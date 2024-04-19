@@ -48,7 +48,10 @@ export default function Files({ news }: { news: any[] }) {
 		<div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
 			{news.length > 0 ? (
 				news.map(app => (
-					<div key={app.id} className="bg-slate-700 text-white max-w-96">
+					<div
+						key={app.id}
+						className="bg-slate-300 dark:bg-slate-700 text-black dark:text-white max-w-96"
+					>
 						<ContextMenu>
 							<ContextMenuTrigger>
 								<Link
@@ -88,11 +91,13 @@ export default function Files({ news }: { news: any[] }) {
 									<div className="m-4">
 										<h1 className="pb-2">{app.tag}</h1>
 										<h1 className="text-3xl pb-1">{app.title}</h1>
-										<p className="line-clamp-3 text-slate-100">{app.description}</p>
-										<p className="text-slate-300 text-xs pt-3">
+										<p className="line-clamp-3 text-black dark:text-slate-100">
+											{app.description}
+										</p>
+										<p className="text-slate-700 dark:text-slate-300 text-xs pt-3">
 											Written by {app.user_name}
 										</p>
-										<p className="text-slate-400 text-[10px]">
+										<p className="text-slate-800 dark:text-slate-400 text-[10px]">
 											{new Date(app.createdAt).toLocaleString('en-GB')}
 										</p>
 									</div>

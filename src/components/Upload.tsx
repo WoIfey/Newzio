@@ -9,23 +9,10 @@ export default function Upload({
 }) {
 	const [newPost, setNewPost] = useAtom(createdNews)
 	return (
-		<div className="flex sm:flex-row flex-col items-center">
+		<div className="flex sm:flex-row flex-col justify-center items-center">
 			<UploadDropzone
 				className="pt-2"
-				endpoint="imageUploader"
-				onClientUploadComplete={res => {
-					const uploadDetails = res[0]
-					onUploadComplete(uploadDetails)
-					setNewPost(true)
-				}}
-				onUploadError={(error: Error) => {
-					alert(`ERROR! ${error.message}`)
-				}}
-			/>
-			<p className="sm:p-2">OR</p>
-			<UploadDropzone
-				className="pt-2"
-				endpoint="videoUploader"
+				endpoint="mediaPost"
 				onClientUploadComplete={res => {
 					const uploadDetails = res[0]
 					onUploadComplete(uploadDetails)

@@ -85,10 +85,12 @@ export default function News({ data }: { data: any }) {
 							</AlertDialog>
 						</div>
 					)}
-					<h1 className="text-slate-600 text-sm pb-3">{data.tag}</h1>
+					<h1 className="dark:text-slate-300 text-slate-600 text-sm pb-3">
+						{data.tag}
+					</h1>
 					<div className="flex flex-col sm:flex-row sm:items-center sm:gap-2 pb-3 sm:pb-0">
 						<h1 className="text-xl">{data.title}</h1>
-						<p className="text-xs text-slate-600">
+						<p className="text-xs dark:text-slate-300 text-slate-600">
 							{new Date(data.createdAt).toLocaleString('en-GB')}
 						</p>
 					</div>

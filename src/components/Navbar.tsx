@@ -181,7 +181,9 @@ export default function Navbar() {
 									<div className="flex items-center">
 										<Avatar>
 											<AvatarImage src={session?.user.image ?? undefined} />
-											<AvatarFallback>{session?.user.name}</AvatarFallback>
+											<AvatarFallback className="bg-slate-200 dark:bg-slate-600">
+												{session?.user.name}
+											</AvatarFallback>
 										</Avatar>
 										<div className="ml-3">
 											<div className="text-base font-medium text-white">
