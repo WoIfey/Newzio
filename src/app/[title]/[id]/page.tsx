@@ -31,6 +31,7 @@ export const generateMetadata = async ({
 			images: [
 				{
 					url: `${data.url}`,
+					secureUrl: `${data.url}`,
 					width: 1280,
 					height: 720,
 					alt: 'Thumbnail',
@@ -39,6 +40,7 @@ export const generateMetadata = async ({
 			videos: [
 				{
 					url: `${data.url}`,
+					secureUrl: `${data.url}`,
 					width: 1280,
 					height: 720,
 					type: 'video/mp4',
