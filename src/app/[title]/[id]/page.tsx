@@ -31,19 +31,9 @@ export const generateMetadata = async ({
 			images: [
 				{
 					url: `${data.url}`,
-					secureUrl: `${data.url}`,
 					width: 1280,
 					height: 720,
 					alt: 'Thumbnail',
-				},
-			],
-			videos: [
-				{
-					url: `${data.url}`,
-					secureUrl: `${data.url}`,
-					width: 1280,
-					height: 720,
-					type: 'video/mp4',
 				},
 			],
 			locale: 'en_US',
@@ -56,7 +46,7 @@ export default async function Page({ params }: Props) {
 	let data = (await getPage(params.id))[0]
 
 	return (
-		<div className="flex min-h-dvh flex-col items-center pt-16">
+		<div className="flex min-h-dvh flex-col items-center md:pt-16">
 			<News data={data} />
 		</div>
 	)

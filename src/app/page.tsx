@@ -10,12 +10,14 @@ export default async function Home() {
 
 	return (
 		<main className="flex min-h-dvh flex-col items-center">
-			<div className="flex flex-col sm:flex-row-reverse pt-20 gap-4">
+			<div className="flex flex-col md:flex-row-reverse md:pt-16 gap-4">
 				{session ? (
 					<Files news={news} />
 				) : (
 					<>
-						<User />
+						<div className="flex-shrink-0">
+							<User />
+						</div>
 						<Files news={news} />
 					</>
 				)}

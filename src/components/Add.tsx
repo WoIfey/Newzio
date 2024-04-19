@@ -144,73 +144,95 @@ export default function Add() {
 	return (
 		<div className="flex justify-center items-center flex-col gap-2 pt-4">
 			<form onSubmit={handleSubmit} className="flex flex-col gap-4">
-				<div className="grid grid-cols-1 gap-2 flex-col">
-					<Label htmlFor="tag">Tag</Label>
-					<Popover open={open} onOpenChange={setOpen}>
-						<PopoverTrigger id="tag" asChild>
-							<Button
-								variant="outline"
-								role="combobox"
-								aria-expanded={open}
-								className="justify-between"
-							>
-								{value
-									? tags.find(framework => framework.value === value)?.label
-									: 'Select tag...'}
-								<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-							</Button>
-						</PopoverTrigger>
-						<PopoverContent className="w-auto p-0">
-							<Command>
-								<CommandInput placeholder="Search tag..." />
-								<CommandEmpty>No tags found.</CommandEmpty>
-								<CommandGroup>
-									<CommandList>
-										{tags.map(framework => (
-											<CommandItem
-												key={framework.value}
-												value={framework.value}
-												onSelect={currentValue => {
-													setValue(currentValue === value ? '' : currentValue)
-													setOpen(false)
-												}}
-											>
-												<Check
-													className={cn(
-														'mr-2 h-4 w-4',
-														value === framework.value ? 'opacity-100' : 'opacity-0'
-													)}
-												/>
-												{framework.label}
-											</CommandItem>
-										))}
-									</CommandList>
-								</CommandGroup>
-							</Command>
-						</PopoverContent>
-					</Popover>
-				</div>
+				<div className="grid grid-cols-1 gap-6 flex-col">
+					<div className="flex flex-col gap-2 sm:w-1/3">
+						<Label htmlFor="tag">Tag</Label>
+						<Popover open={open} onOpenChange={setOpen}>
+							<PopoverTrigger id="tag" asChild>
+								<Button
+									variant="outline"
+									role="combobox"
+									aria-expanded={open}
+									className="justify-between"
+								>
+									{value
+										? tags.find(framework => framework.value === value)?.label
+										: 'Select tag...'}
+									<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+								</Button>
+							</PopoverTrigger>
+							<PopoverContent className="w-auto p-0">
+								<Command>
+									<CommandInput placeholder="Search tag..." />
+									<CommandEmpty>No tags found.</CommandEmpty>
+									<CommandGroup>
+										<CommandList>
+											{tags.map(framework => (
+												<CommandItem
+													key={framework.value}
+													value={framework.value}
+													onSelect={currentValue => {
+														setValue(currentValue === value ? '' : currentValue)
+														setOpen(false)
+													}}
+												>
+													<Check
+														className={cn(
+															'mr-2 h-4 w-4',
+															value === framework.value ? 'opacity-100' : 'opacity-0'
+														)}
+													/>
+													{framework.label}
+												</CommandItem>
+											))}
+										</CommandList>
+									</CommandGroup>
+								</Command>
+							</PopoverContent>
+						</Popover>
+					</div>
 
-				<div>
-					<Label htmlFor="title">Title</Label>
-					<Input
-						id="title"
-						name="title"
-						type="text"
-						placeholder="Something..."
-						required
-						onChange={e => setTitle(e.target.value)}
-					/>
-				</div>
-				<div>
-					<Label htmlFor="description">Description</Label>
-					<Textarea
-						name="description"
-						placeholder="HTML!"
-						id="description"
-						required
-						onChange={e => setDescription(e.target.value)}
-					/>
+					<div className="sm:w-1/2 flex flex-col gap-2">
+						<Label htmlFor="title">
+							Title <span className="text-red-600">*</span>
+						</Label>
+						<Input
+							id="title"
+							name="title"
+							type="text"
+							placeholder="Something..."
+							maxLength={64}
+							required
+							onChange={e => setTitle(e.target.value)}
+							className={`${
+								title.length === 64 ? 'border-red-500 focus:border-red-700' : ''
+							}`}
+						/>
+						<span className={`text-xs ${title.length === 64 ? 'text-red-500' : ''}`}>
+							{title.length}/64
+						</span>
+					</div>
+
+					<div className="flex flex-col gap-2">
+						<Label htmlFor="description">Description</Label>
+						<Textarea
+							name="description"
+							placeholder="Write text..."
+							id="description"
+							className={`min-h-40 ${
+								description.length === 4096 ? 'border-red-500 focus:border-red-700' : ''
+							}`}
+							maxLength={4096}
+							onChange={e => setDescription(e.target.value)}
+						/>
+						<span
+							className={`text-xs ${
+								description.length === 4096 ? 'text-red-500' : ''
+							}`}
+						>
+							{description.length}/4096
+						</span>
+					</div>
 				</div>
 
 				{/* <Editor /> */}

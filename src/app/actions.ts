@@ -14,8 +14,7 @@ export const create = async (formData: FormData, key: string, name: string, size
     revalidatePath('/')
 }
 
-export const remove = async (formData: FormData) => {
-    const id = formData.get('id') as string
+export const remove = async (id: string) => {
     await deletePage(id)
     revalidatePath('/')
 }

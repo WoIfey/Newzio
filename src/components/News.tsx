@@ -14,10 +14,23 @@ import {
 import { Button } from '@/components/ui/button'
 import { remove } from '@/app/actions'
 import { useSession } from 'next-auth/react'
-const confirm = () => {
-	window.location.href = '/'
-}
+import { useAtom } from 'jotai'
+import { deletedNews } from '@/utils/atoms'
+import { useRouter } from 'next/navigation'
 export default function News({ data }: { data: any }) {
+	const [deletePost, setDeletePost] = useAtom(deletedNews)
+	const router = useRouter()
+
+	const confirm = async () => {
+		try {
+			setDeletePost(true)
+			await remove(data.id)
+			router.push('/')
+		} catch (error) {
+			console.error('Failed to delete post:', error)
+		}
+	}
+
 	const { data: session } = useSession()
 	const currentUserId = session?.user?.id
 
@@ -32,7 +45,6 @@ export default function News({ data }: { data: any }) {
 							height="720"
 							className="max-h-[30rem] w-full object-cover"
 							autoPlay
-							muted
 						>
 							<source src={data.url} type="video/mp4" />
 							Your browser does not support the video tag.
@@ -65,10 +77,9 @@ export default function News({ data }: { data: any }) {
 									</AlertDialogHeader>
 									<AlertDialogFooter>
 										<AlertDialogCancel>Cancel</AlertDialogCancel>
-										<form onSubmit={() => confirm()} action={remove}>
-											<input name="id" type="hidden" value={data.id} />
+										<Button onClick={() => confirm()} asChild>
 											<AlertDialogAction type="submit">Proceed</AlertDialogAction>
-										</form>
+										</Button>
 									</AlertDialogFooter>
 								</AlertDialogContent>
 							</AlertDialog>

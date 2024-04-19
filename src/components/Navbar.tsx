@@ -48,7 +48,7 @@ export default function Navbar() {
 	}
 
 	return (
-		<nav className="bg-gray-800 fixed w-full z-50">
+		<nav className="bg-gray-800 md:fixed w-full z-50">
 			<>
 				<div className="mx-auto max-w-7xl px-2 sm:px-4 lg:px-8">
 					<div className="relative flex h-16 items-center justify-between">
@@ -79,7 +79,7 @@ export default function Navbar() {
 								</div>
 							</div>
 						</div>
-						<div className="flex flex-1 justify-center px-2 lg:ml-6 lg:justify-end">
+						{/* <div className="flex flex-1 justify-center px-2 lg:ml-6 lg:justify-end">
 							<div className="w-full max-w-lg lg:max-w-xs">
 								<label htmlFor="search" className="sr-only">
 									Search
@@ -100,10 +100,23 @@ export default function Navbar() {
 									/>
 								</div>
 							</div>
-						</div>
-						<div className="flex lg:hidden">
+						</div> */}
+						<div className="flex gap-2 lg:hidden">
 							{/* Mobile menu button */}
-							<Button
+							<button
+								type="button"
+								className="relative flex-shrink-0 rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+								onClick={toggleTheme}
+							>
+								<span className="absolute -inset-1.5" />
+								<span className="sr-only">Toggle light mode</span>
+								{theme === 'light' ? (
+									<SunIcon className="h-6 w-6 text-yellow-500" aria-hidden="true" />
+								) : (
+									<MoonIcon className="h-6 w-6 text-gray-300" aria-hidden="true" />
+								)}
+							</button>
+							<button
 								onClick={toggleMobileMenu}
 								className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
 							>
@@ -114,7 +127,7 @@ export default function Navbar() {
 								) : (
 									<Bars3Icon className="block h-6 w-6" aria-hidden="true" />
 								)}
-							</Button>
+							</button>
 						</div>
 						<div className="hidden lg:ml-4 lg:block">
 							<div className="flex items-center">
@@ -179,19 +192,6 @@ export default function Navbar() {
 											</div>
 										</div>
 									</div>
-									<button
-										type="button"
-										className="relative flex-shrink-0 rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-										onClick={toggleTheme}
-									>
-										<span className="absolute -inset-1.5" />
-										<span className="sr-only">Toggle light mode</span>
-										{theme === 'light' ? (
-											<SunIcon className="h-6 w-6 text-yellow-500" aria-hidden="true" />
-										) : (
-											<MoonIcon className="h-6 w-6 text-gray-300" aria-hidden="true" />
-										)}
-									</button>
 								</div>
 							)}
 							<div className="space-y-1 px-2">
@@ -210,7 +210,7 @@ export default function Navbar() {
 								{session && (
 									<button
 										onClick={() => signOut()}
-										className="text-left w-full block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
+										className="w-full block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
 									>
 										Sign out
 									</button>
@@ -218,7 +218,7 @@ export default function Navbar() {
 								{!session && (
 									<button
 										onClick={() => signIn()}
-										className="text-left w-full block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
+										className="w-full block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
 									>
 										Sign in
 									</button>
