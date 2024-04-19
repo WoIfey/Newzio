@@ -18,9 +18,10 @@ export const metadata: Metadata = {
 		title: 'Newzio',
 		description: 'Create your own news!',
 		url: 'https://newzio.vercel.app/',
+		siteName: 'Newzio',
 		images: [
 			{
-				url: 'https://wolfey.s-ul.eu/i0dbhKwW',
+				url: 'https://wolfey.s-ul.eu/W4fMflBe',
 				width: 1280,
 				height: 720,
 				alt: 'Thumbnail',

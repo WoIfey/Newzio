@@ -16,17 +16,32 @@ export const generateMetadata = async ({
 	let data = (await getPage(params.id))[0]
 	return {
 		title: `News: ${data.title}`,
-		description: `${data.description.substring(0, 50) + '...'}`,
+		description:
+			data.description.length > 250
+				? `${data.description.substring(0, 250)}...`
+				: data.description,
 		openGraph: {
 			title: `${data.title}`,
-			description: `${data.description.substring(0, 50) + '...'}`,
+			description:
+				data.description.length > 250
+					? `${data.description.substring(0, 250)}...`
+					: data.description,
 			url: `https://newzio.vercel.app/${params.title}/${params.id}`,
+			siteName: 'Newzio',
 			images: [
 				{
 					url: `${data.url}`,
 					width: 1280,
 					height: 720,
 					alt: 'Thumbnail',
+				},
+			],
+			videos: [
+				{
+					url: `${data.url}`,
+					width: 1280,
+					height: 720,
+					type: 'video/mp4',
 				},
 			],
 			locale: 'en_US',

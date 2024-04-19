@@ -23,7 +23,7 @@ import {
 import { useState } from 'react'
 import { Textarea } from '@/components/ui/textarea'
 
-const frameworks = [
+const tags = [
 	{
 		value: 'Tech',
 		label: 'Tech',
@@ -33,8 +33,56 @@ const frameworks = [
 		label: 'Gaming',
 	},
 	{
+		value: 'Entertainment',
+		label: 'Entertainment',
+	},
+	{
+		value: 'Business',
+		label: 'Business',
+	},
+	{
+		value: 'Sports',
+		label: 'Sports',
+	},
+	{
+		value: 'Politics',
+		label: 'Politics',
+	},
+	{
+		value: 'Education',
+		label: 'Education',
+	},
+	{
+		value: 'Travel',
+		label: 'Travel',
+	},
+	{
+		value: 'Fashion',
+		label: 'Fashion',
+	},
+	{
 		value: 'Programming',
 		label: 'Programming',
+	},
+	{
+		value: 'Finance',
+		label: 'Finance',
+	},
+	{
+		value: 'Economy',
+		label: 'Economy',
+	},
+	{
+		value: 'Religion',
+		label: 'Religion',
+	},
+	{
+		value: 'Hobbies',
+		label: 'Hobbies',
+	},
+	{
+		value: 'Other',
+		label: 'Other',
 	},
 ]
 
@@ -107,7 +155,7 @@ export default function Add() {
 								className="justify-between"
 							>
 								{value
-									? frameworks.find(framework => framework.value === value)?.label
+									? tags.find(framework => framework.value === value)?.label
 									: 'Select tag...'}
 								<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 							</Button>
@@ -118,7 +166,7 @@ export default function Add() {
 								<CommandEmpty>No tags found.</CommandEmpty>
 								<CommandGroup>
 									<CommandList>
-										{frameworks.map(framework => (
+										{tags.map(framework => (
 											<CommandItem
 												key={framework.value}
 												value={framework.value}

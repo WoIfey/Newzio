@@ -25,15 +25,28 @@ export default function News({ data }: { data: any }) {
 		<div className="w-full">
 			<div key={data.id}>
 				<div>
-					<Image
-						alt={data.name}
-						width={1080}
-						height={720}
-						src={data.url}
-						unoptimized
-						priority
-						className="w-full h-96 object-cover"
-					/>
+					{data.url.endsWith('.mp4') ? (
+						<video
+							controls
+							width="1080"
+							height="720"
+							className="max-h-[30rem] w-full object-cover"
+							autoPlay
+							muted
+						>
+							<source src={data.url} type="video/mp4" />
+							Your browser does not support the video tag.
+						</video>
+					) : (
+						<Image
+							alt={data.name}
+							width={1080}
+							height={720}
+							src={data.url}
+							unoptimized
+							className="max-h-[30rem] w-full object-cover"
+						/>
+					)}
 				</div>
 				<div className="m-6 sm:m-12">
 					{currentUserId === data.user_id && (
