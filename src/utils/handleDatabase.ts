@@ -11,6 +11,16 @@ export async function getPage(id: string) {
     return data.rows
 }
 
+export async function getUserNews(user_id: string) {
+    const data = await db.query('SELECT * FROM news WHERE user_id = $1', [user_id])
+    return data.rows
+}
+
+export async function getTags() {
+    const data = await db.query('SELECT * FROM tags')
+    return data.rows
+}
+
 export async function saveUpload(key: string, name: string, size: number, type: string, url: string, title: string, description: string, tag: string, user_id: number, user_name: string) {
     try {
         await db.query(`INSERT INTO news(key, name, size, type, url, title, description, tag, user_id, user_name) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`, [key, name, size, type, url, title, description, tag, user_id, user_name])

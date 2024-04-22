@@ -1,16 +1,32 @@
 'use server'
 import { deletePage, saveUpload } from "@/utils/handleDatabase"
-import { revalidatePath } from "next/cache"
+import { revalidatePath, revalidateTag } from "next/cache"
+import { UploadDetails } from "uploadDetails"
 
 export async function refresh() {
-    revalidatePath('/')
+    revalidateTag('news')
 }
 
-export const create = async (formData: FormData, key: string, name: string, size: number, type: string, url: string, user_id: number, user_name: string) => {
-    const title = formData.get('title') as string
-    const description = formData.get('description') as string
-    const tag = formData.get('tag') as string
-    await saveUpload(key, name, size, type, url, title, description, tag, user_id, user_name)
+export const create = async (
+    title: string,
+    description: string,
+    tag: string,
+    uploadDetails: UploadDetails,
+    user_id: number,
+    user_name: string
+) => {
+    await saveUpload(
+        uploadDetails?.key,
+        uploadDetails?.name,
+        uploadDetails?.size,
+        uploadDetails?.type,
+        uploadDetails?.url,
+        title,
+        description,
+        tag,
+        user_id,
+        user_name
+    )
     revalidatePath('/')
 }
 

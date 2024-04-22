@@ -1,6 +1,7 @@
-import News from '@/components/News'
+import Posts from '@/components/Posts'
 import { getPage } from '@/utils/handleDatabase'
 import { Metadata } from 'next'
+import Sidebar from '@/components/Sidebar'
 
 type Props = {
 	params: {
@@ -15,22 +16,22 @@ export const generateMetadata = async ({
 }: Props): Promise<Metadata> => {
 	let data = (await getPage(params.id))[0]
 	return {
-		title: `News: ${data.title}`,
+		title: `News: ${data?.title}`,
 		description:
-			data.description.length > 250
+			data?.description.length > 250
 				? `${data.description.substring(0, 250)}...`
-				: data.description,
+				: data?.description,
 		openGraph: {
-			title: `${data.title}`,
+			title: `${data?.title}`,
 			description:
-				data.description.length > 250
+				data?.description.length > 250
 					? `${data.description.substring(0, 250)}...`
-					: data.description,
+					: data?.description,
 			url: `https://newzio.vercel.app/${params.title}/${params.id}`,
 			siteName: 'Newzio',
 			images: [
 				{
-					url: `${data.url}`,
+					url: `${data?.url}`,
 					width: 1280,
 					height: 720,
 					alt: 'Thumbnail',
@@ -42,12 +43,19 @@ export const generateMetadata = async ({
 	}
 }
 
-export default async function Page({ params }: Props) {
+export default async function NewsPost({ params }: Props) {
 	let data = (await getPage(params.id))[0]
+	const res = await fetch('http://localhost:3000/api/data', {
+		next: { revalidate: 5, tags: ['news'] },
+	})
+	const news = await res.json()
 
 	return (
-		<div className="flex min-h-dvh flex-col items-center md:pt-16 bg-slate-100 dark:bg-slate-900">
-			<News data={data} />
+		<div className="flex min-h-dvh lg:flex-row flex-col justify-center md:pt-16 bg-[#dfdfdf] dark:bg-[#1b1b1b]">
+			<Posts data={data} params={params} />
+			<div className="flex-shrink-0">
+				<Sidebar news={news} id={params.id} />
+			</div>
 		</div>
 	)
 }

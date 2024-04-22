@@ -5,9 +5,16 @@ import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
 import { extractRouterConfig } from 'uploadthing/server'
 import { ourFileRouter } from '@/app/api/uploadthing/core'
 import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
 import AuthProvider from './context/AuthProvider'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import { Toaster } from '@/components/ui/sonner'
+import { Suspense } from 'react'
+import Loading from '@/components/Loading'
+import { getUserNews } from '@/utils/handleDatabase'
+import { options } from './api/auth/[...nextauth]/options'
+import { getServerSession } from 'next-auth/next'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -32,18 +39,27 @@ export const metadata: Metadata = {
 	},
 }
 
-export default function RootLayout({
+export default async function RootLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode
 }>) {
+	const session = await getServerSession(options)
+	let userNews = []
+	if (session?.user.id) {
+		userNews = await getUserNews(session.user.id)
+	}
 	return (
 		<html lang="en">
 			<body className={inter.className}>
 				<AuthProvider>
-					<Navbar />
-					<NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
-					{children}
+					<Suspense fallback={<Loading />}>
+						<Navbar userNews={userNews} />
+						<NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
+						{children}
+						<Footer />
+						<Toaster />
+					</Suspense>
 					<Analytics />
 					<SpeedInsights />
 				</AuthProvider>

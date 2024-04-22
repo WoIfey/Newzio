@@ -22,128 +22,79 @@ import {
 } from '@/components/ui/popover'
 import { useState } from 'react'
 import { Textarea } from '@/components/ui/textarea'
+import { toast } from 'sonner'
+import { CheckIcon, PencilIcon, XCircleIcon } from '@heroicons/react/24/outline'
+import { useForm, SubmitHandler } from 'react-hook-form'
+import { UploadDropzone } from '@/utils/uploadthing'
+import { createdNews } from '@/utils/atoms'
+import { useAtom } from 'jotai'
+import Image from 'next/image'
+import { useSession } from 'next-auth/react'
+import { UploadDetails } from 'uploadDetails'
+import { FormFields } from 'FormFields'
 
-const tags = [
-	{
-		value: 'Tech',
-		label: 'Tech',
-	},
-	{
-		value: 'Gaming',
-		label: 'Gaming',
-	},
-	{
-		value: 'Entertainment',
-		label: 'Entertainment',
-	},
-	{
-		value: 'Business',
-		label: 'Business',
-	},
-	{
-		value: 'Sports',
-		label: 'Sports',
-	},
-	{
-		value: 'Politics',
-		label: 'Politics',
-	},
-	{
-		value: 'Education',
-		label: 'Education',
-	},
-	{
-		value: 'Travel',
-		label: 'Travel',
-	},
-	{
-		value: 'Fashion',
-		label: 'Fashion',
-	},
-	{
-		value: 'Programming',
-		label: 'Programming',
-	},
-	{
-		value: 'Finance',
-		label: 'Finance',
-	},
-	{
-		value: 'Economy',
-		label: 'Economy',
-	},
-	{
-		value: 'Religion',
-		label: 'Religion',
-	},
-	{
-		value: 'Hobbies',
-		label: 'Hobbies',
-	},
-	{
-		value: 'Other',
-		label: 'Other',
-	},
-]
+interface Tag {
+	id: string
+	tag: string
+}
 
-export default function Add() {
+export default function Add({ tags }: { tags: any }) {
 	const [open, setOpen] = useState(false)
 	const [value, setValue] = useState('')
 	const [title, setTitle] = useState('')
 	const [description, setDescription] = useState('')
+	const [newPost, setNewPost] = useAtom(createdNews)
+	const [uploadDetails, setUploadDetails] = useState<UploadDetails | null>(null)
+	const [imageUrl, setImageUrl] = useState('')
+	const {
+		register,
+		handleSubmit,
 
-	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault()
-		const formData = new FormData()
-		formData.append('title', title)
-		formData.append('description', description)
-		formData.append('tag', value)
-	}
+		formState: { errors, isSubmitting },
+	} = useForm<FormFields>()
 
-	interface UploadDetails {
-		key: string
-		name: string
-		size: number
-		type: string
-		url: string
-		serverData: {
-			id: number
-			user: string
-		}
-	}
+	const { data: session } = useSession()
 
-	const handleUploadComplete = async (uploadDetails: UploadDetails) => {
-		const formData = new FormData()
-		formData.append('title', title)
-		formData.append('description', description)
-		formData.append('tag', value)
-		formData.append('key', uploadDetails.key)
-		formData.append('name', uploadDetails.name)
-		formData.append('size', uploadDetails.size.toString())
-		formData.append('type', uploadDetails.type)
-		formData.append('url', uploadDetails.url)
-		formData.append('user_id', uploadDetails.serverData.id.toString())
-		formData.append('user_name', uploadDetails.serverData.user)
-
+	const onSubmit: SubmitHandler<FormFields> = async data => {
 		try {
+			await new Promise(resolve => setTimeout(resolve, 1000))
+			data.tag = value
+			if (uploadDetails) {
+				data.uploadDetails = uploadDetails
+			}
+			const user_id = session?.user.id ? Number(session.user.id) : 0
+			const user_name = session?.user.name ?? ''
 			await create(
-				formData,
-				uploadDetails.key,
-				uploadDetails.name,
-				uploadDetails.size,
-				uploadDetails.type,
-				uploadDetails.url,
-				uploadDetails.serverData.id,
-				uploadDetails.serverData.user
+				data.title,
+				data.description,
+				data.tag,
+				data.uploadDetails,
+				user_id,
+				user_name
+			)
+			toast(
+				<div className="flex gap-2">
+					<CheckIcon className="h-5 w-5" />
+					<span>News successfully added.</span>
+				</div>
 			)
 		} catch (error) {
-			console.error('Failed to submit form:', error)
+			console.error('Error submitting form:', error)
+			toast(
+				<div className="flex gap-2">
+					<XCircleIcon className="h-5 w-5 text-red-500" />
+					<span>Error submitting news. Please try again.</span>
+				</div>
+			)
 		}
 	}
 
 	return (
 		<div className="flex justify-center items-center flex-col gap-2 pt-4">
-			<form onSubmit={handleSubmit} className="flex flex-col gap-4 max-w-[764px]">
+			<form
+				className="flex flex-col gap-4 max-w-[764px]"
+				onSubmit={handleSubmit(onSubmit)}
+			>
 				<div className="grid grid-cols-1 gap-6 flex-col">
 					<div className="flex flex-col gap-2">
 						<Label htmlFor="tag">Tag</Label>
@@ -155,9 +106,7 @@ export default function Add() {
 									aria-expanded={open}
 									className="justify-between"
 								>
-									{value
-										? tags.find(framework => framework.value === value)?.label
-										: 'Select tag...'}
+									{value ? value : 'Select tag...'}
 									<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 								</Button>
 							</PopoverTrigger>
@@ -167,24 +116,30 @@ export default function Add() {
 									<CommandEmpty>No tags found.</CommandEmpty>
 									<CommandGroup>
 										<CommandList>
-											{tags.map(framework => (
-												<CommandItem
-													key={framework.value}
-													value={framework.value}
-													onSelect={currentValue => {
-														setValue(currentValue === value ? '' : currentValue)
-														setOpen(false)
-													}}
-												>
-													<Check
-														className={cn(
-															'mr-2 h-4 w-4',
-															value === framework.value ? 'opacity-100' : 'opacity-0'
-														)}
-													/>
-													{framework.label}
-												</CommandItem>
-											))}
+											{tags
+												.sort((a: Tag, b: Tag) => {
+													if (a.tag === 'Other') return 1
+													if (b.tag === 'Other') return -1
+													return a.tag.localeCompare(b.tag)
+												})
+												.map((tag: Tag) => (
+													<CommandItem
+														key={tag.id}
+														value={tag.tag}
+														onSelect={currentValue => {
+															setValue(currentValue === value ? '' : currentValue)
+															setOpen(false)
+														}}
+													>
+														<Check
+															className={cn(
+																'mr-2 h-4 w-4',
+																value === tag.tag ? 'opacity-100' : 'opacity-0'
+															)}
+														/>
+														{tag.tag}
+													</CommandItem>
+												))}
 										</CommandList>
 									</CommandGroup>
 								</Command>
@@ -197,12 +152,14 @@ export default function Add() {
 							Title <span className="text-red-600">*</span>
 						</Label>
 						<Input
+							{...register('title', {
+								required: 'There is no title!',
+								maxLength: { value: 64, message: 'The title is too long!' },
+							})}
 							id="title"
 							name="title"
 							type="text"
 							placeholder="Something..."
-							maxLength={64}
-							required
 							onChange={e => setTitle(e.target.value)}
 							className={`${
 								title.length === 64 ? 'border-red-500 focus:border-red-700' : ''
@@ -216,13 +173,15 @@ export default function Add() {
 					<div className="flex flex-col gap-2">
 						<Label htmlFor="description">Description</Label>
 						<Textarea
+							{...register('description', {
+								maxLength: { value: 4096, message: 'The description is too long!' },
+							})}
 							name="description"
 							placeholder="Write text..."
 							id="description"
 							className={`min-h-40 ${
 								description.length === 4096 ? 'border-red-500 focus:border-red-700' : ''
 							}`}
-							maxLength={4096}
 							onChange={e => setDescription(e.target.value)}
 						/>
 						<span
@@ -233,12 +192,57 @@ export default function Add() {
 							{description.length}/4096
 						</span>
 					</div>
-					<Upload onUploadComplete={handleUploadComplete} />
+					{imageUrl && (
+						<Button onClick={() => setImageUrl('')} className="flex gap-1">
+							<PencilIcon className="w-5 h-5 p-0.5" />
+							Change Image
+						</Button>
+					)}
+					{imageUrl ? (
+						<Image
+							src={imageUrl}
+							alt="Image"
+							width={1280}
+							height={720}
+							className="w-80 h-52 object-cover rounded-md"
+						/>
+					) : (
+						<UploadDropzone
+							className="pt-2"
+							endpoint="mediaPost"
+							onClientUploadComplete={res => {
+								const uploadDetails = res[0]
+								setImageUrl(res[0].url)
+								setNewPost(true)
+
+								const convertedUploadDetails = {
+									...uploadDetails,
+									serverData: {
+										...uploadDetails.serverData,
+										id: Number(uploadDetails.serverData.id) || 0,
+										user: uploadDetails.serverData.user || '',
+									},
+								}
+								setUploadDetails(convertedUploadDetails)
+							}}
+							onUploadError={(error: Error) => {
+								toast(
+									<div className="flex gap-2">
+										<CheckIcon className="h-5 w-5" />
+										<span>{error.message}</span>
+									</div>
+								)
+							}}
+						/>
+					)}
 				</div>
 
 				{/* <Editor /> */}
 
-				{/* <Button type="submit">Submit</Button> */}
+				<Button disabled={isSubmitting} type="submit">
+					{isSubmitting ? 'Submitting...' : 'Submit'}
+				</Button>
+				{errors.title && <div className="text-red-600">{errors.title.message}</div>}
 			</form>
 		</div>
 	)
