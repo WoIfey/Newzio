@@ -204,28 +204,17 @@ export default function Profile({ user, userNews }: Props) {
 																		{news.title}
 																	</h1>
 																</div>
-																<div className="flex items-center">
+																<div className="flex items-center mx-2">
 																	{news.url && news.url.endsWith('.mp4') ? (
 																		<video
 																			width="1080"
 																			height="720"
-																			className="h-16 w-24 p-2 object-fill"
+																			className="h-16 w-24 object-fill rounded-lg"
 																			autoPlay
 																			loop
 																			muted
 																		>
-																			{news.url ? (
-																				<source src={news.url} type="video/mp4" />
-																			) : (
-																				<Image
-																					alt={news.name}
-																					width={1080}
-																					height={720}
-																					src="/file-x.svg"
-																					unoptimized
-																					className="h-16 w-24 object-fill bg-slate-950 p-4"
-																				/>
-																			)}
+																			<source src={news.url} type="video/mp4" />
 																			Your browser does not support the video tag.
 																		</video>
 																	) : news.url ? (
@@ -235,7 +224,7 @@ export default function Profile({ user, userNews }: Props) {
 																			height={720}
 																			src={news.url}
 																			unoptimized
-																			className="h-16 w-24 p-2 object-fill"
+																			className="h-16 w-24 object-fill rounded-lg"
 																		/>
 																	) : (
 																		<Image
@@ -244,20 +233,20 @@ export default function Profile({ user, userNews }: Props) {
 																			height={720}
 																			src="/file-x.svg"
 																			unoptimized
-																			className="h-16 w-24 object-fill bg-slate-950 p-4"
+																			className="h-16 w-24 object-fill bg-slate-950 p-4 rounded-lg"
 																		/>
 																	)}
 																</div>
 															</Link>
 															<ContextMenuContent>
-																<ContextMenuItem asChild>
+																{/* <ContextMenuItem asChild>
 																	<DialogTrigger asChild>
 																		<div className="cursor-pointer">
 																			<PencilIcon className="w-6 h-6 p-1" />
 																			<p className="mb-0.5">Edit Post</p>
 																		</div>
 																	</DialogTrigger>
-																</ContextMenuItem>
+																</ContextMenuItem> */}
 																<ContextMenuItem asChild>
 																	<AlertDialogTrigger asChild>
 																		<div className="cursor-pointer">

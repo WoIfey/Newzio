@@ -121,23 +121,12 @@ export default function Files({ data }: { data: any[] }) {
 													<video
 														width="1080"
 														height="720"
-														className="h-52 w-96 object-fill"
+														className="h-52 w-96 object-fill rounded-t-lg"
 														autoPlay
 														loop
 														muted
 													>
-														{news.url ? (
-															<source src={news.url} type="video/mp4" />
-														) : (
-															<Image
-																alt={news.name}
-																width={1080}
-																height={720}
-																src="/file-x.svg"
-																unoptimized
-																className="h-52 w-96 object-fill bg-slate-950 p-16"
-															/>
-														)}
+														<source src={news.url} type="video/mp4" />
 														Your browser does not support the video tag.
 													</video>
 												) : news.url ? (
@@ -147,7 +136,7 @@ export default function Files({ data }: { data: any[] }) {
 														height={720}
 														src={news.url}
 														unoptimized
-														className="h-52 w-96 object-fill"
+														className="h-52 w-96 object-fill rounded-t-lg"
 													/>
 												) : (
 													<Image
@@ -156,12 +145,14 @@ export default function Files({ data }: { data: any[] }) {
 														height={720}
 														src="/file-x.svg"
 														unoptimized
-														className="h-52 w-96 object-fill bg-slate-950 p-16"
+														className="h-52 w-96 object-fill bg-slate-950 p-16 rounded-t-lg"
 													/>
 												)}
-												<span className="text-slate-800 dark:text-slate-200 absolute top-40 left-3 p-1.5 bg-slate-300 dark:bg-[#2F3335] rounded-lg">
-													{news.tag}
-												</span>
+												{news.tag && (
+													<span className="text-slate-800 dark:text-slate-200 absolute top-40 left-3 p-1.5 bg-slate-300 dark:bg-[#2F3335] rounded-lg">
+														{news.tag}
+													</span>
+												)}
 
 												<div className="flex flex-col gap-1 p-4 hover:dark:text-sky-400 hover:text-sky-700 transition-all delay-100">
 													<h1 className="text-2xl font-bold break-words">{news.title}</h1>
@@ -182,14 +173,14 @@ export default function Files({ data }: { data: any[] }) {
 											{currentUserId === news.user_id && (
 												<>
 													<ContextMenuContent>
-														<ContextMenuItem asChild>
+														{/* <ContextMenuItem asChild>
 															<DialogTrigger asChild>
 																<div className="cursor-pointer">
 																	<PencilIcon className="w-6 h-6 p-1" />
 																	<p className="mb-0.5">Edit Post {news.id}</p>
 																</div>
 															</DialogTrigger>
-														</ContextMenuItem>
+														</ContextMenuItem> */}
 														<ContextMenuItem asChild>
 															<AlertDialogTrigger asChild>
 																<div className="cursor-pointer">

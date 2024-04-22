@@ -37,6 +37,14 @@ export const generateMetadata = async ({
 					alt: 'Thumbnail',
 				},
 			],
+			videos: [
+				{
+					url: `${data?.url}`,
+					width: 1280,
+					height: 720,
+					type: 'video',
+				},
+			],
 			locale: 'en_US',
 			type: 'website',
 		},

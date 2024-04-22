@@ -96,9 +96,11 @@ export default function News({ data, params }: { data: any; params: any }) {
 					</div>
 					<div className="flex gap-1 sm:flex-row flex-col">
 						<div className="flex gap-3 items-center flex-row">
-							<span className="bg-[#bfccdc] dark:bg-[#404B5E] px-1.5 py-1 dark:text-white text-sm rounded-lg">
-								{data.tag}
-							</span>
+							{data.tag && (
+								<span className="bg-[#bfccdc] dark:bg-[#404B5E] px-1.5 py-1 dark:text-white text-sm rounded-lg">
+									{data.tag}
+								</span>
+							)}
 							<h1 className="text-sm">By {data.user_name}</h1>
 						</div>
 						<div className="flex items-center">
@@ -208,24 +210,9 @@ export default function News({ data, params }: { data: any; params: any }) {
 							height="720"
 							className="max-h-[640px] w-[640px]"
 							autoPlay
-							loop
-							muted
+							controls
 						>
-							{data.url ? (
-								<source src={data.url} type="video/mp4" />
-							) : (
-								<>
-									<Image
-										alt={data.name}
-										width={1080}
-										height={720}
-										src="/file-x.svg"
-										unoptimized
-										className="max-h-[640px] w-[640px] object-fill bg-slate-900 p-52"
-									/>
-									<p className="text-white">File not found.</p>
-								</>
-							)}
+							<source src={data.url} type="video/mp4" />
 							Your browser does not support the video tag.
 						</video>
 					) : data.url ? (
@@ -247,7 +234,9 @@ export default function News({ data, params }: { data: any; params: any }) {
 								unoptimized
 								className="max-h-[640px] w-[640px] object-fill bg-slate-950 p-52"
 							/>
-							<p className="dark:text-white mx-8">Image does not exist.</p>
+							<p className="dark:text-slate-400 mx-8 mt-2 text-slate-600">
+								File does not exist.
+							</p>
 						</div>
 					)}
 				</div>
