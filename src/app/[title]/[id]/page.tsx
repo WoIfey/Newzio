@@ -1,5 +1,5 @@
 import Posts from '@/components/Posts'
-import { getPage } from '@/utils/handleDatabase'
+import { getNews, getPage } from '@/utils/handleDatabase'
 import { Metadata } from 'next'
 import Sidebar from '@/components/Sidebar'
 
@@ -45,10 +45,11 @@ export const generateMetadata = async ({
 
 export default async function NewsPost({ params }: Props) {
 	let data = (await getPage(params.id))[0]
-	const res = await fetch('http://localhost:3000/api/data', {
+	let news = await getNews()
+	/* const res = await fetch('http://localhost:3000/api/data', {
 		next: { revalidate: 5, tags: ['news'] },
 	})
-	const news = await res.json()
+	const news = await res.json() */
 
 	return (
 		<div className="flex min-h-dvh lg:flex-row flex-col justify-center md:pt-16 bg-[#dfdfdf] dark:bg-[#1b1b1b]">
