@@ -8,22 +8,22 @@ export default async function Home() {
 	const session = await getServerSession(options)
 	let news = await getNews()
 
-	const res = await fetch(`${process.env.API_URL}/api/data`, {
+	/* const res = await fetch(`${process.env.API_URL}/api/data`, {
 		next: { revalidate: 5, tags: ['news'] },
 	})
-	const data = await res.json()
+	const data = await res.json() */
 
 	return (
 		<main className="flex min-h-dvh flex-col items-center bg-[#dfdfdf] dark:bg-[#1b1b1b]">
 			<div className="flex flex-col lg:flex-row-reverse md:pt-16">
 				{session ? (
-					<News data={data} />
+					<News data={news} />
 				) : (
 					<>
 						<div className="flex-shrink-0">
 							<User />
 						</div>
-						<News data={data} />
+						<News data={news} />
 					</>
 				)}
 			</div>

@@ -4,7 +4,7 @@ import { revalidatePath, revalidateTag } from "next/cache"
 import { UploadDetails } from "uploadDetails"
 
 export async function refresh() {
-    revalidateTag('news')
+    revalidatePath('/')
 }
 
 export const create = async (
