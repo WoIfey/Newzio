@@ -124,7 +124,7 @@ export default function Profile({ user, userNews }: Props) {
 					<UserIcon className="w-6 h-6 text-gray-400 hover:text-white" />
 				)}
 			</SheetTrigger>
-			<SheetContent side={'left'}>
+			<SheetContent>
 				<div className="overflow-y-auto max-h-[900px]">
 					<SheetHeader>
 						<div className="flex flex-col w-full gap-3">

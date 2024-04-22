@@ -46,9 +46,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 export default function News({ data, params }: { data: any; params: any }) {
-	if (!data) {
-		return <Loading />
-	}
 	const [deletePost, setDeletePost] = useAtom(deletedNews)
 	const router = useRouter()
 
@@ -85,6 +82,9 @@ export default function News({ data, params }: { data: any; params: any }) {
 	}
 
 	const { data: session } = useSession()
+	if (!data) {
+		return <Loading />
+	}
 	const currentUserId = session?.user?.id
 
 	return (
