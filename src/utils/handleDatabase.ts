@@ -21,9 +21,9 @@ export async function getTags() {
     return data.rows
 }
 
-export async function saveUpload(key: string, name: string, size: number, type: string, url: string, title: string, description: string, tag: string, user_id: number, user_name: string) {
+export async function saveUpload(key: string, name: string, size: number, type: string, url: string, headline: string, lead: string, body: string, tag: string, user_id: number, user_name: string) {
     try {
-        await db.query(`INSERT INTO news(key, name, size, type, url, title, description, tag, user_id, user_name) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`, [key, name, size, type, url, title, description, tag, user_id, user_name])
+        await db.query(`INSERT INTO news(key, name, size, type, url, headline, lead, body, tag, user_id, user_name) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`, [key, name, size, type, url, headline, lead, body, tag, user_id, user_name])
         return 'Saved Page'
     } catch (error) {
         console.log(error)

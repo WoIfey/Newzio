@@ -8,7 +8,7 @@ export default function User() {
 			<div>
 				<p className="text-xl font-bold mx-4">Create news!</p>
 				<p className="py-2 mx-4">
-					Login now to start creating your own news posts along with other users.
+					Login now to start creating your own news along with other users.
 				</p>
 			</div>
 			<Button className="w-full" onClick={() => signIn()}>

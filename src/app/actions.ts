@@ -1,6 +1,7 @@
 'use server'
 import { deletePage, saveUpload } from "@/utils/handleDatabase"
 import { revalidatePath, revalidateTag } from "next/cache"
+import { redirect } from "next/navigation"
 import { UploadDetails } from "uploadDetails"
 
 export async function refresh() {
@@ -8,8 +9,9 @@ export async function refresh() {
 }
 
 export const create = async (
-    title: string,
-    description: string,
+    headline: string,
+    lead: string,
+    body: string,
     tag: string,
     uploadDetails: UploadDetails,
     user_id: number,
@@ -21,8 +23,9 @@ export const create = async (
         uploadDetails?.size,
         uploadDetails?.type,
         uploadDetails?.url,
-        title,
-        description,
+        headline,
+        lead,
+        body,
         tag,
         user_id,
         user_name
@@ -32,5 +35,5 @@ export const create = async (
 
 export const remove = async (id: string) => {
     await deletePage(id)
-    revalidatePath('/')
+    redirect('/')
 }

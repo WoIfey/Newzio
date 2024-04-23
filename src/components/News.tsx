@@ -48,7 +48,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
-export default function Files({ data }: { data: any[] }) {
+export default function News({ data }: { data: any[] }) {
 	data.sort((a: any, b: any) => b.id - a.id)
 	const [newPost, setNewPost] = useAtom(createdNews)
 	const [deletePost, setDeletePost] = useAtom(deletedNews)
@@ -104,10 +104,41 @@ export default function Files({ data }: { data: any[] }) {
 								<AlertDialog>
 									<ContextMenu>
 										<ContextMenuTrigger>
+											{currentUserId !== news.user_id && currentUserId === '87246869' && (
+												<ContextMenuContent>
+													<ContextMenuItem asChild>
+														<AlertDialogTrigger asChild>
+															<div className="cursor-pointer">
+																<TrashIcon className="w-6 h-6 text-red-600 p-1" />
+																<p className="mb-0.5">Force Delete Post</p>
+															</div>
+														</AlertDialogTrigger>
+													</ContextMenuItem>
+												</ContextMenuContent>
+											)}
+											<AlertDialogContent>
+												<AlertDialogHeader>
+													<AlertDialogTitle className="text-red-600 flex gap-2 items-center sm:flex-row flex-col">
+														<TrashIcon className="h-6 w-6" />
+														{`Force delete ${news.user_name}'s news post?`}
+													</AlertDialogTitle>
+													<AlertDialogDescription>
+														{`This action cannot be undone. This will permanently delete their
+														news post and they will probably be sad! (also won't be viewable.)`}
+													</AlertDialogDescription>
+												</AlertDialogHeader>
+												<AlertDialogFooter>
+													<AlertDialogCancel>Cancel</AlertDialogCancel>
+													<Button onClick={() => confirm(news.id)} asChild>
+														<AlertDialogAction type="submit">Proceed</AlertDialogAction>
+													</Button>
+												</AlertDialogFooter>
+											</AlertDialogContent>
+
 											<Link
 												href={`/${encodeURIComponent(
-													news.title
-														? news.title
+													news.headline
+														? news.headline
 																.toLowerCase()
 																.replace(/ö/g, 'o')
 																.replace(/ä/g, 'a')
@@ -117,7 +148,7 @@ export default function Files({ data }: { data: any[] }) {
 												)}/${news.id}`}
 												className="hover:dark:text-sky-400 hover:text-sky-700 transition-all delay-150"
 											>
-												{news.url && news.url.endsWith('.mp4') ? (
+												{news.type && news.type.startsWith('video') ? (
 													<video
 														width="1080"
 														height="720"
@@ -129,7 +160,7 @@ export default function Files({ data }: { data: any[] }) {
 														<source src={news.url} type="video/mp4" />
 														Your browser does not support the video tag.
 													</video>
-												) : news.url ? (
+												) : news.type ? (
 													<Image
 														alt={news.name}
 														width={1080}
@@ -139,14 +170,7 @@ export default function Files({ data }: { data: any[] }) {
 														className="h-52 w-96 object-fill rounded-t-lg"
 													/>
 												) : (
-													<Image
-														alt={news.name}
-														width={1080}
-														height={720}
-														src="/file-x.svg"
-														unoptimized
-														className="h-52 w-96 object-fill bg-slate-950 p-16 rounded-t-lg"
-													/>
+													<div className="h-52 w-96 bg-slate-950 rounded-t-lg"></div>
 												)}
 												{news.tag && (
 													<span className="text-slate-800 dark:text-slate-200 absolute top-40 left-3 p-1.5 bg-slate-300 dark:bg-[#2F3335] rounded-lg">
@@ -155,7 +179,7 @@ export default function Files({ data }: { data: any[] }) {
 												)}
 
 												<div className="flex flex-col gap-1 p-4 hover:dark:text-sky-400 hover:text-sky-700 transition-all delay-100">
-													<h1 className="text-2xl font-bold break-words">{news.title}</h1>
+													<h1 className="text-2xl font-bold break-words">{news.headline}</h1>
 													<p className="text-slate-700 dark:text-slate-300 text-xs flex gap-1 items-center">
 														By {news.user_name} published{' '}
 														<span className="dark:text-slate-300 text-slate-600">
@@ -165,7 +189,7 @@ export default function Files({ data }: { data: any[] }) {
 														</span>
 													</p>
 													<p className="line-clamp-3 text-black dark:text-slate-100 break-words">
-														{news.description}
+														{news.lead}
 													</p>
 												</div>
 											</Link>
@@ -200,11 +224,11 @@ export default function Files({ data }: { data: any[] }) {
 														</DialogHeader>
 														<div className="grid gap-4 py-4">
 															<div className="grid grid-cols-4 items-center gap-4">
-																<Label htmlFor="title" className="text-right">
-																	Title
+																<Label htmlFor="headline" className="text-right">
+																	Headline
 																</Label>
 																<Input
-																	id="title"
+																	id="headline"
 																	defaultValue="Something..."
 																	className="col-span-3"
 																/>

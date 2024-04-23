@@ -64,8 +64,10 @@ type User =
 
 type NewsPost = {
 	id: string
-	title: string
-	description: string
+	headline: string
+	lead: string
+	body: string
+	type: string
 	url: string
 	tag: string
 	name: string
@@ -81,6 +83,8 @@ type Props = {
 export default function Profile({ user, userNews }: Props) {
 	const [deletePost, setDeletePost] = useAtom(deletedNews)
 	const router = useRouter()
+
+	userNews.sort((a: any, b: any) => b.id - a.id)
 
 	useEffect(() => {
 		if (deletePost) {
@@ -175,8 +179,8 @@ export default function Profile({ user, userNews }: Props) {
 														<ContextMenuTrigger>
 															<Link
 																href={`/${encodeURIComponent(
-																	news.title
-																		? news.title
+																	news.headline
+																		? news.headline
 																				.toLowerCase()
 																				.replace(/ö/g, 'o')
 																				.replace(/ä/g, 'a')
@@ -188,9 +192,11 @@ export default function Profile({ user, userNews }: Props) {
 															>
 																<div className="flex flex-col gap-1 p-4 hover:dark:text-sky-400 hover:text-sky-700 transition-all delay-100 w-full">
 																	<div className="flex gap-1">
-																		<span className="text-black dark:text-white text-xs">
-																			{news.tag}
-																		</span>
+																		{news.tag && (
+																			<span className="text-black dark:text-white text-xs">
+																				{news.tag}
+																			</span>
+																		)}
 																		<p className="text-slate-700 dark:text-slate-300 text-xs flex gap-1 items-center">
 																			published{' '}
 																			<span className="dark:text-slate-300 text-slate-600">
@@ -201,11 +207,11 @@ export default function Profile({ user, userNews }: Props) {
 																		</p>
 																	</div>
 																	<h1 className="text-xl font-bold break-all line-clamp-1">
-																		{news.title}
+																		{news.headline}
 																	</h1>
 																</div>
 																<div className="flex items-center mx-2">
-																	{news.url && news.url.endsWith('.mp4') ? (
+																	{news.type && news.type.startsWith('video') ? (
 																		<video
 																			width="1080"
 																			height="720"
@@ -217,24 +223,17 @@ export default function Profile({ user, userNews }: Props) {
 																			<source src={news.url} type="video/mp4" />
 																			Your browser does not support the video tag.
 																		</video>
-																	) : news.url ? (
+																	) : news.type ? (
 																		<Image
 																			alt={news.name}
 																			width={1080}
 																			height={720}
 																			src={news.url}
 																			unoptimized
-																			className="h-16 w-24 object-fill rounded-lg"
+																			className="break-all line-clamp-2 h-16 w-24 object-fill rounded-lg"
 																		/>
 																	) : (
-																		<Image
-																			alt={news.name}
-																			width={1080}
-																			height={720}
-																			src="/file-x.svg"
-																			unoptimized
-																			className="h-16 w-24 object-fill bg-slate-950 p-4 rounded-lg"
-																		/>
+																		<div></div>
 																	)}
 																</div>
 															</Link>
@@ -266,11 +265,11 @@ export default function Profile({ user, userNews }: Props) {
 																</DialogHeader>
 																<div className="grid gap-4 py-4">
 																	<div className="grid grid-cols-4 items-center gap-4">
-																		<Label htmlFor="title" className="text-right">
-																			Title
+																		<Label htmlFor="headline" className="text-right">
+																			Headline
 																		</Label>
 																		<Input
-																			id="title"
+																			id="headline"
 																			defaultValue="Something..."
 																			className="col-span-3"
 																		/>

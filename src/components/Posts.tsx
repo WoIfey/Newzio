@@ -44,16 +44,27 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useEffect, useState } from 'react'
 
-export default function News({ data, params }: { data: any; params: any }) {
+export default function Posts({ data, params }: { data: any; params: any }) {
 	const [deletePost, setDeletePost] = useAtom(deletedNews)
+	const [loadingText, setLoadingText] = useState('Loading...')
 	const router = useRouter()
+
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setLoadingText("This news post probably doesn't exist")
+		}, 5000)
+
+		return () => clearTimeout(timer)
+	}, [])
 
 	const confirm = async () => {
 		try {
 			await remove(data.id)
 			setDeletePost(true)
-			router.push('/')
+			router.replace('/')
+			router.refresh()
 			toast(
 				<div className="flex gap-2">
 					<TrashIcon className="h-5 w-5" />
@@ -83,36 +94,41 @@ export default function News({ data, params }: { data: any; params: any }) {
 
 	const { data: session } = useSession()
 	if (!data) {
-		return <Loading />
+		return (
+			<div className="sm:mx-32">
+				<Loading text={loadingText} />
+			</div>
+		)
 	}
 	const currentUserId = session?.user?.id
 
 	return (
 		<div className="lg:max-w-2xl bg-[#e4ebec] dark:bg-[#2F3335] min-h-dvh">
 			<div key={data.id}>
-				<div className="m-6 sm:m-8">
-					<div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
-						<h1 className="text-3xl font-bold mb-4 break-all">{data.title}</h1>
-					</div>
-					<div className="flex gap-1 sm:flex-row flex-col">
-						<div className="flex gap-3 items-center flex-row">
-							{data.tag && (
-								<span className="bg-[#bfccdc] dark:bg-[#404B5E] px-1.5 py-1 dark:text-white text-sm rounded-lg">
-									{data.tag}
-								</span>
-							)}
-							<h1 className="text-sm">By {data.user_name}</h1>
+				<div className={`m-6 sm:mx-8 ${data.type ? '' : 'm-4'}`}>
+					<div className="border-b border-slate-800 dark:border-slate-200 pb-4">
+						<h1 className="text-3xl font-bold mb-4 break-words">{data.headline}</h1>
+						<div className="flex gap-1 sm:flex-row flex-col">
+							<div className="flex gap-2 items-center flex-row">
+								{data.tag && (
+									<span className="bg-[#bfccdc] dark:bg-[#404B5E] px-1.5 py-1 dark:text-white text-sm rounded-lg">
+										{data.tag}
+									</span>
+								)}
+								<h1 className="text-sm">By {data.user_name}</h1>
+							</div>
+							<div className="flex items-center">
+								<p className="text-sm">
+									published{' '}
+									<span className="dark:text-slate-300 text-slate-600">
+										{formatDistanceToNowStrict(new Date(data.createdAt), {
+											addSuffix: true,
+										})}
+									</span>
+								</p>
+							</div>
 						</div>
-						<div className="flex items-center">
-							<p className="text-sm">
-								published{' '}
-								<span className="dark:text-slate-300 text-slate-600">
-									{formatDistanceToNowStrict(new Date(data.createdAt), {
-										addSuffix: true,
-									})}
-								</span>
-							</p>
-						</div>
+						{data.lead && <p className="leading-7 break-words mt-4">{data.lead}</p>}
 					</div>
 					<div className="mt-4 flex gap-2">
 						<Dialog>
@@ -204,44 +220,34 @@ export default function News({ data, params }: { data: any; params: any }) {
 					</div>
 				</div>
 				<div className="flex items-center justify-center">
-					{data.url && data.url.endsWith('.mp4') ? (
+					{data.type && data.type.startsWith('video') ? (
 						<video
 							width="1080"
 							height="720"
-							className="max-h-[640px] w-[640px]"
+							className="max-h-[480px] w-full"
 							autoPlay
 							controls
 						>
 							<source src={data.url} type="video/mp4" />
 							Your browser does not support the video tag.
 						</video>
-					) : data.url ? (
+					) : data.type ? (
 						<Image
 							alt={data.name}
 							width={1080}
 							height={720}
 							src={data.url}
 							unoptimized
-							className="max-h-[640px] w-[640px] object-fill"
+							className="max-h-[480px] w-full object-fill"
 						/>
 					) : (
-						<div className="flex flex-col">
-							<Image
-								alt={data.name}
-								width={1080}
-								height={720}
-								src="/file-x.svg"
-								unoptimized
-								className="max-h-[640px] w-[640px] object-fill bg-slate-950 p-52"
-							/>
-							<p className="dark:text-slate-400 mx-8 mt-2 text-slate-600">
-								File does not exist.
-							</p>
-						</div>
+						<div></div>
 					)}
 				</div>
-				<div className="m-6 sm:mx-8">
-					<p className="leading-7 break-all">{data.description}</p>
+				<div
+					className={`mx-6 sm:mx-8 ${data.type ? 'sm:my-4' : 'sm:my-0 sm:mb-4'}`}
+				>
+					<p className="leading-7 break-words">{data.body}</p>
 				</div>
 			</div>
 		</div>

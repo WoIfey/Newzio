@@ -14,8 +14,9 @@ declare module "uploadDetails" {
 
 declare module "FormFields" {
     type FormFields = {
-        title: string
-        description: string
+        headline: string
+        lead: string
+        body: string
         tag: string
         productImageUrl: string
         uploadDetails: any

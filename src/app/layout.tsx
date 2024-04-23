@@ -53,7 +53,7 @@ export default async function RootLayout({
 		<html lang="en">
 			<body className={inter.className}>
 				<AuthProvider>
-					<Suspense fallback={<Loading />}>
+					<Suspense fallback={<Loading text={'Loading...'} />}>
 						<Navbar userNews={userNews} />
 						<NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
 						{children}

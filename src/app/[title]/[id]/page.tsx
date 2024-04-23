@@ -7,7 +7,6 @@ type Props = {
 	params: {
 		id: string
 		title: string
-		description: string
 	}
 }
 
@@ -16,33 +15,21 @@ export const generateMetadata = async ({
 }: Props): Promise<Metadata> => {
 	let data = (await getPage(params.id))[0]
 	return {
-		title: `News: ${data?.title}`,
+		title: `News: ${data?.headline}`,
 		description:
-			data?.description.length > 250
-				? `${data.description.substring(0, 250)}...`
-				: data?.description,
+			data?.lead?.length > 128 ? `${data.lead.substring(0, 128)}...` : data?.lead,
 		openGraph: {
-			title: `${data?.title}`,
+			title: `${data?.headline}`,
 			description:
-				data?.description.length > 250
-					? `${data.description.substring(0, 250)}...`
-					: data?.description,
+				data?.lead?.length > 128 ? `${data.lead.substring(0, 128)}...` : data?.lead,
 			url: `https://newzio.vercel.app/${params.title}/${params.id}`,
-			siteName: 'Newzio',
+			siteName: `Newzio ${data?.tag ? '::' : ''} ${data?.tag || ''}`,
 			images: [
 				{
 					url: `${data?.url}`,
 					width: 1280,
 					height: 720,
 					alt: 'Thumbnail',
-				},
-			],
-			videos: [
-				{
-					url: `${data?.url}`,
-					width: 1280,
-					height: 720,
-					type: 'video',
 				},
 			],
 			locale: 'en_US',
@@ -63,7 +50,7 @@ export default async function NewsPost({ params }: Props) {
 		<div className="flex min-h-dvh lg:flex-row flex-col justify-center md:pt-16 bg-[#dfdfdf] dark:bg-[#1b1b1b]">
 			<Posts data={data} params={params} />
 			<div className="flex-shrink-0">
-				<Sidebar news={news} id={params.id} />
+				<Sidebar news={news} />
 			</div>
 		</div>
 	)
