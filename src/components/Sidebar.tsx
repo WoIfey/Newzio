@@ -14,7 +14,7 @@ export default function Sidebar({ news }: { news: any[] }) {
 			<h1 className="font-semibold text-xl bg-slate-200 dark:bg-[#242729] px-6 mt-4 lg:self-start">
 				Other news
 			</h1>
-			<div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-col gap-6 bg-slate-200 dark:bg-[#242729] px-6 mb-4 items-start">
+			<div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-col gap-6 bg-slate-200 dark:bg-[#242729] px-6 mb-4">
 				{currentNews.length > 0 ? (
 					currentNews.map(news => (
 						<div
@@ -36,7 +36,7 @@ export default function Sidebar({ news }: { news: any[] }) {
 									<video
 										width="1080"
 										height="720"
-										className="h-52 w-96 object-fill rounded-t-lg"
+										className="h-52 w-full object-fill rounded-t-lg"
 										autoPlay
 										loop
 										muted
@@ -51,10 +51,10 @@ export default function Sidebar({ news }: { news: any[] }) {
 										height={720}
 										src={news.url}
 										unoptimized
-										className="h-52 w-96 object-fill rounded-t-lg"
+										className="h-52 w-full object-fill rounded-t-lg"
 									/>
 								) : (
-									<div className="h-52 w-96 bg-slate-950 rounded-t-lg"></div>
+									<div className="h-52 w-full bg-slate-400 dark:bg-[#1d2022] rounded-t-lg"></div>
 								)}
 								{news.tag && (
 									<span className="text-slate-800 dark:text-slate-200 absolute top-40 left-3 p-1.5 bg-slate-300 dark:bg-[#2F3335] rounded-lg">

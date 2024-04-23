@@ -244,9 +244,7 @@ export default function Posts({ data, params }: { data: any; params: any }) {
 						<div></div>
 					)}
 				</div>
-				<div
-					className={`mx-6 sm:mx-8 ${data.type ? 'sm:my-4' : 'sm:my-0 sm:mb-4'}`}
-				>
+				<div className={`mx-6 sm:mx-8 ${data.type ? 'my-4' : 'sm:my-0 sm:mb-4'}`}>
 					<p className="leading-7 break-words">{data.body}</p>
 				</div>
 			</div>

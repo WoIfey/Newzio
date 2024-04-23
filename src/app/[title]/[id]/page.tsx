@@ -23,7 +23,7 @@ export const generateMetadata = async ({
 			description:
 				data?.lead?.length > 128 ? `${data.lead.substring(0, 128)}...` : data?.lead,
 			url: `https://newzio.vercel.app/${params.title}/${params.id}`,
-			siteName: `Newzio ${data?.tag ? '::' : ''} ${data?.tag || ''}`,
+			siteName: `Newzio ${data?.tag ? '-' : ''} ${data?.tag || ''}`,
 			images: [
 				{
 					url: `${data?.url}`,

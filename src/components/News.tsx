@@ -152,7 +152,7 @@ export default function News({ data }: { data: any[] }) {
 													<video
 														width="1080"
 														height="720"
-														className="h-52 w-96 object-fill rounded-t-lg"
+														className="h-52 w-full object-fill rounded-t-lg"
 														autoPlay
 														loop
 														muted
@@ -167,10 +167,10 @@ export default function News({ data }: { data: any[] }) {
 														height={720}
 														src={news.url}
 														unoptimized
-														className="h-52 w-96 object-fill rounded-t-lg"
+														className="h-52 w-full object-fill rounded-t-lg"
 													/>
 												) : (
-													<div className="h-52 w-96 bg-slate-950 rounded-t-lg"></div>
+													<div className="h-52 w-full bg-slate-400 dark:bg-[#1d2022] rounded-t-lg"></div>
 												)}
 												{news.tag && (
 													<span className="text-slate-800 dark:text-slate-200 absolute top-40 left-3 p-1.5 bg-slate-300 dark:bg-[#2F3335] rounded-lg">
