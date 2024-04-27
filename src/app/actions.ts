@@ -15,7 +15,8 @@ export const create = async (
     tag: string,
     uploadDetails: UploadDetails,
     user_id: number,
-    user_name: string
+    user_name: string,
+    user_image: string
 ) => {
     await saveUpload(
         uploadDetails?.key,
@@ -28,7 +29,8 @@ export const create = async (
         body,
         tag,
         user_id,
-        user_name
+        user_name,
+        user_image
     )
     revalidatePath('/')
 }

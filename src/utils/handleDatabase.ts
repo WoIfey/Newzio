@@ -21,13 +21,13 @@ export async function getTags() {
     return data.rows
 }
 
-export async function saveUpload(key: string, name: string, size: number, type: string, url: string, headline: string, lead: string, body: string, tag: string, user_id: number, user_name: string) {
+export async function saveUpload(key: string, name: string, size: number, type: string, url: string, headline: string, lead: string, body: string, tag: string, user_id: number, user_name: string, user_image: string) {
     try {
-        await db.query(`INSERT INTO news(key, name, size, type, url, headline, lead, body, tag, user_id, user_name) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`, [key, name, size, type, url, headline, lead, body, tag, user_id, user_name])
+        await db.query(`INSERT INTO news(key, name, size, type, url, headline, lead, body, tag, user_id, user_name, user_image) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`, [key, name, size, type, url, headline, lead, body, tag, user_id, user_name, user_image])
         return 'Saved Page'
     } catch (error) {
         console.log(error)
-        return 'Something went wrong'
+        return "Failed to save page."
     }
 }
 
@@ -37,7 +37,7 @@ export async function deletePage(id: string) {
         return 'Deleted Page'
     } catch (error) {
         console.log(error)
-        return 'Something went wrong'
+        return 'Failed to delete page.'
     }
 }
 
@@ -48,7 +48,7 @@ export async function registerUser(name: string, email: string, password: string
         return 'User Registered'
     } catch (error) {
         console.log(error)
-        return 'Something went wrong'
+        return 'Failed to register user.'
     }
 }
 

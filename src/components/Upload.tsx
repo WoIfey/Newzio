@@ -18,7 +18,6 @@ export default function Upload({
 			onClientUploadComplete={res => {
 				const uploadDetails = res[0]
 				onUploadComplete(uploadDetails)
-				console.log(uploadDetails)
 				setImageUrl(res[0].url)
 				setNewPost(true)
 			}}

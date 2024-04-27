@@ -20,7 +20,7 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from '@/components/ui/popover'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 import {
@@ -32,12 +32,21 @@ import {
 import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { UploadDropzone } from '@/utils/uploadthing'
-import { createdNews } from '@/utils/atoms'
+import {
+	createdNews,
+	tagInput,
+	bodyInput,
+	leadInput,
+	headlineInput,
+	fileUrlInput,
+	fileTypeValue,
+} from '@/utils/atoms'
 import { useAtom } from 'jotai'
 import Image from 'next/image'
 import { useSession } from 'next-auth/react'
 import { UploadDetails } from 'uploadDetails'
 import { FormFields } from 'FormFields'
+import Preview from './Preview'
 
 interface Tag {
 	id: string
@@ -46,14 +55,15 @@ interface Tag {
 
 export default function Add({ tags }: { tags: any }) {
 	const [open, setOpen] = useState(false)
-	const [value, setValue] = useState('')
-	const [headline, setHeadline] = useState('')
-	const [lead, setLead] = useState('')
-	const [body, setBody] = useState('')
-	const [newPost, setNewPost] = useAtom(createdNews)
+	const [body, setBody] = useAtom(bodyInput)
+	const [tagValue, setTagValue] = useAtom(tagInput)
+	const [headline, setHeadline] = useAtom(headlineInput)
+	const [lead, setLead] = useAtom(leadInput)
+	const [fileUrl, setFileUrl] = useAtom(fileUrlInput)
+	const [newArticle, setNewArticle] = useAtom(createdNews)
+	const [fileType, setFileType] = useAtom(fileTypeValue)
 	const [uploadDetails, setUploadDetails] = useState<UploadDetails | null>(null)
-	const [fileUrl, setFileUrl] = useState('')
-	const [fileType, setFileType] = useState('')
+
 	const {
 		register,
 		handleSubmit,
@@ -65,18 +75,18 @@ export default function Add({ tags }: { tags: any }) {
 
 	const onSubmit: SubmitHandler<FormFields> = async data => {
 		try {
-			setValue('')
+			setTagValue('')
 			setHeadline('')
 			setLead('')
 			setBody('')
 			setFileUrl('')
-			await new Promise(resolve => setTimeout(resolve, 250))
-			data.tag = value
+			data.tag = tagValue
 			if (uploadDetails) {
 				data.uploadDetails = uploadDetails
 			}
-			const user_id = session?.user.id ? Number(session.user.id) : 0
+			const user_id = session?.user.id as unknown as number
 			const user_name = session?.user.name ?? ''
+			const user_image = session?.user.image ?? ''
 			await create(
 				data.headline,
 				data.lead,
@@ -84,23 +94,59 @@ export default function Add({ tags }: { tags: any }) {
 				data.tag,
 				data.uploadDetails,
 				user_id,
-				user_name
+				user_name,
+				user_image
 			)
 			toast(
 				<div className="flex gap-2">
 					<CheckIcon className="h-5 w-5" />
-					<span>News successfully added.</span>
-				</div>
+					<span>Article successfully added.</span>
+				</div>,
+				{
+					position: 'bottom-center',
+				}
 			)
 		} catch (error) {
 			toast(
 				<div className="flex gap-2">
 					<XCircleIcon className="h-5 w-5 text-red-500" />
-					<span>Error submitting news. Please try again.</span>
-				</div>
+					<span>Error submitting article. Please try again.</span>
+				</div>,
+				{
+					position: 'bottom-center',
+				}
 			)
 		}
 	}
+
+	useEffect(() => {
+		const handlePaste = (event: ClipboardEvent) => {
+			const items = event.clipboardData?.items
+			if (items) {
+				for (let i = 0; i < items.length; i++) {
+					if (items[i].type.indexOf('image') !== -1) {
+						const blob = items[i].getAsFile()
+						if (blob) {
+							// Convert the blob to a URL and handle it as an uploaded file
+							const url = URL.createObjectURL(blob)
+							// Here, you would handle the pasted image URL as you would with an uploaded file
+							// For example, setting it as the fileUrl state
+							setFileUrl(url)
+							// You might also want to set the fileType state based on the blob type
+							setFileType(blob.type)
+							// Optionally, you can trigger the upload process here
+						}
+					}
+				}
+			}
+		}
+
+		document.addEventListener('paste', handlePaste)
+
+		return () => {
+			document.removeEventListener('paste', handlePaste)
+		}
+	}, [])
 
 	return (
 		<>
@@ -108,7 +154,7 @@ export default function Add({ tags }: { tags: any }) {
 				<div className="grid grid-cols-1 md:pt-28 md:px-10 lg:px-0 md:pb-16 md:py-0 sm:py-6 pt-4 md:grid-cols-3">
 					<div className="px-4 sm:px-0 pb-4 md:pb-0">
 						<h2 className="text-base font-semibold leading-7 dark:text-white text-gray-900">
-							Create News Post
+							Create news article
 						</h2>
 						<p className="mt-1 text-sm leading-6 dark:text-gray-400 text-gray-600">
 							Share with the world!
@@ -134,7 +180,7 @@ export default function Add({ tags }: { tags: any }) {
 													aria-expanded={open}
 													className="justify-between"
 												>
-													{value ? value : 'Select tag...'}
+													{tagValue ? tagValue : 'Select tag...'}
 													<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 												</Button>
 											</PopoverTrigger>
@@ -154,15 +200,15 @@ export default function Add({ tags }: { tags: any }) {
 																	<CommandItem
 																		key={tag.id}
 																		value={tag.tag}
-																		onSelect={currentValue => {
-																			setValue(currentValue === value ? '' : currentValue)
+																		onSelect={currentTag => {
+																			setTagValue(currentTag === tagValue ? '' : currentTag)
 																			setOpen(false)
 																		}}
 																	>
 																		<Check
 																			className={cn(
 																				'mr-2 h-4 w-4',
-																				value === tag.tag ? 'opacity-100' : 'opacity-0'
+																				tagValue === tag.tag ? 'opacity-100' : 'opacity-0'
 																			)}
 																		/>
 																		{tag.tag}
@@ -298,34 +344,8 @@ export default function Add({ tags }: { tags: any }) {
 
 								<div className="col-span-full">
 									<Label htmlFor="file" className="block text-sm font-medium leading-6">
-										News cover
+										{'News cover'}
 									</Label>
-									{/* <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-										<div className="text-center">
-											<PhotoIcon
-												className="mx-auto h-12 w-12 text-gray-300"
-												aria-hidden="true"
-											/>
-											<div className="mt-4 flex text-sm leading-6 text-gray-600">
-												<label
-													htmlFor="file-upload"
-													className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
-												>
-													<span>Upload a file</span>
-													<input
-														id="file-upload"
-														name="file-upload"
-														type="file"
-														className="sr-only"
-													/>
-												</label>
-												<p className="pl-1">or drag and drop</p>
-											</div>
-											<p className="text-xs leading-5 text-gray-600">
-												PNG, JPG, GIF up to 10MB
-											</p>
-										</div>
-									</div> */}
 									{fileUrl && (
 										<Button
 											onClick={() => setFileUrl('')}
@@ -360,11 +380,32 @@ export default function Add({ tags }: { tags: any }) {
 										<UploadDropzone
 											className="pt-2"
 											endpoint="mediaPost"
+											appearance={{
+												uploadIcon: 'mt-6',
+												label:
+													'text-blue-600 dark:text-blue-500 hover:text-blue-700 dark:hover:text-blue-600 ',
+												button:
+													'bg-blue-300 hover:bg-blue-200 text-black dark:bg-blue-700 dark:hover:bg-blue-800 dark:text-white transition-all duration-150',
+												container:
+													'flex-col rounded-md border-blue-400 dark:border-blue-900 bg-[#FFFFFF] dark:bg-[#020817]',
+												allowedContent:
+													'flex h-8 flex-col items-center justify-center px-2 text-slate-800 dark:text-slate-300',
+											}}
+											content={{
+												label({ isUploading }) {
+													if (isUploading) return ''
+													return `Choose a file or drag and drop`
+												},
+												allowedContent({ fileTypes, isUploading }) {
+													if (isUploading) return 'Uploading file!'
+													return `${fileTypes.join(', ')} up to 8MB`
+												},
+											}}
 											onClientUploadComplete={res => {
 												const uploadDetails = res[0]
 												setFileUrl(res[0].url)
 												setFileType(res[0].type)
-												setNewPost(true)
+												setNewArticle(true)
 
 												const convertedUploadDetails = {
 													...uploadDetails,
@@ -377,12 +418,15 @@ export default function Add({ tags }: { tags: any }) {
 												setUploadDetails(convertedUploadDetails)
 												reset()
 											}}
-											onUploadError={(error: Error) => {
+											onUploadError={error => {
 												toast(
 													<div className="flex gap-2">
 														<XCircleIcon className="h-5 w-5 text-red-600" />
-														<span>{error.message}</span>
-													</div>
+														<span>The file might be too large!</span>
+													</div>,
+													{
+														position: 'bottom-center',
+													}
 												)
 											}}
 										/>
@@ -390,11 +434,12 @@ export default function Add({ tags }: { tags: any }) {
 								</div>
 							</div>
 						</div>
-						<div className="flex items-center justify-end gap-x-6 border-t border-gray-900/10 dark:border-gray-50/10 px-4 py-4 sm:px-8">
+						<div className="flex items-center justify-end gap-x-4 sm:gap-x-6 border-t border-gray-900/10 dark:border-gray-50/10 px-4 py-4 sm:px-8">
+							<Preview user={session} />
 							<Button
 								disabled={isSubmitting}
 								type="submit"
-								className="w-full flex gap-1 bg-slate-300 hover:bg-slate-200 text-black dark:bg-slate-700 dark:hover:bg-slate-800 dark:text-white"
+								className="w-full flex gap-1 bg-blue-300 hover:bg-blue-200 text-black dark:bg-blue-700 dark:hover:bg-blue-800 dark:text-white"
 							>
 								<PlusIcon className="w-5 h-5 p-0.5" />
 								{isSubmitting ? 'Publishing...' : 'Publish'}

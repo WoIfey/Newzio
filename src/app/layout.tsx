@@ -15,6 +15,7 @@ import Loading from '@/components/Loading'
 import { getUserNews } from '@/utils/handleDatabase'
 import { options } from './api/auth/[...nextauth]/options'
 import { getServerSession } from 'next-auth/next'
+import { ThemeProvider } from 'next-themes'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -50,19 +51,21 @@ export default async function RootLayout({
 		userNews = await getUserNews(session.user.id)
 	}
 	return (
-		<html lang="en">
+		<html lang="en" suppressHydrationWarning>
 			<body className={inter.className}>
-				<AuthProvider>
-					<Suspense fallback={<Loading text={'Loading...'} />}>
-						<Navbar userNews={userNews} />
-						<NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
-						{children}
-						<Footer />
-						<Toaster />
-					</Suspense>
-					<Analytics />
-					<SpeedInsights />
-				</AuthProvider>
+				<ThemeProvider defaultTheme="system" attribute="class">
+					<AuthProvider>
+						<Suspense fallback={<Loading text={'Loading...'} />}>
+							<Navbar userNews={userNews} />
+							<NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
+							{children}
+							<Footer />
+							<Toaster />
+						</Suspense>
+						<Analytics />
+						<SpeedInsights />
+					</AuthProvider>
+				</ThemeProvider>
 			</body>
 		</html>
 	)

@@ -2,8 +2,9 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { formatDistanceToNowStrict } from 'date-fns'
+import { memo } from 'react'
 
-export default function Sidebar({ news }: { news: any[] }) {
+const Sidebar = memo(function Sidebar({ news }: { news: any[] }) {
 	const shuffledNews = news.sort(() => 0.5 - Math.random())
 
 	const itemsPerPage = 3
@@ -23,12 +24,23 @@ export default function Sidebar({ news }: { news: any[] }) {
 						>
 							<Link
 								href={`/${encodeURIComponent(
+									news.tag
+										? news.tag
+												.toLowerCase()
+												.replace(/ö/g, 'o')
+												.replace(/ä/g, 'a')
+												.replace(/å/g, 'a')
+												.replace(/\s+/g, '-')
+										: 'article'
+								)}/${encodeURIComponent(
 									news.headline
-										.toLowerCase()
-										.replace(/ö/g, 'o')
-										.replace(/ä/g, 'a')
-										.replace(/å/g, 'a')
-										.replace(/\s+/g, '-')
+										? news.headline
+												.toLowerCase()
+												.replace(/ö/g, 'o')
+												.replace(/ä/g, 'a')
+												.replace(/å/g, 'a')
+												.replace(/\s+/g, '-')
+										: 'untitled'
 								)}/${news.id}`}
 								className="hover:dark:text-sky-400 hover:text-sky-700 transition-all delay-150"
 							>
@@ -66,13 +78,17 @@ export default function Sidebar({ news }: { news: any[] }) {
 									<h1 className="text-2xl font-bold break-words">{news.headline}</h1>
 									<p className="text-slate-700 dark:text-slate-300 text-xs flex gap-1 items-center">
 										By {news.user_name} published{' '}
-										<span className="dark:text-slate-300 text-slate-600">
+										<time
+											title={new Date(news.createdAt).toUTCString()}
+											dateTime={new Date(news.createdAt).toLocaleString()}
+											className="dark:text-slate-300 text-slate-600"
+										>
 											{formatDistanceToNowStrict(new Date(news.createdAt), {
 												addSuffix: true,
 											})}
-										</span>
+										</time>
 									</p>
-									<p className="line-clamp-3 text-black dark:text-slate-100 break-words">
+									<p className="line-clamp-2 text-black dark:text-slate-100 break-words">
 										{news.lead}
 									</p>
 								</div>
@@ -85,4 +101,5 @@ export default function Sidebar({ news }: { news: any[] }) {
 			</div>
 		</div>
 	)
-}
+})
+export default Sidebar

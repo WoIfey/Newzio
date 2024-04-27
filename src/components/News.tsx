@@ -11,7 +11,11 @@ import {
 	ContextMenuItem,
 	ContextMenuTrigger,
 } from '@/components/ui/context-menu'
-import { TrashIcon, PencilIcon } from '@heroicons/react/24/outline'
+import {
+	TrashIcon,
+	PencilIcon,
+	ExclamationCircleIcon,
+} from '@heroicons/react/24/outline'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 import {
@@ -50,8 +54,8 @@ import { Label } from '@/components/ui/label'
 
 export default function News({ data }: { data: any[] }) {
 	data.sort((a: any, b: any) => b.id - a.id)
-	const [newPost, setNewPost] = useAtom(createdNews)
-	const [deletePost, setDeletePost] = useAtom(deletedNews)
+	const [newArticle, setNewArticle] = useAtom(createdNews)
+	const [deleteArticle, setDeleteArticle] = useAtom(deletedNews)
 	const [currentPage, setCurrentPage] = useState(1)
 	const itemsPerPage = 15
 
@@ -61,30 +65,33 @@ export default function News({ data }: { data: any[] }) {
 	const totalPages = Math.ceil(data.length / itemsPerPage)
 
 	useEffect(() => {
-		if (newPost) {
+		if (newArticle) {
 			refresh()
-			setNewPost(false)
+			setNewArticle(false)
 		}
-	}, [newPost])
+	}, [newArticle])
 	useEffect(() => {
-		if (deletePost) {
+		if (deleteArticle) {
 			refresh()
-			setDeletePost(false)
+			setDeleteArticle(false)
 		}
-	}, [deletePost])
+	}, [deleteArticle])
 
 	const confirm = async (id: string) => {
 		try {
-			setDeletePost(true)
+			setDeleteArticle(true)
 			await remove(id)
 			toast(
 				<div className="flex gap-2">
 					<TrashIcon className="h-5 w-5" />
 					<span>News successfully deleted.</span>
-				</div>
+				</div>,
+				{
+					position: 'bottom-center',
+				}
 			)
 		} catch (error) {
-			console.error('Failed to delete post:', error)
+			console.error('Failed to delete article:', error)
 		}
 	}
 
@@ -93,7 +100,7 @@ export default function News({ data }: { data: any[] }) {
 
 	return (
 		<div className="flex flex-col">
-			<div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 bg-slate-200 dark:bg-[#242729] min-h-dvh p-6 items-start">
+			<div className="grid grid-cols-1 grid-rows-1 sm:grid-cols-2 sm:grid-rows-2 xl:grid-cols-3 xl:grid-rows-3 gap-6 bg-slate-200 dark:bg-[#242729] min-h-dvh p-6 items-start">
 				{currentNews.length > 0 ? (
 					currentNews.map(news => (
 						<div
@@ -108,9 +115,9 @@ export default function News({ data }: { data: any[] }) {
 												<ContextMenuContent>
 													<ContextMenuItem asChild>
 														<AlertDialogTrigger asChild>
-															<div className="cursor-pointer">
+															<div className="cursor-pointer pr-3">
 																<TrashIcon className="w-6 h-6 text-red-600 p-1" />
-																<p className="mb-0.5">Force Delete Post</p>
+																<p className="mb-0.5">Force Delete Article</p>
 															</div>
 														</AlertDialogTrigger>
 													</ContextMenuItem>
@@ -119,12 +126,11 @@ export default function News({ data }: { data: any[] }) {
 											<AlertDialogContent>
 												<AlertDialogHeader>
 													<AlertDialogTitle className="text-red-600 flex gap-2 items-center sm:flex-row flex-col">
-														<TrashIcon className="h-6 w-6" />
-														{`Force delete ${news.user_name}'s news post?`}
+														<ExclamationCircleIcon className="h-6 w-6" />
+														{`This is ${news.user_name}'s news article!`}
 													</AlertDialogTitle>
 													<AlertDialogDescription>
-														{`This action cannot be undone. This will permanently delete their
-														news post and they will probably be sad! (also won't be viewable.)`}
+														{`This action cannot be undone. Do you really want to permanently delete their news article?`}
 													</AlertDialogDescription>
 												</AlertDialogHeader>
 												<AlertDialogFooter>
@@ -137,6 +143,15 @@ export default function News({ data }: { data: any[] }) {
 
 											<Link
 												href={`/${encodeURIComponent(
+													news.tag
+														? news.tag
+																.toLowerCase()
+																.replace(/ö/g, 'o')
+																.replace(/ä/g, 'a')
+																.replace(/å/g, 'a')
+																.replace(/\s+/g, '-')
+														: 'article'
+												)}/${encodeURIComponent(
 													news.headline
 														? news.headline
 																.toLowerCase()
@@ -146,7 +161,7 @@ export default function News({ data }: { data: any[] }) {
 																.replace(/\s+/g, '-')
 														: 'untitled'
 												)}/${news.id}`}
-												className="hover:dark:text-sky-400 hover:text-sky-700 transition-all delay-150"
+												className="hover:dark:text-sky-400 hover:text-sky-700 transition-all duration-75"
 											>
 												{news.type && news.type.startsWith('video') ? (
 													<video
@@ -166,7 +181,6 @@ export default function News({ data }: { data: any[] }) {
 														width={1080}
 														height={720}
 														src={news.url}
-														unoptimized
 														className="h-52 w-full object-fill rounded-t-lg"
 													/>
 												) : (
@@ -178,17 +192,21 @@ export default function News({ data }: { data: any[] }) {
 													</span>
 												)}
 
-												<div className="flex flex-col gap-1 p-4 hover:dark:text-sky-400 hover:text-sky-700 transition-all delay-100">
+												<div className="flex flex-col gap-1 p-4 hover:dark:text-sky-400 hover:text-sky-700 transition-all duration-75">
 													<h1 className="text-2xl font-bold break-words">{news.headline}</h1>
 													<p className="text-slate-700 dark:text-slate-300 text-xs flex gap-1 items-center">
 														By {news.user_name} published{' '}
-														<span className="dark:text-slate-300 text-slate-600">
+														<time
+															title={new Date(news.createdAt).toUTCString()}
+															dateTime={new Date(news.createdAt).toLocaleString()}
+															className="dark:text-slate-300 text-slate-600"
+														>
 															{formatDistanceToNowStrict(new Date(news.createdAt), {
 																addSuffix: true,
 															})}
-														</span>
+														</time>
 													</p>
-													<p className="line-clamp-3 text-black dark:text-slate-100 break-words">
+													<p className="line-clamp-2 text-black dark:text-slate-100 break-words">
 														{news.lead}
 													</p>
 												</div>
@@ -201,15 +219,15 @@ export default function News({ data }: { data: any[] }) {
 															<DialogTrigger asChild>
 																<div className="cursor-pointer">
 																	<PencilIcon className="w-6 h-6 p-1" />
-																	<p className="mb-0.5">Edit Post {news.id}</p>
+																	<p className="mb-0.5">Edit Article {news.id}</p>
 																</div>
 															</DialogTrigger>
 														</ContextMenuItem> */}
 														<ContextMenuItem asChild>
 															<AlertDialogTrigger asChild>
-																<div className="cursor-pointer">
+																<div className="cursor-pointer pr-3">
 																	<TrashIcon className="w-6 h-6 text-red-600 p-1" />
-																	<p className="mb-0.5">Delete Post</p>
+																	<p className="mb-0.5">Delete Article</p>
 																</div>
 															</AlertDialogTrigger>
 														</ContextMenuItem>
@@ -217,9 +235,9 @@ export default function News({ data }: { data: any[] }) {
 
 													<DialogContent className="sm:max-w-[425px]">
 														<DialogHeader>
-															<DialogTitle>Edit news</DialogTitle>
+															<DialogTitle>Edit article</DialogTitle>
 															<DialogDescription>
-																Make changes to your news post.
+																Make changes to your news article.
 															</DialogDescription>
 														</DialogHeader>
 														<div className="grid gap-4 py-4">
@@ -253,11 +271,11 @@ export default function News({ data }: { data: any[] }) {
 														<AlertDialogHeader>
 															<AlertDialogTitle className="text-red-600 flex gap-2 items-center sm:flex-row flex-col">
 																<TrashIcon className="h-6 w-6" />
-																Permanently delete this news post?
+																Permanently delete this news article?
 															</AlertDialogTitle>
 															<AlertDialogDescription>
-																This action cannot be undone. This will permanently delete this
-																news post and will no longer be viewable.
+																This action cannot be undone. This will permanently get rid of
+																this news article and will no longer be viewable.
 															</AlertDialogDescription>
 														</AlertDialogHeader>
 														<AlertDialogFooter>
@@ -284,7 +302,7 @@ export default function News({ data }: { data: any[] }) {
 					<PaginationContent>
 						<PaginationItem className="dark:bg-[#2F3335] bg-slate-300 rounded-md cursor-pointer">
 							<PaginationPrevious
-								className="hover:dark:bg-[#344045] hover:bg-[#d4d4d4]"
+								className="sm:px-4 px-3 hover:dark:bg-[#344045] hover:bg-[#d4d4d4]"
 								onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
 							/>
 						</PaginationItem>
@@ -305,7 +323,7 @@ export default function News({ data }: { data: any[] }) {
 						))}
 						<PaginationItem className="dark:bg-[#2F3335] bg-slate-300 rounded-md cursor-pointer">
 							<PaginationNext
-								className="hover:dark:bg-[#344045] hover:bg-[#d4d4d4]"
+								className="sm:px-4 px-3 hover:dark:bg-[#344045] hover:bg-[#d4d4d4]"
 								onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
 							/>
 						</PaginationItem>

@@ -15,7 +15,7 @@ export default function NotFound() {
 					<div className="mt-6 flex items-center justify-center gap-x-6">
 						<Link
 							href={'/'}
-							className="rounded-md bg-orange-400 px-2 py-1 hover:bg-orange-500"
+							className="rounded-md bg-sky-400 px-2 py-1 hover:bg-sky-500"
 						>
 							<ArrowLeftIcon className="h-8 w-8 p-1 text-white dark:text-black" />
 						</Link>

@@ -1,5 +1,6 @@
 import type { NextAuthOptions, User, Session } from 'next-auth'
 import GitHubProvider from 'next-auth/providers/github'
+import DiscordProvider from "next-auth/providers/discord";
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { findUsers } from '@/utils/handleDatabase'
 import { JWT } from 'next-auth/jwt'
@@ -14,6 +15,10 @@ export const options: NextAuthOptions = {
         GitHubProvider({
             clientId: process.env.GITHUB_ID as string,
             clientSecret: process.env.GITHUB_SECRET as string
+        }),
+        DiscordProvider({
+            clientId: process.env.DISCORD_CLIENT_ID as string,
+            clientSecret: process.env.DISCORD_CLIENT_SECRET as string
         }),
         CredentialsProvider({
             name: "Credentials",
@@ -31,7 +36,6 @@ export const options: NextAuthOptions = {
             },
             async authorize(credentials) {
                 const users = await findUsers(credentials?.email || '', credentials?.password || '') as User
-                console.log(users)
                 if (users) {
                     return users
                 } else {
