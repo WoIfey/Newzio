@@ -1,7 +1,6 @@
 'use client'
 import { Check, ChevronsUpDown } from 'lucide-react'
-import Upload from './Upload'
-import Editor from './Editor'
+import Editor from '@/components/Editor'
 import { create } from '@/app/actions'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -29,7 +28,6 @@ import {
 	PlusIcon,
 	XCircleIcon,
 } from '@heroicons/react/24/outline'
-import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { UploadDropzone } from '@/utils/uploadthing'
 import {
@@ -59,19 +57,19 @@ export default function Add({ tags }: { tags: any }) {
 	const [tagValue, setTagValue] = useAtom(tagInput)
 	const [headline, setHeadline] = useAtom(headlineInput)
 	const [lead, setLead] = useAtom(leadInput)
-	const [fileUrl, setFileUrl] = useAtom(fileUrlInput)
 	const [newArticle, setNewArticle] = useAtom(createdNews)
+	const [fileUrl, setFileUrl] = useAtom(fileUrlInput)
 	const [fileType, setFileType] = useAtom(fileTypeValue)
 	const [uploadDetails, setUploadDetails] = useState<UploadDetails | null>(null)
 
 	const {
 		register,
 		handleSubmit,
-		reset,
 		formState: { errors, isSubmitting },
 	} = useForm<FormFields>()
 
 	const { data: session } = useSession()
+	const currentUserId = session?.user?.id
 
 	const onSubmit: SubmitHandler<FormFields> = async data => {
 		try {
@@ -80,6 +78,9 @@ export default function Add({ tags }: { tags: any }) {
 			setLead('')
 			setBody('')
 			setFileUrl('')
+			setFileType('')
+			setUploadDetails(null)
+			data.body = body
 			data.tag = tagValue
 			if (uploadDetails) {
 				data.uploadDetails = uploadDetails
@@ -118,35 +119,6 @@ export default function Add({ tags }: { tags: any }) {
 			)
 		}
 	}
-
-	useEffect(() => {
-		const handlePaste = (event: ClipboardEvent) => {
-			const items = event.clipboardData?.items
-			if (items) {
-				for (let i = 0; i < items.length; i++) {
-					if (items[i].type.indexOf('image') !== -1) {
-						const blob = items[i].getAsFile()
-						if (blob) {
-							// Convert the blob to a URL and handle it as an uploaded file
-							const url = URL.createObjectURL(blob)
-							// Here, you would handle the pasted image URL as you would with an uploaded file
-							// For example, setting it as the fileUrl state
-							setFileUrl(url)
-							// You might also want to set the fileType state based on the blob type
-							setFileType(blob.type)
-							// Optionally, you can trigger the upload process here
-						}
-					}
-				}
-			}
-		}
-
-		document.addEventListener('paste', handlePaste)
-
-		return () => {
-			document.removeEventListener('paste', handlePaste)
-		}
-	}, [])
 
 	return (
 		<>
@@ -191,9 +163,13 @@ export default function Add({ tags }: { tags: any }) {
 													<CommandGroup>
 														<CommandList>
 															{tags
+																.filter(
+																	(tag: Tag) =>
+																		tag.tag !== 'Newzio' || currentUserId === '87246869'
+																)
 																.sort((a: Tag, b: Tag) => {
-																	if (a.tag === 'Other') return 1
-																	if (b.tag === 'Other') return -1
+																	if (a.tag === 'Other' || a.tag === 'Newzio') return 1
+																	if (b.tag === 'Other' || b.tag === 'Newzio') return -1
 																	return a.tag.localeCompare(b.tag)
 																})
 																.map((tag: Tag) => (
@@ -234,20 +210,24 @@ export default function Add({ tags }: { tags: any }) {
 											{...register('headline', {
 												required: 'There is no headline!',
 												minLength: {
-													value: 2,
+													value: 4,
 													message: 'The headline might be too short!',
 												},
 												maxLength: { value: 64, message: 'The headline is too long!' },
 												validate: {
-													checkSpace: value =>
-														!value.startsWith(' ') || 'Headline cannot start with spaces!',
+													checkStartSpace: value =>
+														!value.startsWith(' ') ||
+														'Headline cannot start or end with spaces!',
+													checkEndSpace: value =>
+														!value.endsWith(' ') ||
+														'Headline cannot start or end with spaces!',
 												},
 											})}
 											id="headline"
 											name="headline"
 											type="text"
 											placeholder="Something..."
-											minLength={8}
+											minLength={4}
 											maxLength={64}
 											value={headline}
 											onChange={e => setHeadline(e.target.value)}
@@ -277,14 +257,18 @@ export default function Add({ tags }: { tags: any }) {
 												minLength: { value: 8, message: 'The lead is too short!' },
 												maxLength: { value: 256, message: 'The lead is too long!' },
 												validate: {
-													checkSpace: value =>
-														!value.startsWith(' ') || "The lead can't start with spaces!",
+													checkStartSpace: value =>
+														!value.startsWith(' ') ||
+														'The lead cannot start or end with spaces!',
+													checkEndSpace: value =>
+														!value.endsWith(' ') ||
+														'The lead cannot start or end with spaces!',
 												},
 											})}
 											name="lead"
 											placeholder="This is such a crazy story..."
 											id="lead"
-											className={`min-h-28 ${
+											className={`min-h-24 max-h-40 ${
 												lead.length === 256 ? 'border-red-500 focus:border-red-700' : ''
 											}`}
 											value={lead}
@@ -309,19 +293,24 @@ export default function Add({ tags }: { tags: any }) {
 										Body
 									</Label>
 									<div className="mt-2">
-										<Textarea
+										<Editor />
+										{/* <Textarea
 											{...register('body', {
 												minLength: { value: 8, message: 'The body is too short!' },
 												maxLength: { value: 4096, message: 'The body is too long!' },
 												validate: {
-													checkSpace: value =>
-														!value.startsWith(' ') || "The body can't start with spaces!",
+													checkStartSpace: value =>
+														!value.startsWith(' ') ||
+														'The body cannot start or end with spaces!',
+													checkEndSpace: value =>
+														!value.endsWith(' ') ||
+														'The body cannot start or end with spaces!',
 												},
 											})}
 											name="body"
 											placeholder="Write a whole essay..."
 											id="body"
-											className={`min-h-40 ${
+											className={`min-h-40 max-h-[768px] ${
 												body.length === 4096 ? 'border-red-500 focus:border-red-700' : ''
 											}`}
 											value={body}
@@ -338,7 +327,12 @@ export default function Add({ tags }: { tags: any }) {
 											<div className="mt-2 text-red-500 bg-[#FFFFFF] dark:bg-[#020817] border-gray-200 dark:border-gray-800 border p-2 rounded-md">
 												{errors.body.message}
 											</div>
-										)}
+										)} */}
+										<span
+											className={`text-xs ${body.length === 4096 ? 'text-red-500' : ''}`}
+										>
+											{body.length}/4096
+										</span>
 									</div>
 								</div>
 
@@ -348,18 +342,27 @@ export default function Add({ tags }: { tags: any }) {
 									</Label>
 									{fileUrl && (
 										<Button
-											onClick={() => setFileUrl('')}
+											onClick={() => {
+												setFileUrl('')
+												setFileType('')
+												setUploadDetails(null)
+											}}
 											className="mt-2 w-full mb-4 flex gap-1 bg-slate-300 hover:bg-slate-200 text-black dark:bg-slate-700 dark:hover:bg-slate-800 dark:text-white"
 										>
 											<PencilIcon className="w-5 h-5 p-0.5" />
 											Change File
 										</Button>
 									)}
-									{fileType && fileUrl && fileType.startsWith('video') ? (
+									{fileType && fileUrl && fileType.startsWith('audio') ? (
+										<audio controls autoPlay className="w-full rounded-md">
+											<source src={fileUrl} type="audio/mpeg" />
+											Your browser does not support the audio element.
+										</audio>
+									) : fileType && fileUrl && fileType.startsWith('video') ? (
 										<video
 											width="1080"
 											height="720"
-											className="h-60 w-full rounded-md"
+											className="h-64 w-full rounded-md"
 											autoPlay
 											controls
 										>
@@ -372,7 +375,7 @@ export default function Add({ tags }: { tags: any }) {
 											alt={fileType}
 											width={1280}
 											height={720}
-											className="h-60 w-full rounded-md"
+											className="h-64 w-full rounded-md"
 										/>
 									) : null}
 
@@ -392,9 +395,10 @@ export default function Add({ tags }: { tags: any }) {
 													'flex h-8 flex-col items-center justify-center px-2 text-slate-800 dark:text-slate-300',
 											}}
 											content={{
-												label({ isUploading }) {
+												label({ isUploading, isDragActive }) {
 													if (isUploading) return ''
-													return `Choose a file or drag and drop`
+													if (isDragActive) return 'Drag and drop'
+													return `Upload file or drag and drop`
 												},
 												allowedContent({ fileTypes, isUploading }) {
 													if (isUploading) return 'Uploading file!'
@@ -416,13 +420,14 @@ export default function Add({ tags }: { tags: any }) {
 													},
 												}
 												setUploadDetails(convertedUploadDetails)
-												reset()
 											}}
 											onUploadError={error => {
 												toast(
 													<div className="flex gap-2">
 														<XCircleIcon className="h-5 w-5 text-red-600" />
-														<span>The file might be too large!</span>
+														<span>
+															{`The file(s) you are trying to upload are either too many or too large`}
+														</span>
 													</div>,
 													{
 														position: 'bottom-center',

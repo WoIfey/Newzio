@@ -52,6 +52,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useRouter } from 'next/navigation'
+import { FileAudio2Icon } from 'lucide-react'
 
 export default function Settings({ user, userNews }: any) {
 	const [deletePost, setDeletePost] = useAtom(deletedNews)
@@ -111,17 +112,42 @@ export default function Settings({ user, userNews }: any) {
 						<div className="flex flex-col w-full gap-3">
 							<div className="flex items-center gap-4">
 								{user && (
-									<Avatar>
-										<AvatarImage src={user?.user.image ?? undefined} />
-										<AvatarFallback className="bg-slate-200 dark:bg-slate-600">
-											{user?.user.name.charAt(0) ?? ''}
-										</AvatarFallback>
-									</Avatar>
+									<Link
+										href={`/author/${encodeURIComponent(
+											user?.user.name
+												? user?.user.name
+														.toLowerCase()
+														.replace(/ö/g, 'o')
+														.replace(/ä/g, 'a')
+														.replace(/å/g, 'a')
+														.replace(/\s+/g, '-')
+												: 'unknown'
+										)}/${user?.user.id}`}
+										className="w-full flex items-center gap-3 text-black dark:text-gray-300 hover:text-slate-900 hover:bg-slate-300 hover:dark:bg-gray-900 hover:dark:text-white p-2 rounded-md transition-all duration-75"
+									>
+										{user && (
+											<Avatar className="size-12">
+												<AvatarImage src={user?.user.image ?? undefined} />
+												<AvatarFallback className="bg-slate-200 dark:bg-slate-600">
+													{user?.user.name.charAt(0) ?? ''}
+												</AvatarFallback>
+											</Avatar>
+										)}
+										<SheetTitle>
+											{user && (
+												<div className="flex flex-col">
+													<p className="text-base">{user?.user.name}</p>
+
+													<p className="text-xs text-gray-600 dark:text-gray-400">
+														{user?.user.email}
+													</p>
+												</div>
+											)}
+										</SheetTitle>
+									</Link>
 								)}
 								<SheetTitle>
-									{user
-										? `Hello, ${user?.user.name}`
-										: 'Sign in to be able to create news!'}
+									{!user && <p>Sign in to be able to create articles!</p>}
 								</SheetTitle>
 							</div>
 							{user && (
@@ -150,7 +176,7 @@ export default function Settings({ user, userNews }: any) {
 									Sign in
 								</Button>
 							)}
-							<div className="flex flex-col gap-4">
+							<div className="flex flex-col gap-3">
 								<h1 className="text-xl self-start sm:self-center font-bold mt-2">
 									{user ? 'Your News' : ''}
 								</h1>
@@ -181,9 +207,9 @@ export default function Settings({ user, userNews }: any) {
 																				.replace(/\s+/g, '-')
 																		: 'untitled'
 																)}/${news.id}`}
-																className="hover:dark:text-sky-400 hover:text-sky-700 transition-all delay-150 bg-slate-300 dark:bg-[#2F3335] rounded-lg flex"
+																className="hover:dark:text-sky-400 hover:text-sky-700 transition-all delay-150 bg-slate-300 dark:bg-[#2F3335] rounded-md flex"
 															>
-																<div className="flex flex-col gap-1 p-4 hover:dark:text-sky-400 hover:text-sky-700 transition-all delay-100 w-full">
+																<div className="flex flex-col gap-1 p-4 hover:dark:text-sky-400 hover:text-sky-700 transition-all delay-100 w-[75%]">
 																	<div className="flex gap-1">
 																		{news.tag && (
 																			<span className="text-black dark:text-white text-xs">
@@ -191,9 +217,8 @@ export default function Settings({ user, userNews }: any) {
 																			</span>
 																		)}
 																		<p className="sm:flex hidden text-slate-700 dark:text-slate-300 text-xs gap-1 items-center">
-																			published{' '}
 																			<time
-																				title={new Date(news.createdAt).toUTCString()}
+																				title={new Date(news.createdAt).toLocaleString()}
 																				dateTime={new Date(news.createdAt).toLocaleString()}
 																				className="dark:text-slate-300 text-slate-600"
 																			>
@@ -208,11 +233,15 @@ export default function Settings({ user, userNews }: any) {
 																	</h1>
 																</div>
 																<div className="flex items-center mx-2">
-																	{news.type && news.type.startsWith('video') ? (
+																	{news.type && news.url && news.type.startsWith('audio') ? (
+																		<div className="bg-slate-400 dark:bg-[#1d2022] flex justify-center items-center rounded-md h-16 w-16">
+																			<FileAudio2Icon className="w-8 h-8 text-white" />
+																		</div>
+																	) : news.type && news.type.startsWith('video') ? (
 																		<video
 																			width="1080"
 																			height="720"
-																			className="h-16 w-24 object-fill rounded-lg"
+																			className="h-16 w-16 object-fill rounded-md"
 																			autoPlay
 																			loop
 																			muted
@@ -226,8 +255,7 @@ export default function Settings({ user, userNews }: any) {
 																			width={1080}
 																			height={720}
 																			src={news.url}
-																			unoptimized
-																			className="break-all line-clamp-2 h-16 w-24 object-fill rounded-lg"
+																			className="break-all line-clamp-2 h-16 w-16 object-fill rounded-md"
 																		/>
 																	) : (
 																		<div></div>
@@ -237,75 +265,79 @@ export default function Settings({ user, userNews }: any) {
 															<ContextMenuContent>
 																{/* <ContextMenuItem asChild>
 																	<DialogTrigger asChild>
-																		<div className="cursor-pointer">
+																	<div className="cursor-pointer">
 																			<PencilIcon className="w-6 h-6 p-1" />
-																			<p className="mb-0.5">Edit Post</p>
+																			<p className="mb-0.5">Edit Article</p>
 																		</div>
 																	</DialogTrigger>
 																</ContextMenuItem> */}
 																<ContextMenuItem asChild>
 																	<AlertDialogTrigger asChild>
-																		<div className="cursor-pointer">
+																		<div className="cursor-pointer pr-3">
 																			<TrashIcon className="w-6 h-6 text-red-600 p-1" />
-																			<p className="mb-0.5">Delete Post</p>
+																			<p className="mb-0.5">Delete Article</p>
 																		</div>
 																	</AlertDialogTrigger>
 																</ContextMenuItem>
 															</ContextMenuContent>
-
-															<DialogContent className="sm:max-w-[425px]">
-																<DialogHeader>
-																	<DialogTitle>Edit news</DialogTitle>
-																	<DialogDescription>
-																		Make changes to your news post.
-																	</DialogDescription>
-																</DialogHeader>
-																<div className="grid gap-4 py-4">
-																	<div className="grid grid-cols-4 items-center gap-4">
-																		<Label htmlFor="headline" className="text-right">
-																			Headline
-																		</Label>
-																		<Input
-																			id="headline"
-																			defaultValue="Something..."
-																			className="col-span-3"
-																		/>
-																	</div>
-																	<div className="grid grid-cols-4 items-center gap-4">
-																		<Label htmlFor="description" className="text-right">
-																			Description
-																		</Label>
-																		<Input
-																			id="description"
-																			defaultValue="Something..."
-																			className="col-span-3"
-																		/>
-																	</div>
-																</div>
-																<DialogFooter>
-																	<Button type="submit">Save changes</Button>
-																</DialogFooter>
-															</DialogContent>
-
-															<AlertDialogContent>
-																<AlertDialogHeader>
-																	<AlertDialogTitle className="text-red-600 flex gap-2 items-center sm:flex-row flex-col">
-																		<TrashIcon className="h-6 w-6" />
-																		Permanently delete this news post?
-																	</AlertDialogTitle>
-																	<AlertDialogDescription>
-																		This action cannot be undone. This will permanently delete
-																		this news post and will no longer be viewable.
-																	</AlertDialogDescription>
-																</AlertDialogHeader>
-																<AlertDialogFooter>
-																	<AlertDialogCancel>Cancel</AlertDialogCancel>
-																	<Button onClick={() => confirm(news.id)} asChild>
-																		<AlertDialogAction type="submit">Proceed</AlertDialogAction>
-																	</Button>
-																</AlertDialogFooter>
-															</AlertDialogContent>
 														</ContextMenuTrigger>
+
+														<DialogContent className="sm:max-w-[425px]">
+															<DialogHeader>
+																<DialogTitle>Edit article</DialogTitle>
+																<DialogDescription>
+																	Make changes to your news article.
+																</DialogDescription>
+															</DialogHeader>
+															<div className="grid gap-4 py-4">
+																<div className="grid grid-cols-4 items-center gap-4">
+																	<Label htmlFor="headline" className="text-right">
+																		Headline
+																	</Label>
+																	<Input
+																		id="headline"
+																		defaultValue="Something..."
+																		className="col-span-3"
+																	/>
+																</div>
+																<div className="grid grid-cols-4 items-center gap-4">
+																	<Label htmlFor="description" className="text-right">
+																		Description
+																	</Label>
+																	<Input
+																		id="description"
+																		defaultValue="Something..."
+																		className="col-span-3"
+																	/>
+																</div>
+															</div>
+															<DialogFooter>
+																<Button type="submit">Save changes</Button>
+															</DialogFooter>
+														</DialogContent>
+
+														<AlertDialogContent>
+															<AlertDialogHeader>
+																<AlertDialogTitle className="text-red-600 flex gap-2 items-center sm:flex-row flex-col">
+																	<TrashIcon className="h-6 w-6" />
+																	Permanently delete
+																	<span className="line-clamp-1 max-w-48 break-all">
+																		{news.headline}
+																	</span>
+																	?
+																</AlertDialogTitle>
+																<AlertDialogDescription>
+																	This action cannot be undone. This will permanently get rid of
+																	this article and will no longer be viewable.
+																</AlertDialogDescription>
+															</AlertDialogHeader>
+															<AlertDialogFooter>
+																<AlertDialogCancel>Cancel</AlertDialogCancel>
+																<Button onClick={() => confirm(news.id)} asChild>
+																	<AlertDialogAction type="submit">Proceed</AlertDialogAction>
+																</Button>
+															</AlertDialogFooter>
+														</AlertDialogContent>
 													</ContextMenu>
 												</AlertDialog>
 											</Dialog>

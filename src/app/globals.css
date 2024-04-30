@@ -20,6 +20,34 @@
   background: #6E6E6E;
 }
 
+.html h1 {
+  @apply text-[2em] block mb-[0.67em] mt-[0.67em] mx-0 font-bold break-words;
+}
+
+.html h2 {
+  @apply text-[1.5em] block mb-[0.67em] mt-[0.67em] mx-0 font-bold break-words;
+}
+
+.html h3 {
+  @apply text-[1.17em] block mb-[0.67em] mt-[0.67em] mx-0 font-bold break-words;
+}
+
+.html h4 {
+  @apply text-[1em] block mb-[0.67em] mt-[0.67em] mx-0 font-bold break-words;
+}
+
+.html h5 {
+  @apply text-[0.83em] block mb-[0.67em] mt-[0.67em] mx-0 font-bold break-words;
+}
+
+.html h6 {
+  @apply text-[0.67em] block mb-[0.67em] mt-[0.67em] mx-0 font-bold break-words;
+}
+
+.html a {
+  @apply font-medium text-blue-600 underline dark:text-blue-500 hover:no-underline
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

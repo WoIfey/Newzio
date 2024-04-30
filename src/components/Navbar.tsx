@@ -17,17 +17,43 @@ import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useTheme } from 'next-themes'
+import { LogInIcon, LogOutIcon } from 'lucide-react'
 
 export default function Navbar({ userNews }: { userNews: any[] }) {
+	const [mounted, setMounted] = useState(false)
 	const [toggleMenu, setToggleMenu] = useState(false)
-	const { resolvedTheme, theme, setTheme } = useTheme()
+	const { theme, setTheme } = useTheme()
+	const { data: session } = useSession()
 
-	const { data: session } = useSession({
-		required: false,
-		onUnauthenticated() {
-			redirect('/api/auth/signin')
-		},
-	})
+	useEffect(() => {
+		setMounted(true)
+	}, [])
+
+	if (!mounted) {
+		return (
+			<div className="h-16 md:fixed w-full z-50 flex justify-center items-center bg-[#aec7d7] dark:bg-[#192a33] text-black dark:text-white gap-4">
+				<div role="status">
+					<svg
+						aria-hidden="true"
+						className="w-8 h-8 text-gray-400 animate-spin dark:text-gray-500 fill-blue-700 dark:fill-sky-500"
+						viewBox="0 0 100 101"
+						fill="none"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<path
+							d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+							fill="currentColor"
+						/>
+						<path
+							d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+							fill="currentFill"
+						/>
+					</svg>
+					<span className="sr-only text-lg">Loading...</span>
+				</div>
+			</div>
+		)
+	}
 
 	const toggleMobileMenu = () => {
 		setToggleMenu(!toggleMenu)
@@ -57,7 +83,7 @@ export default function Navbar({ userNews }: { userNews: any[] }) {
 									Home
 								</Link>
 								<Link
-									href="/create"
+									href="/create/article"
 									className="flex gap-1 items-center pr-4 rounded-md px-3 py-2 text-sm font-medium text-black dark:text-gray-300 hover:text-slate-900 hover:bg-slate-300 hover:dark:bg-gray-900 hover:dark:text-white"
 								>
 									<PlusIcon className="w-6 h-6 p-1" />
@@ -93,7 +119,7 @@ export default function Navbar({ userNews }: { userNews: any[] }) {
 						<button
 							type="button"
 							onClick={() => {
-								setTheme(resolvedTheme === 'light' ? 'dark' : 'light')
+								setTheme(theme === 'light' ? 'dark' : 'light')
 							}}
 							className="relative flex-shrink-0 rounded-full p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
 						>
@@ -123,7 +149,7 @@ export default function Navbar({ userNews }: { userNews: any[] }) {
 							<button
 								type="button"
 								onClick={() => {
-									setTheme(resolvedTheme === 'light' ? 'dark' : 'light')
+									setTheme(theme === 'light' ? 'dark' : 'light')
 								}}
 								className="relative flex-shrink-0 rounded-full p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
 							>
@@ -160,7 +186,7 @@ export default function Navbar({ userNews }: { userNews: any[] }) {
 							Home
 						</Link>
 						<Link
-							href="/create"
+							href="/create/article"
 							onClick={() => setToggleMenu(!toggleMenu)}
 							className="items-center gap-1 flex rounded-md px-3 py-2 text-base font-medium text-black dark:text-gray-300 hover:text-slate-900 hover:bg-slate-300 hover:dark:bg-gray-900 hover:dark:text-white"
 						>
@@ -170,8 +196,21 @@ export default function Navbar({ userNews }: { userNews: any[] }) {
 					</div>
 					<div className="border-t border-gray-500 dark:border-gray-700 pb-3 pt-4">
 						{session && (
-							<div className="flex items-center justify-between px-5 mb-3">
-								<div className="flex items-center">
+							<div className="flex items-center justify-between px-2 mb-1">
+								<Link
+									href={`/author/${encodeURIComponent(
+										session?.user.name
+											? session?.user.name
+													.toLowerCase()
+													.replace(/ö/g, 'o')
+													.replace(/ä/g, 'a')
+													.replace(/å/g, 'a')
+													.replace(/\s+/g, '-')
+											: 'unknown'
+									)}/${session?.user.id}`}
+									onClick={() => setToggleMenu(!toggleMenu)}
+									className="flex items-center w-full rounded-md px-3 py-2 text-base font-medium text-black dark:text-gray-300 hover:text-slate-900 hover:bg-slate-300 hover:dark:bg-gray-900 hover:dark:text-white"
+								>
 									<Avatar>
 										<AvatarImage src={session?.user.image ?? undefined} />
 										<AvatarFallback className="bg-slate-200 dark:bg-slate-600">
@@ -186,38 +225,37 @@ export default function Navbar({ userNews }: { userNews: any[] }) {
 											{session?.user.email}
 										</div>
 									</div>
-								</div>
+								</Link>
 							</div>
 						)}
-						<div className="space-y-1 px-2">
-							{/* <a
+						<div className="space-y-1">
+							{/* <div className="pb-3 px-2 border-b border-gray-500 dark:border-gray-700">
+								<Link
 									href="#"
-									className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
-								>
-									Your Profile
-								</a>
-								<a
-									href="#"
-									className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
+									className="w-full block rounded-md px-3 py-2 mb-1 text-base font-medium text-black dark:text-gray-300 hover:text-slate-900 hover:bg-slate-300 hover:dark:bg-gray-900 hover:dark:text-white"
 								>
 									Settings
-								</a> */}
-							{session && (
-								<button
-									onClick={() => signOut()}
-									className="w-full block rounded-md px-3 py-2 text-base font-medium text-black dark:text-gray-300 hover:text-slate-900 hover:bg-slate-300 hover:dark:bg-gray-900 hover:dark:text-white"
-								>
-									Sign out
-								</button>
-							)}
-							{!session && (
-								<button
-									onClick={() => signIn()}
-									className="w-full block rounded-md px-3 py-2 text-base font-medium text-black dark:text-gray-300 hover:text-slate-900 hover:bg-slate-300 hover:dark:bg-gray-900 hover:dark:text-white"
-								>
-									Sign in
-								</button>
-							)}
+								</Link>
+							</div> */}
+							<div className="px-2 mb-1">
+								{session ? (
+									<button
+										onClick={() => signOut()}
+										className="w-full flex items-center justify-center gap-1 rounded-md px-3 py-2 text-base font-medium text-black dark:text-gray-300 hover:text-red-900 hover:bg-slate-300 hover:dark:bg-gray-900 hover:dark:text-white"
+									>
+										<LogOutIcon className="w-6 h-6 p-1" />
+										Sign out
+									</button>
+								) : (
+									<button
+										onClick={() => signIn()}
+										className="w-full flex items-center justify-center gap-1 rounded-md px-3 py-2 text-base font-medium text-black dark:text-gray-300 hover:text-red-900 hover:bg-slate-300 hover:dark:bg-gray-900 hover:dark:text-white"
+									>
+										<LogInIcon className="w-6 h-6 p-1" />
+										Sign in
+									</button>
+								)}
+							</div>
 						</div>
 					</div>
 				</div>

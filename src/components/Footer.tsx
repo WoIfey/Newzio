@@ -11,7 +11,7 @@ const navigation = [
 export default function Footer() {
 	return (
 		<footer className="bg-[#aec7d7] dark:bg-[#192a33]">
-			<div className="mx-auto max-w-7xl p-6 md:flex md:items-center md:justify-between lg:px-8">
+			<div className="mx-auto max-w-7xl lg:h-16 md:flex md:items-center md:justify-between px-10 p-4">
 				<div className="flex justify-center space-x-6 md:order-2">
 					{navigation.map(item => (
 						<Link

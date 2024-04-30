@@ -45,39 +45,65 @@ export default function Preview({ user }: { user: any }) {
 				<DialogContent>
 					<DialogHeader className="text-left">
 						<DialogTitle className="pb-3">Preview of your news article</DialogTitle>
-						<div className="bg-[#e4ebec] dark:bg-[#2F3335] rounded-md max-h-[400px] overflow-y-auto">
+						<div className="bg-[#e4ebec] dark:bg-[#2F3335] rounded-md max-h-[400px] max-w-[465px] overflow-y-auto overflow-x-hidden w-full">
 							<div>
-								<div className={`m-6 sm:mx-8 ${fileType ? '' : 'm-4'}`}>
-									<div className="border-b border-slate-800 dark:border-slate-200 pb-6">
-										<h1 className="text-3xl font-bold mb-4 break-words break-all">
-											{headline}
-										</h1>
-										<div className="flex gap-1 sm:flex-row flex-col">
-											<div className="flex gap-2 items-center flex-row">
-												{tagValue && (
+								<div className={`mx-6 sm:mx-8 mt-4 ${fileType ? 'mb-6' : 'mb-3'}`}>
+									<div>
+										{headline && (
+											<h1 className="text-3xl font-bold mb-2 break-words">{headline}</h1>
+										)}
+										{lead && (
+											<p className="leading-7 font-extralight break-words mb-2">{lead}</p>
+										)}
+										{tagValue && (
+											<div className="flex gap-2 sm:flex-row flex-col mb-4">
+												<div className="flex gap-2 items-center flex-row">
 													<span className="bg-[#bfccdc] dark:bg-[#404B5E] px-1.5 py-1 dark:text-white text-sm rounded-lg">
 														{tagValue}
 													</span>
-												)}
-												<Avatar>
-													<AvatarImage src={user?.user.image ?? undefined} />
-													<AvatarFallback>{user?.user.name?.charAt(0) ?? ''}</AvatarFallback>
-												</Avatar>
-												<h1 className="text-sm">By {user?.user.name}</h1>
+												</div>
+											</div>
+										)}
+										<div className="flex items-center gap-2">
+											<Avatar>
+												<AvatarImage src={user?.user?.image ?? undefined} />
+												<AvatarFallback>{user?.user?.name?.charAt(0) ?? ''}</AvatarFallback>
+											</Avatar>
+											<div className="flex items-center">
+												<div className="text-sm flex flex-col gap-1">
+													<div className="text-sm flex gap-1">
+														<p>By</p>
+														<div className="hover:dark:text-sky-400 hover:text-sky-700 transition-all duration-75">
+															{user?.user?.name}
+														</div>
+													</div>
+													<div className="flex gap-1 text-xs">
+														<p>published</p>
+														<time
+															title="soon"
+															dateTime="soon"
+															className="dark:text-slate-300 text-slate-600"
+														>
+															soon
+														</time>
+													</div>
+												</div>
 											</div>
 										</div>
-										{lead && (
-											<p className="leading-7 break-words break-all mt-4">{lead}</p>
-										)}
 									</div>
 								</div>
 								{fileUrl && (
 									<div className="flex items-center justify-center">
-										{fileType && fileType.startsWith('video') ? (
+										{fileType && fileUrl && fileType.startsWith('audio') ? (
+											<audio controls autoPlay muted className="px-6 w-full rounded-md">
+												<source src={fileUrl} type="audio/mpeg" />
+												Your browser does not support the audio element.
+											</audio>
+										) : fileType && fileType.startsWith('video') ? (
 											<video
 												width="1080"
 												height="720"
-												className="max-h-[480px] w-full"
+												className="max-h-[360px] w-full shadow-xl"
 												autoPlay
 												controls
 												muted
@@ -92,7 +118,7 @@ export default function Preview({ user }: { user: any }) {
 												height={720}
 												src={fileUrl}
 												unoptimized
-												className="max-h-[480px] w-full object-fill"
+												className="max-h-[360px] w-full object-fill shadow-xl"
 											/>
 										) : (
 											<div></div>
@@ -100,9 +126,11 @@ export default function Preview({ user }: { user: any }) {
 									</div>
 								)}
 								<div
-									className={`mx-6 sm:mx-8 ${fileType ? 'my-4' : 'sm:my-0 sm:mb-4'}`}
+									className={`mx-6 sm:mx-8 ${
+										fileType ? 'my-4 sm:my-6' : 'sm:my-0 sm:mb-4'
+									}`}
 								>
-									<p className="leading-7 break-words break-all pb-2">{body}</p>
+									<div className="html" dangerouslySetInnerHTML={{ __html: body }} />
 								</div>
 							</div>
 						</div>

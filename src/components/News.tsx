@@ -51,12 +51,36 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useSearchParams } from 'next/navigation'
 
-export default function News({ data }: { data: any[] }) {
+export default function News({
+	data,
+	pagination,
+}: {
+	data: any[]
+	pagination: number
+}) {
 	data.sort((a: any, b: any) => b.id - a.id)
 	const [newArticle, setNewArticle] = useAtom(createdNews)
 	const [deleteArticle, setDeleteArticle] = useAtom(deletedNews)
+	const [headline, setHeadline] = useState('')
 	const [currentPage, setCurrentPage] = useState(1)
+	const params = useSearchParams()
+	const [limit, setLimit] = useState(params.get('limit') || '1')
+
+	const handleLimitChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const newLimit = e.target.value
+		setLimit(newLimit)
+		const newParams = new URLSearchParams(params)
+		newParams.set('limit', newLimit)
+		window.history.replaceState({}, '', `?${newParams.toString()}`)
+	}
+
+	const search = params.get('pagination')
+
+	const paginationValue = search ? parseInt(search) : 1
+	const paginationData = data.slice(0, paginationValue)
+
 	const itemsPerPage = 15
 
 	const startIndex = (currentPage - 1) * itemsPerPage
@@ -100,7 +124,7 @@ export default function News({ data }: { data: any[] }) {
 
 	return (
 		<div className="flex flex-col">
-			<div className="grid grid-cols-1 grid-rows-1 sm:grid-cols-2 sm:grid-rows-2 xl:grid-cols-3 xl:grid-rows-3 gap-6 bg-slate-200 dark:bg-[#242729] min-h-dvh p-6 items-start">
+			<div className="max-w-7xl grid grid-cols-1 grid-rows-1 sm:grid-cols-2 sm:grid-rows-2 xl:grid-cols-3 xl:grid-rows-3 gap-6 bg-slate-200 dark:bg-[#242729] min-h-dvh p-6 items-start">
 				{currentNews.length > 0 ? (
 					currentNews.map(news => (
 						<div
@@ -163,11 +187,18 @@ export default function News({ data }: { data: any[] }) {
 												)}/${news.id}`}
 												className="hover:dark:text-sky-400 hover:text-sky-700 transition-all duration-75"
 											>
-												{news.type && news.type.startsWith('video') ? (
+												{news.type && news.url && news.type.startsWith('audio') ? (
+													<div className="bg-slate-400 dark:bg-[#1d2022] flex justify-center items-center h-52 px-4 w-full rounded-t-md">
+														<audio controls className="w-full">
+															<source src={news.url} type="audio/mpeg" />
+															Your browser does not support the audio element.
+														</audio>
+													</div>
+												) : news.type && news.type.startsWith('video') ? (
 													<video
 														width="1080"
 														height="720"
-														className="h-52 w-full object-fill rounded-t-lg"
+														className="h-52 w-full object-fill rounded-t-md"
 														autoPlay
 														loop
 														muted
@@ -181,23 +212,23 @@ export default function News({ data }: { data: any[] }) {
 														width={1080}
 														height={720}
 														src={news.url}
-														className="h-52 w-full object-fill rounded-t-lg"
+														className="h-52 w-full object-fill rounded-t-md"
 													/>
 												) : (
-													<div className="h-52 w-full bg-slate-400 dark:bg-[#1d2022] rounded-t-lg"></div>
+													<div className="h-52 w-full bg-slate-400 dark:bg-[#1d2022] rounded-t-md"></div>
 												)}
 												{news.tag && (
-													<span className="text-slate-800 dark:text-slate-200 absolute top-40 left-3 p-1.5 bg-slate-300 dark:bg-[#2F3335] rounded-lg">
+													<span className="text-slate-800 dark:text-slate-200 absolute top-40 left-3 p-1.5 bg-slate-300 dark:bg-[#2F3335] rounded-md">
 														{news.tag}
 													</span>
 												)}
 
 												<div className="flex flex-col gap-1 p-4 hover:dark:text-sky-400 hover:text-sky-700 transition-all duration-75">
 													<h1 className="text-2xl font-bold break-words">{news.headline}</h1>
-													<p className="text-slate-700 dark:text-slate-300 text-xs flex gap-1 items-center">
-														By {news.user_name} published{' '}
+													<div className="text-slate-700 dark:text-slate-300 text-xs flex gap-1 items-center">
+														<p>By {news.user_name} published</p>
 														<time
-															title={new Date(news.createdAt).toUTCString()}
+															title={new Date(news.createdAt).toLocaleString()}
 															dateTime={new Date(news.createdAt).toLocaleString()}
 															className="dark:text-slate-300 text-slate-600"
 														>
@@ -205,7 +236,7 @@ export default function News({ data }: { data: any[] }) {
 																addSuffix: true,
 															})}
 														</time>
-													</p>
+													</div>
 													<p className="line-clamp-2 text-black dark:text-slate-100 break-words">
 														{news.lead}
 													</p>
@@ -217,9 +248,9 @@ export default function News({ data }: { data: any[] }) {
 													<ContextMenuContent>
 														{/* <ContextMenuItem asChild>
 															<DialogTrigger asChild>
-																<div className="cursor-pointer">
+																<div className="cursor-pointer pr-3">
 																	<PencilIcon className="w-6 h-6 p-1" />
-																	<p className="mb-0.5">Edit Article {news.id}</p>
+																	<p className="mb-0.5">Edit Article</p>
 																</div>
 															</DialogTrigger>
 														</ContextMenuItem> */}
@@ -232,62 +263,63 @@ export default function News({ data }: { data: any[] }) {
 															</AlertDialogTrigger>
 														</ContextMenuItem>
 													</ContextMenuContent>
-
-													<DialogContent className="sm:max-w-[425px]">
-														<DialogHeader>
-															<DialogTitle>Edit article</DialogTitle>
-															<DialogDescription>
-																Make changes to your news article.
-															</DialogDescription>
-														</DialogHeader>
-														<div className="grid gap-4 py-4">
-															<div className="grid grid-cols-4 items-center gap-4">
-																<Label htmlFor="headline" className="text-right">
-																	Headline
-																</Label>
-																<Input
-																	id="headline"
-																	defaultValue="Something..."
-																	className="col-span-3"
-																/>
-															</div>
-															<div className="grid grid-cols-4 items-center gap-4">
-																<Label htmlFor="description" className="text-right">
-																	Description
-																</Label>
-																<Input
-																	id="description"
-																	defaultValue="Something..."
-																	className="col-span-3"
-																/>
-															</div>
-														</div>
-														<DialogFooter>
-															<Button type="submit">Save changes</Button>
-														</DialogFooter>
-													</DialogContent>
-
-													<AlertDialogContent>
-														<AlertDialogHeader>
-															<AlertDialogTitle className="text-red-600 flex gap-2 items-center sm:flex-row flex-col">
-																<TrashIcon className="h-6 w-6" />
-																Permanently delete this news article?
-															</AlertDialogTitle>
-															<AlertDialogDescription>
-																This action cannot be undone. This will permanently get rid of
-																this news article and will no longer be viewable.
-															</AlertDialogDescription>
-														</AlertDialogHeader>
-														<AlertDialogFooter>
-															<AlertDialogCancel>Cancel</AlertDialogCancel>
-															<Button onClick={() => confirm(news.id)} asChild>
-																<AlertDialogAction type="submit">Proceed</AlertDialogAction>
-															</Button>
-														</AlertDialogFooter>
-													</AlertDialogContent>
 												</>
 											)}
 										</ContextMenuTrigger>
+
+										<DialogContent className="sm:max-w-[425px]">
+											<DialogHeader>
+												<DialogTitle>Edit article</DialogTitle>
+												<DialogDescription>
+													Make changes to your news article.
+												</DialogDescription>
+											</DialogHeader>
+											<div className="grid gap-4 py-4">
+												<div className="grid grid-cols-4 items-center gap-4">
+													<Label htmlFor="headline" className="text-right">
+														Headline
+													</Label>
+													<Input
+														id="headline"
+														value={headline}
+														onChange={e => setHeadline(e.target.value)}
+														className="col-span-3"
+													/>
+												</div>
+												<div className="grid grid-cols-4 items-center gap-4">
+													<Label htmlFor="description" className="text-right">
+														Description
+													</Label>
+													<Input id="description" className="col-span-3" />
+												</div>
+											</div>
+											<DialogFooter>
+												<Button type="submit">Save changes</Button>
+											</DialogFooter>
+										</DialogContent>
+
+										<AlertDialogContent>
+											<AlertDialogHeader>
+												<AlertDialogTitle className="text-red-600 flex gap-2 items-center sm:flex-row flex-col">
+													<TrashIcon className="h-6 w-6" />
+													Permanently delete
+													<span className="line-clamp-1 max-w-40 break-all">
+														{news.headline}
+													</span>
+													?
+												</AlertDialogTitle>
+												<AlertDialogDescription>
+													This action cannot be undone. This will permanently get rid of this
+													article and will no longer be viewable.
+												</AlertDialogDescription>
+											</AlertDialogHeader>
+											<AlertDialogFooter>
+												<AlertDialogCancel>Cancel</AlertDialogCancel>
+												<Button onClick={() => confirm(news.id)} asChild>
+													<AlertDialogAction type="submit">Proceed</AlertDialogAction>
+												</Button>
+											</AlertDialogFooter>
+										</AlertDialogContent>
 									</ContextMenu>
 								</AlertDialog>
 							</Dialog>

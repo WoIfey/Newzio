@@ -1,23 +1,50 @@
-'use client'
 import { Editor } from '@tinymce/tinymce-react'
+import { useAtom } from 'jotai'
+import { bodyInput } from '@/utils/atoms'
 
 export default function TinyMCE() {
+	const [body, setBody] = useAtom(bodyInput)
+
 	return (
-		<Editor
-			apiKey=""
-			init={{
-				plugins:
-					'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker tinymcespellchecker permanentpen powerpaste advtable advcode editimage advtemplate mentions tinycomments tableofcontents footnotes mergetags autocorrect typography inlinecss markdown',
-				toolbar:
-					'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-				tinycomments_mode: 'embedded',
-				tinycomments_author: 'Author name',
-				mergetags_list: [
-					{ value: 'First.Name', title: 'First Name' },
-					{ value: 'Email', title: 'Email' },
-				],
-			}}
-			initialValue="Description"
-		/>
+		<>
+			<Editor
+				tinymceScriptSrc={'/tinymce/tinymce.min.js'}
+				onChange={(e, editor) => setBody(editor.getContent())}
+				init={{
+					height: 400,
+					menubar: false,
+					plugins: [
+						'advlist',
+						'autolink',
+						'lists',
+						'link',
+						'image',
+						'charmap',
+						'anchor',
+						'searchreplace',
+						'visualblocks',
+						'code',
+						'fullscreen',
+						'insertdatetime',
+						'media',
+						'table',
+						'preview',
+						'help',
+						'wordcount',
+					],
+					toolbar:
+						'undo redo autolink | blocks | ' +
+						'bold italic forecolor | alignleft aligncenter | ' +
+						'media image link insertdatetime | ' +
+						'alignright alignjustify | bullist numlist outdent indent | ' +
+						'removeformat | fullscreen searchreplace help',
+					content_style:
+						'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+					placeholder: 'Write a whole essay...',
+					branding: false,
+					max_height: 720,
+				}}
+			/>
+		</>
 	)
 }

@@ -4,7 +4,11 @@ import { getNews } from '@/utils/handleDatabase'
 import { options } from './api/auth/[...nextauth]/options'
 import { getServerSession } from 'next-auth/next'
 
-export default async function Home() {
+export default async function Home({
+	searchParams,
+}: {
+	searchParams: { pagination: number }
+}) {
 	const session = await getServerSession(options)
 	let news = await getNews()
 
@@ -19,7 +23,7 @@ export default async function Home() {
 				<div className="flex-shrink-0">
 					<User data={news} session={session} />
 				</div>
-				<News data={news} />
+				<News data={news} pagination={searchParams.pagination} />
 			</div>
 		</main>
 	)

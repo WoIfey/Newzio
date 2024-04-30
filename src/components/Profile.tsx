@@ -53,7 +53,13 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
-export default function Profile({ userNews }: { userNews: any[] }) {
+export default function Profile({
+	userNews,
+	params,
+}: {
+	userNews: any[]
+	params: any
+}) {
 	userNews.sort((a: any, b: any) => b.id - a.id)
 	const [newArticle, setNewArticle] = useAtom(createdNews)
 	const [deleteArticle, setDeleteArticle] = useAtom(deletedNews)
@@ -102,16 +108,16 @@ export default function Profile({ userNews }: { userNews: any[] }) {
 	return (
 		<div>
 			<div className="bg-slate-200 dark:bg-[#242729] p-6 text-xl font-bold flex items-center gap-4">
-				<Avatar>
-					<AvatarImage src={userNews[0].user_image ?? undefined} />
+				<Avatar className="h-14 w-14">
+					<AvatarImage src={userNews[0]?.user_image ?? undefined} />
 					<AvatarFallback className="font-normal text-base bg-slate-200 dark:bg-slate-600 dark:text-white text-black">
-						{userNews[0].user_name.charAt(0) ?? ''}
+						{userNews[0]?.user_name.charAt(0) ?? params.author.charAt(0)}
 					</AvatarFallback>
 				</Avatar>
-				{`${userNews[0].user_name}'s Articles`}
+				{`${userNews[0]?.user_name ?? params.author}'s Articles`}
 			</div>
 			<div className="flex flex-col">
-				<div className="grid grid-cols-1 grid-rows-1 sm:grid-cols-2 sm:grid-rows-2 xl:grid-cols-3 xl:grid-rows-3 gap-6 bg-slate-200 dark:bg-[#242729] min-h-dvh px-6 pb-6 items-start">
+				<div className="max-w-7xl grid grid-cols-1 grid-rows-1 sm:grid-cols-2 sm:grid-rows-2 xl:grid-cols-3 xl:grid-rows-3 gap-6 bg-slate-200 dark:bg-[#242729] min-h-dvh px-6 pb-6 items-start">
 					{currentNews.length > 0 ? (
 						currentNews.map(news => (
 							<div
@@ -173,7 +179,14 @@ export default function Profile({ userNews }: { userNews: any[] }) {
 													)}/${news.id}`}
 													className="hover:dark:text-sky-400 hover:text-sky-700 transition-all duration-75"
 												>
-													{news.type && news.type.startsWith('video') ? (
+													{news.type && news.url && news.type.startsWith('audio') ? (
+														<div className="bg-slate-400 dark:bg-[#1d2022] flex justify-center items-center h-52 px-4 w-full rounded-t-md">
+															<audio controls className="w-full">
+																<source src={news.url} type="audio/mpeg" />
+																Your browser does not support the audio element.
+															</audio>
+														</div>
+													) : news.type && news.type.startsWith('video') ? (
 														<video
 															width="1080"
 															height="720"
@@ -230,9 +243,9 @@ export default function Profile({ userNews }: { userNews: any[] }) {
                                                                                 <div className="cursor-pointer">
                                                                                     <PencilIcon className="w-6 h-6 p-1" />
                                                                                     <p className="mb-0.5">Edit Article {news.id}</p>
-                                                                                </div>
-                                                                            </DialogTrigger>
-                                                                        </ContextMenuItem> */}
+																					</div>
+																					</DialogTrigger>
+																				</ContextMenuItem> */}
 															<ContextMenuItem asChild>
 																<AlertDialogTrigger asChild>
 																	<div className="cursor-pointer pr-3">
@@ -242,67 +255,69 @@ export default function Profile({ userNews }: { userNews: any[] }) {
 																</AlertDialogTrigger>
 															</ContextMenuItem>
 														</ContextMenuContent>
-														<DialogContent className="sm:max-w-[425px]">
-															<DialogHeader>
-																<DialogTitle>Edit article</DialogTitle>
-																<DialogDescription>
-																	Make changes to your news article.
-																</DialogDescription>
-															</DialogHeader>
-															<div className="grid gap-4 py-4">
-																<div className="grid grid-cols-4 items-center gap-4">
-																	<Label htmlFor="headline" className="text-right">
-																		Headline
-																	</Label>
-																	<Input
-																		id="headline"
-																		defaultValue="Something..."
-																		className="col-span-3"
-																	/>
-																</div>
-																<div className="grid grid-cols-4 items-center gap-4">
-																	<Label htmlFor="description" className="text-right">
-																		Description
-																	</Label>
-																	<Input
-																		id="description"
-																		defaultValue="Something..."
-																		className="col-span-3"
-																	/>
-																</div>
-															</div>
-															<DialogFooter>
-																<Button type="submit">Save changes</Button>
-															</DialogFooter>
-														</DialogContent>
-														<AlertDialogContent>
-															<AlertDialogHeader>
-																<AlertDialogTitle className="text-red-600 flex gap-2 items-center sm:flex-row flex-col">
-																	<TrashIcon className="h-6 w-6" />
-																	Permanently delete this news article?
-																</AlertDialogTitle>
-																<AlertDialogDescription>
-																	This action cannot be undone. This will permanently get rid of
-																	this news article and will no longer be viewable.
-																</AlertDialogDescription>
-															</AlertDialogHeader>
-															<AlertDialogFooter>
-																<AlertDialogCancel>Cancel</AlertDialogCancel>
-																<Button onClick={() => confirm(news.id)} asChild>
-																	<AlertDialogAction type="submit">Proceed</AlertDialogAction>
-																</Button>
-															</AlertDialogFooter>
-														</AlertDialogContent>
 													</>
 												)}
 											</ContextMenuTrigger>
+											<DialogContent className="sm:max-w-[425px]">
+												<DialogHeader>
+													<DialogTitle>Edit article</DialogTitle>
+													<DialogDescription>
+														Make changes to your news article.
+													</DialogDescription>
+												</DialogHeader>
+												<div className="grid gap-4 py-4">
+													<div className="grid grid-cols-4 items-center gap-4">
+														<Label htmlFor="headline" className="text-right">
+															Headline
+														</Label>
+														<Input
+															id="headline"
+															defaultValue="Something..."
+															className="col-span-3"
+														/>
+													</div>
+													<div className="grid grid-cols-4 items-center gap-4">
+														<Label htmlFor="description" className="text-right">
+															Description
+														</Label>
+														<Input
+															id="description"
+															defaultValue="Something..."
+															className="col-span-3"
+														/>
+													</div>
+												</div>
+												<DialogFooter>
+													<Button type="submit">Save changes</Button>
+												</DialogFooter>
+											</DialogContent>
+											<AlertDialogContent>
+												<AlertDialogHeader>
+													<AlertDialogTitle className="text-red-600 flex gap-2 items-center sm:flex-row flex-col">
+														<TrashIcon className="h-6 w-6" />
+														Permanently delete this news article?
+													</AlertDialogTitle>
+													<AlertDialogDescription>
+														This action cannot be undone. This will permanently get rid of
+														this news article and will no longer be viewable.
+													</AlertDialogDescription>
+												</AlertDialogHeader>
+												<AlertDialogFooter>
+													<AlertDialogCancel>Cancel</AlertDialogCancel>
+													<Button onClick={() => confirm(news.id)} asChild>
+														<AlertDialogAction type="submit">Proceed</AlertDialogAction>
+													</Button>
+												</AlertDialogFooter>
+											</AlertDialogContent>
 										</ContextMenu>
 									</AlertDialog>
 								</Dialog>
 							</div>
 						))
 					) : (
-						<div className="text-center text-xl py-10">No news available.</div>
+						<div className="text-lg">
+							{params.author} either does not exist or has not created an article!
+						</div>
 					)}
 				</div>
 				{totalPages > 1 && (

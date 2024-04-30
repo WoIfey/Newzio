@@ -1,5 +1,5 @@
 'use server'
-import { deletePage, saveUpload } from "@/utils/handleDatabase"
+import { deleteArticle, saveArticle } from "@/utils/handleDatabase"
 import { revalidatePath, revalidateTag } from "next/cache"
 import { redirect } from "next/navigation"
 import { UploadDetails } from "uploadDetails"
@@ -18,7 +18,7 @@ export const create = async (
     user_name: string,
     user_image: string
 ) => {
-    await saveUpload(
+    await saveArticle(
         uploadDetails?.key,
         uploadDetails?.name,
         uploadDetails?.size,
@@ -36,6 +36,6 @@ export const create = async (
 }
 
 export const remove = async (id: string) => {
-    await deletePage(id)
+    await deleteArticle(id)
     redirect('/')
 }

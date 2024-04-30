@@ -9,7 +9,7 @@ export default function User({ data, session }: { data: any[]; session: any }) {
 	const users = useMemo(() => {
 		const unique = new Map()
 		data.forEach(item => unique.set(item.user_id, item))
-		return Array.from(unique.values())
+		return Array.from(unique.values()).slice(0, 12)
 	}, [data])
 
 	return (
@@ -21,7 +21,7 @@ export default function User({ data, session }: { data: any[]; session: any }) {
 						<p className="py-2 mx-4">
 							Check out the users that have made all these articles!
 						</p>
-						<div className="flex flex-col gap-3 mt-2">
+						<div className="flex flex-col gap-3 mt-1">
 							{users.map((news: any) => {
 								const count = data.filter(item => item.user_id === news.user_id).length
 								return (

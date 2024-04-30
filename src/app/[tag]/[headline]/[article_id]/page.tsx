@@ -4,8 +4,9 @@ import { Metadata } from 'next'
 
 type Props = {
 	params: {
-		article_id: string
+		tag: string
 		headline: string
+		article_id: string
 	}
 }
 
@@ -14,14 +15,14 @@ export const generateMetadata = async ({
 }: Props): Promise<Metadata> => {
 	let data = (await getPage(params.article_id))[0]
 	return {
-		title: `News: ${data?.headline}`,
+		title: `${data?.headline} - Newzio`,
 		description:
 			data?.lead?.length > 128 ? `${data.lead.substring(0, 128)}...` : data?.lead,
 		openGraph: {
 			title: `${data?.headline}`,
 			description:
 				data?.lead?.length > 128 ? `${data.lead.substring(0, 128)}...` : data?.lead,
-			url: `https://newzio.vercel.app/${params.headline}/${params.article_id}`,
+			url: `https://newzio.vercel.app/${params.tag}/${params.headline}/${params.article_id}`,
 			siteName: `Newzio ${data?.tag ? '-' : ''} ${data?.tag || ''}`,
 			images: [
 				{
@@ -46,7 +47,7 @@ export default async function NewsPost({ params }: Props) {
 	const news = await res.json() */
 
 	return (
-		<div className="flex min-h-dvh lg:flex-row flex-col justify-center md:pt-16 bg-[#dfdfdf] dark:bg-[#1b1b1b]">
+		<div className="flex min-h-dvh md:flex-row flex-col justify-center md:pt-16 bg-[#dfdfdf] dark:bg-[#1b1b1b]">
 			<Article data={data} params={params} news={news} />
 		</div>
 	)

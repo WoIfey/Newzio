@@ -122,24 +122,52 @@ export default function Article({
 
 	return (
 		<>
-			<div className="lg:max-w-2xl bg-[#e4ebec] dark:bg-[#2F3335] min-h-dvh">
+			<div className="md:w-[500px] lg:w-[640px] bg-[#e4ebec] dark:bg-[#2F3335] min-h-dvh">
 				<div key={data.id}>
-					<div className={`m-6 sm:mx-8 ${data.type ? '' : 'm-4'}`}>
-						<div className="border-b border-slate-800 dark:border-slate-200 pb-4">
-							<h1 className="text-3xl font-bold mb-4 break-words">{data.headline}</h1>
-							<div className="flex gap-1 sm:flex-row flex-col">
-								<div className="flex gap-2 items-center flex-row">
-									{data.tag && (
-										<span className="bg-[#bfccdc] dark:bg-[#404B5E] px-1.5 py-1 dark:text-white text-sm rounded-lg">
-											{data.tag}
-										</span>
-									)}
-									<Avatar>
-										<AvatarImage src={data.user_image ?? undefined} />
-										<AvatarFallback>{data.user_name.charAt(0) ?? ''}</AvatarFallback>
-									</Avatar>
-									<h1 className="text-sm">
-										By{' '}
+					<div className={`mx-6 sm:mx-8 mt-6 ${data.type ? 'mb-6' : 'mb-3'}`}>
+						<div>
+							{data.headline && (
+								<h1 className="text-3xl font-bold mb-2 break-words">{data.headline}</h1>
+							)}
+							{data.lead && (
+								<p className="leading-7 font-extralight break-words mb-2">
+									{data.lead}
+								</p>
+							)}
+							{data.tag && (
+								<div className="flex gap-2 sm:flex-row flex-col mb-4">
+									<div className="flex gap-2 items-center flex-row">
+										{data.tag && (
+											<span className="bg-[#bfccdc] dark:bg-[#404B5E] px-1.5 py-1 dark:text-white text-sm rounded-lg">
+												{data.tag}
+											</span>
+										)}
+									</div>
+								</div>
+							)}
+						</div>
+						<div className="flex items-center gap-2">
+							<Link
+								href={`/author/${encodeURIComponent(
+									data.user_name
+										? data.user_name
+												.toLowerCase()
+												.replace(/ö/g, 'o')
+												.replace(/ä/g, 'a')
+												.replace(/å/g, 'a')
+												.replace(/\s+/g, '-')
+										: 'unknown'
+								)}/${data.user_id}`}
+							>
+								<Avatar>
+									<AvatarImage src={data.user_image ?? undefined} />
+									<AvatarFallback>{data.user_name.charAt(0) ?? ''}</AvatarFallback>
+								</Avatar>
+							</Link>
+							<div className="flex items-center">
+								<div className="text-sm flex flex-col gap-1">
+									<div className="flex gap-1">
+										<p>By</p>
 										<Link
 											className="hover:dark:text-sky-400 hover:text-sky-700 transition-all duration-75"
 											href={`/author/${encodeURIComponent(
@@ -155,13 +183,11 @@ export default function Article({
 										>
 											{data.user_name}
 										</Link>
-									</h1>
-								</div>
-								<div className="flex items-center">
-									<p className="text-sm">
-										published{' '}
+									</div>
+									<div className="flex gap-1 text-xs">
+										<p>published</p>
 										<time
-											title={new Date(data.createdAt).toUTCString()}
+											title={new Date(data.createdAt).toLocaleString()}
 											dateTime={new Date(data.createdAt).toLocaleString()}
 											className="dark:text-slate-300 text-slate-600"
 										>
@@ -169,10 +195,9 @@ export default function Article({
 												addSuffix: true,
 											})}
 										</time>
-									</p>
+									</div>
 								</div>
 							</div>
-							{data.lead && <p className="leading-7 break-words mt-4">{data.lead}</p>}
 						</div>
 						<div className="mt-4 flex gap-2">
 							<Dialog>
@@ -245,10 +270,14 @@ export default function Article({
 										<AlertDialogHeader>
 											<AlertDialogTitle className="text-red-600 flex gap-2 items-center sm:flex-row flex-col">
 												<TrashIcon className="h-6 w-6" />
-												Permanently delete this news article?
+												Permanently delete
+												<span className="line-clamp-1 max-w-40 break-all">
+													{data.headline}
+												</span>
+												?
 											</AlertDialogTitle>
 											<AlertDialogDescription>
-												This action cannot be undone. This will permanently delete this news
+												This action cannot be undone. This will permanently delete this
 												article and will no longer be viewable.
 											</AlertDialogDescription>
 										</AlertDialogHeader>
@@ -265,11 +294,16 @@ export default function Article({
 					</div>
 					{data.url && (
 						<div className="flex items-center justify-center">
-							{data.type && data.type.startsWith('video') ? (
+							{data.type && data.url && data.type.startsWith('audio') ? (
+								<audio controls autoPlay className="px-6 w-full rounded-md">
+									<source src={data.url} type="audio/mpeg" />
+									Your browser does not support the audio element.
+								</audio>
+							) : data.type && data.type.startsWith('video') ? (
 								<video
 									width="1080"
 									height="720"
-									className="max-h-[480px] w-full"
+									className="max-h-[360px] w-full shadow-xl"
 									autoPlay
 									controls
 								>
@@ -283,15 +317,19 @@ export default function Article({
 									height={720}
 									src={data.url}
 									unoptimized
-									className="max-h-[480px] w-full object-fill"
+									className="max-h-[360px] w-full object-fill shadow-xl"
 								/>
 							) : (
 								<div></div>
 							)}
 						</div>
 					)}
-					<div className={`mx-6 sm:mx-8 ${data.type ? 'my-4' : 'sm:my-0 sm:mb-4'}`}>
-						<p className="leading-7 break-words">{data.body}</p>
+					<div
+						className={`mx-6 sm:mx-8 ${
+							data.type ? 'my-4 sm:my-6' : 'sm:my-0 sm:mb-4'
+						}`}
+					>
+						<div className="html" dangerouslySetInnerHTML={{ __html: data.body }} />
 					</div>
 				</div>
 			</div>

@@ -21,23 +21,33 @@ export async function getTags() {
     return data.rows
 }
 
-export async function saveUpload(key: string, name: string, size: number, type: string, url: string, headline: string, lead: string, body: string, tag: string, user_id: number, user_name: string, user_image: string) {
+export async function saveArticle(key: string, name: string, size: number, type: string, url: string, headline: string, lead: string, body: string, tag: string, user_id: number, user_name: string, user_image: string) {
     try {
         await db.query(`INSERT INTO news(key, name, size, type, url, headline, lead, body, tag, user_id, user_name, user_image) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`, [key, name, size, type, url, headline, lead, body, tag, user_id, user_name, user_image])
-        return 'Saved Page'
+        return 'Saved Article'
     } catch (error) {
         console.log(error)
-        return "Failed to save page."
+        return "Failed to save article."
     }
 }
 
-export async function deletePage(id: string) {
+export async function deleteArticle(id: string) {
     try {
         await db.query("DELETE FROM news WHERE id = $1", [id])
-        return 'Deleted Page'
+        return 'Deleted Article'
     } catch (error) {
         console.log(error)
-        return 'Failed to delete page.'
+        return 'Failed to delete article.'
+    }
+}
+
+export async function updateArticle(id: string, key: string, name: string, size: number, type: string, url: string, headline: string, lead: string, body: string, tag: string, user_id: number, user_name: string, user_image: string) {
+    try {
+        await db.query(`UPDATE news SET key = $1, name = $2, size = $3, type = $4, url = $5, headline = $6, lead = $7, body = $8, tag = $9, user_id = $10, user_name = $11, user_image = $12 WHERE id = $13`, [key, name, size, type, url, headline, lead, body, tag, user_id, user_name, user_image, id])
+        return 'Updated Article'
+    } catch (error) {
+        console.log(error)
+        return 'Failed to update article.'
     }
 }
 
