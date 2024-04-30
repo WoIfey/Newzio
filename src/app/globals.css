@@ -20,32 +20,44 @@
   background: #6E6E6E;
 }
 
+.html p {
+  @apply leading-8;
+}
+
 .html h1 {
-  @apply text-[2em] block mb-[0.67em] mt-[0.67em] mx-0 font-bold break-words;
+  @apply text-[2em] mb-[0.67em] mt-[0.67em] font-bold;
 }
 
 .html h2 {
-  @apply text-[1.5em] block mb-[0.67em] mt-[0.67em] mx-0 font-bold break-words;
+  @apply text-[1.5em] mb-[0.83em] mt-[0.83em] font-bold;
 }
 
 .html h3 {
-  @apply text-[1.17em] block mb-[0.67em] mt-[0.67em] mx-0 font-bold break-words;
+  @apply text-[1.17em] mb-[1em] mt-[1em] font-bold;
 }
 
 .html h4 {
-  @apply text-[1em] block mb-[0.67em] mt-[0.67em] mx-0 font-bold break-words;
+  @apply text-[1em] mb-[1.33em] mt-[1.33em] font-semibold;
 }
 
 .html h5 {
-  @apply text-[0.83em] block mb-[0.67em] mt-[0.67em] mx-0 font-bold break-words;
+  @apply text-[0.83em] mb-[1.67em] mt-[1.67em] font-semibold;
 }
 
 .html h6 {
-  @apply text-[0.67em] block mb-[0.67em] mt-[0.67em] mx-0 font-bold break-words;
+  @apply text-[0.67em] mb-[2.33em] mt-[2.33em] font-semibold;
 }
 
 .html a {
   @apply font-medium text-blue-600 underline dark:text-blue-500 hover:no-underline
+}
+
+.html ul {
+  @apply list-disc list-inside
+}
+
+.html ol {
+  @apply list-decimal list-inside
 }
 
 @layer base {

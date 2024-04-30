@@ -31,9 +31,10 @@ export default function TinyMCE() {
 						'preview',
 						'help',
 						'wordcount',
+						'fontsize',
 					],
 					toolbar:
-						'undo redo autolink | blocks | ' +
+						'undo redo fontsize autolink | blocks | ' +
 						'bold italic forecolor | alignleft aligncenter | ' +
 						'media image link insertdatetime | ' +
 						'alignright alignjustify | bullist numlist outdent indent | ' +

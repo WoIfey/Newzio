@@ -122,7 +122,7 @@ export default function Add({ tags }: { tags: any }) {
 
 	return (
 		<>
-			<div className="sm:max-w-xl md:max-w-3xl w-full">
+			<div className="sm:max-w-2xl md:max-w-4xl w-full">
 				<div className="grid grid-cols-1 md:pt-28 md:px-10 lg:px-0 md:pb-16 md:py-0 sm:py-6 pt-4 md:grid-cols-3">
 					<div className="px-4 sm:px-0 pb-4 md:pb-0">
 						<h2 className="text-base font-semibold leading-7 dark:text-white text-gray-900">

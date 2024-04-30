@@ -221,7 +221,7 @@ export default function Navbar({ userNews }: { userNews: any[] }) {
 										<div className="text-base font-medium text-black dark:text-white">
 											{session?.user.name}
 										</div>
-										<div className="text-sm font-medium text-gray-600 dark:text-gray-400 break-all">
+										<div className="text-sm font-medium text-gray-600 dark:text-gray-400 [overflow-wrap:anywhere]">
 											{session?.user.email}
 										</div>
 									</div>

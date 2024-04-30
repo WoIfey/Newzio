@@ -215,7 +215,7 @@ export default function Profile({
 														</span>
 													)}
 													<div className="flex flex-col gap-1 p-4 hover:dark:text-sky-400 hover:text-sky-700 transition-all duration-75">
-														<h1 className="text-2xl font-bold break-words">
+														<h1 className="text-2xl font-bold [overflow-wrap:anywhere]">
 															{news.headline}
 														</h1>
 														<p className="text-slate-700 dark:text-slate-300 text-xs flex gap-1 items-center">
@@ -230,7 +230,7 @@ export default function Profile({
 																})}
 															</time>
 														</p>
-														<p className="line-clamp-2 text-black dark:text-slate-100 break-words">
+														<p className="line-clamp-2 text-black dark:text-slate-100 [overflow-wrap:anywhere]">
 															{news.lead}
 														</p>
 													</div>
@@ -295,11 +295,14 @@ export default function Profile({
 												<AlertDialogHeader>
 													<AlertDialogTitle className="text-red-600 flex gap-2 items-center sm:flex-row flex-col">
 														<TrashIcon className="h-6 w-6" />
-														Permanently delete this news article?
+														<p>Permanently delete</p>
+														<span className="line-clamp-1 max-w-40 [overflow-wrap:anywhere]">
+															{news.headline}
+														</span>
 													</AlertDialogTitle>
 													<AlertDialogDescription>
 														This action cannot be undone. This will permanently get rid of
-														this news article and will no longer be viewable.
+														this article and will no longer be viewable.
 													</AlertDialogDescription>
 												</AlertDialogHeader>
 												<AlertDialogFooter>

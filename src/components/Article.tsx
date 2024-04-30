@@ -127,10 +127,12 @@ export default function Article({
 					<div className={`mx-6 sm:mx-8 mt-6 ${data.type ? 'mb-6' : 'mb-3'}`}>
 						<div>
 							{data.headline && (
-								<h1 className="text-3xl font-bold mb-2 break-words">{data.headline}</h1>
+								<h1 className="text-3xl font-bold mb-2 [overflow-wrap:anywhere]">
+									{data.headline}
+								</h1>
 							)}
 							{data.lead && (
-								<p className="leading-7 font-extralight break-words mb-2">
+								<p className="leading-7 font-extralight [overflow-wrap:anywhere] mb-2">
 									{data.lead}
 								</p>
 							)}
@@ -270,11 +272,10 @@ export default function Article({
 										<AlertDialogHeader>
 											<AlertDialogTitle className="text-red-600 flex gap-2 items-center sm:flex-row flex-col">
 												<TrashIcon className="h-6 w-6" />
-												Permanently delete
-												<span className="line-clamp-1 max-w-40 break-all">
+												<p>Permanently delete</p>
+												<span className="line-clamp-1 max-w-40 [overflow-wrap:anywhere]">
 													{data.headline}
 												</span>
-												?
 											</AlertDialogTitle>
 											<AlertDialogDescription>
 												This action cannot be undone. This will permanently delete this
@@ -329,7 +330,10 @@ export default function Article({
 							data.type ? 'my-4 sm:my-6' : 'sm:my-0 sm:mb-4'
 						}`}
 					>
-						<div className="html" dangerouslySetInnerHTML={{ __html: data.body }} />
+						<div
+							className="html [overflow-wrap:anywhere]"
+							dangerouslySetInnerHTML={{ __html: data.body }}
+						/>
 					</div>
 				</div>
 			</div>

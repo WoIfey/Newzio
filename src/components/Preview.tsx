@@ -50,10 +50,14 @@ export default function Preview({ user }: { user: any }) {
 								<div className={`mx-6 sm:mx-8 mt-4 ${fileType ? 'mb-6' : 'mb-3'}`}>
 									<div>
 										{headline && (
-											<h1 className="text-3xl font-bold mb-2 break-words">{headline}</h1>
+											<h1 className="text-3xl font-bold mb-2 [overflow-wrap:anywhere]">
+												{headline}
+											</h1>
 										)}
 										{lead && (
-											<p className="leading-7 font-extralight break-words mb-2">{lead}</p>
+											<p className="leading-7 font-extralight [overflow-wrap:anywhere] mb-2">
+												{lead}
+											</p>
 										)}
 										{tagValue && (
 											<div className="flex gap-2 sm:flex-row flex-col mb-4">
@@ -130,7 +134,10 @@ export default function Preview({ user }: { user: any }) {
 										fileType ? 'my-4 sm:my-6' : 'sm:my-0 sm:mb-4'
 									}`}
 								>
-									<div className="html" dangerouslySetInnerHTML={{ __html: body }} />
+									<div
+										className="html [overflow-wrap:anywhere]"
+										dangerouslySetInnerHTML={{ __html: body }}
+									/>
 								</div>
 							</div>
 						</div>

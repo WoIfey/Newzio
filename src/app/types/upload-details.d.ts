@@ -9,7 +9,7 @@ declare module "uploadDetails" {
             id: number
             user: string
         }
-    }[]
+    }
 }
 
 declare module "FormFields" {

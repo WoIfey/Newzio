@@ -302,11 +302,10 @@ export default function News({
 											<AlertDialogHeader>
 												<AlertDialogTitle className="text-red-600 flex gap-2 items-center sm:flex-row flex-col">
 													<TrashIcon className="h-6 w-6" />
-													Permanently delete
-													<span className="line-clamp-1 max-w-40 break-all">
+													<p>Permanently delete</p>
+													<span className="line-clamp-1 max-w-40 [overflow-wrap:anywhere]">
 														{news.headline}
 													</span>
-													?
 												</AlertDialogTitle>
 												<AlertDialogDescription>
 													This action cannot be undone. This will permanently get rid of this
