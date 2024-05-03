@@ -52,7 +52,7 @@ export const createComment = async (article_id: string, message: string, user_id
 
 export const like = async (id: string, user_id: number, user_name: string, user_image: string, article_id: string) => {
     const result = await toggleLike(id, article_id, user_id, user_name, user_image)
-    revalidatePath(`/`)
+    revalidatePath(`/${article_id}`)
     return result
 }
 

@@ -11,6 +11,7 @@ import {
 	XCircleIcon,
 	TrashIcon,
 	ChartBarIcon,
+	PlusIcon,
 } from '@heroicons/react/24/outline'
 import { HeartIcon as HeartIconOutline } from '@heroicons/react/24/outline'
 import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid'
@@ -114,53 +115,69 @@ export default function Comments({
 		const user_image = user?.user.image ?? ''
 		await like(id, user_id, user_name, user_image, article_id)
 	}
+	const currentUserId = user?.user?.id
 
 	return (
-		<div className="flex flex-col gap-3 pb-6 bg-slate-200 dark:bg-[#242729]">
+		<div className="flex flex-col gap-3 pb-6 bg-[#eaeff1] dark:bg-[#242729]">
 			<form
-				className="px-6 flex flex-col gap-3 pt-6 pb-4"
+				className="px-6 flex flex-col gap-3 pt-6 pb-2"
 				onSubmit={handleSubmit(onSubmit)}
 			>
 				<Label htmlFor="message" className="block text-lg font-medium leading-6">
-					Discussion
+					Discussion{' '}
+					<span className="text-sm dark:text-gray-400 text-gray-700">
+						{comments.length} comments
+					</span>
 				</Label>
-				<Textarea
-					{...register('message', {
-						required: 'There is no message!',
-						minLength: {
-							value: 1,
-							message: 'The message might be too short!',
-						},
-						maxLength: { value: 256, message: 'The message is too long!' },
-						validate: {
-							checkStartSpace: value =>
-								!value.startsWith(' ') || 'Message cannot start or end with spaces!',
-							checkEndSpace: value =>
-								!value.endsWith(' ') || 'Message cannot start or end with spaces!',
-						},
-					})}
-					id="message"
-					name="message"
-					placeholder="Write a comment..."
-					value={message}
-					onChange={e => setMessage(e.target.value)}
-					minLength={1}
-					maxLength={256}
-					className={`min-h-24 max-h-40 ${
-						message.length === 256 ? 'border-red-500 focus:border-red-700' : ''
-					}`}
-				/>
-				<span className={`text-xs ${message.length === 256 ? 'text-red-500' : ''}`}>
-					{message.length}/256
-				</span>
-				{errors.message && (
-					<div className="mt-2 text-red-500 bg-[#FFFFFF] dark:bg-[#020817] border-gray-200 dark:border-gray-800 border p-2 rounded-md">
-						{errors.message.message}
-					</div>
+				{user && (
+					<>
+						<Textarea
+							{...register('message', {
+								required: 'There is no message!',
+								minLength: {
+									value: 1,
+									message: 'The message might be too short!',
+								},
+								maxLength: { value: 256, message: 'The message is too long!' },
+								validate: {
+									checkStartSpace: value =>
+										!value.startsWith(' ') || 'Message cannot start or end with spaces!',
+									checkEndSpace: value =>
+										!value.endsWith(' ') || 'Message cannot start or end with spaces!',
+								},
+							})}
+							id="message"
+							name="message"
+							placeholder="Write a comment..."
+							value={message}
+							onChange={e => setMessage(e.target.value)}
+							minLength={1}
+							maxLength={256}
+							className={`min-h-20 max-h-40 ${
+								message.length === 256 ? 'border-red-500 focus:border-red-700' : ''
+							}`}
+						/>
+						<span
+							className={`text-xs ${message.length === 256 ? 'text-red-500' : ''}`}
+						>
+							{message.length}/256
+						</span>
+						{errors.message && (
+							<div className="text-red-500 bg-[#FFFFFF] dark:bg-[#020817] border-gray-200 dark:border-gray-800 border p-2 rounded-md">
+								{errors.message.message}
+							</div>
+						)}
+
+						<Button
+							disabled={isSubmitting}
+							type="submit"
+							className="w-full flex gap-1 bg-blue-300 hover:bg-blue-200 text-black dark:bg-blue-700 dark:hover:bg-blue-800 dark:text-white"
+						>
+							<PlusIcon className="w-5 h-5 p-0.5" />
+							{isSubmitting ? 'Posting...' : 'Post Comment'}
+						</Button>
+					</>
 				)}
-				<Button disabled={isSubmitting} type="submit" className="self-start">
-					{isSubmitting ? 'Posting...' : 'Post comment'}
-				</Button>
 			</form>
 			{comments.map((comment: any) => (
 				<div
@@ -189,42 +206,47 @@ export default function Comments({
 							</div>
 						</div>
 						<div className="flex items-center gap-2">
-							<TooltipProvider delayDuration={100}>
-								<Tooltip>
-									<TooltipTrigger
-										asChild
-										className="bg-red-400 dark:bg-red-700 rounded-full p-1.5 hover:dark:bg-red-800 hover:bg-red-500 transition-all duration-100"
-									>
-										<Link
-											href={`/${encodeURIComponent(
-												params.tag
-													? params.tag
-															.toLowerCase()
-															.replace(/ö/g, 'o')
-															.replace(/ä/g, 'a')
-															.replace(/å/g, 'a')
-															.replace(/\s+/g, '-')
-													: 'article'
-											)}/${encodeURIComponent(
-												params.headline
-													? params.headline
-															.toLowerCase()
-															.replace(/ö/g, 'o')
-															.replace(/ä/g, 'a')
-															.replace(/å/g, 'a')
-															.replace(/\s+/g, '-')
-													: 'untitled'
-											)}/${params.article_id}/likes/${comment.id}`}
-											className="bg-gray-400 dark:bg-gray-700 rounded-full p-1.5 hover:dark:bg-gray-800 hover:bg-gray-500 transition-all duration-100"
-										>
-											<ChartBarIcon className="h-6 w-6" />
-										</Link>
-									</TooltipTrigger>
-									<TooltipContent>
-										<p>Comment Likes</p>
-									</TooltipContent>
-								</Tooltip>
-							</TooltipProvider>
+							{currentUserId !== comment.user_id && currentUserId === '87246869' && (
+								<AlertDialog>
+									<TooltipProvider delayDuration={100}>
+										<Tooltip>
+											<TooltipTrigger
+												className="bg-red-400 dark:bg-red-700 rounded-full p-1.5 hover:dark:bg-red-800 hover:bg-red-500 transition-all duration-100"
+												asChild
+											>
+												<AlertDialogTrigger>
+													<TrashIcon className="h-6 w-6" />
+												</AlertDialogTrigger>
+											</TooltipTrigger>
+
+											<TooltipContent>
+												<p>Force Delete Comment</p>
+											</TooltipContent>
+										</Tooltip>
+									</TooltipProvider>
+									<AlertDialogContent>
+										<AlertDialogHeader>
+											<AlertDialogTitle className="text-red-600 flex gap-2 items-center sm:flex-row flex-col">
+												<TrashIcon className="h-6 w-6" />
+												<p>Permanently delete</p>
+												<span className="line-clamp-1 max-w-40 [overflow-wrap:anywhere]">
+													{comment.message}
+												</span>
+											</AlertDialogTitle>
+											<AlertDialogDescription>
+												This action cannot be undone. This will permanently delete this
+												comment and will no longer be viewable.
+											</AlertDialogDescription>
+										</AlertDialogHeader>
+										<AlertDialogFooter>
+											<AlertDialogCancel>Cancel</AlertDialogCancel>
+											<Button onClick={() => confirm(comment.id)} asChild>
+												<AlertDialogAction type="submit">Proceed</AlertDialogAction>
+											</Button>
+										</AlertDialogFooter>
+									</AlertDialogContent>
+								</AlertDialog>
+							)}
 							{user?.user.id === comment.user_id && (
 								<AlertDialog>
 									<TooltipProvider delayDuration={100}>
@@ -272,17 +294,53 @@ export default function Comments({
 					{user && (
 						<div className="flex gap-2">
 							{/* <Button>Reply</Button> */}
-							<button
-								onClick={() => handleLike(comment.id, params.article_id)}
-								className="hover:text-red-600 flex gap-1 items-center"
-							>
-								{likes.some((like: any) => like.comment_id === comment.id) ? (
-									<HeartIconSolid className="size-6" />
-								) : (
-									<HeartIconOutline className="size-6" />
-								)}
-								<p className="text-black dark:text-white">{comment.likes}</p>
-							</button>
+							<TooltipProvider delayDuration={100}>
+								<Tooltip>
+									<TooltipTrigger asChild>
+										<div className="flex gap-1 items-center">
+											<button
+												onClick={() => handleLike(comment.id, params.article_id)}
+												className="hover:text-red-600 flex gap-1 items-center"
+											>
+												{likes.some(
+													(like: any) =>
+														like.comment_id === comment.id && like.user_id === currentUserId
+												) ? (
+													<HeartIconSolid className="size-6" />
+												) : (
+													<HeartIconOutline className="size-6" />
+												)}
+												<p className="text-black dark:text-white">{comment.likes}</p>
+											</button>
+										</div>
+									</TooltipTrigger>
+									<TooltipContent>
+										<Link
+											href={`/${encodeURIComponent(
+												params.tag
+													? params.tag
+															.toLowerCase()
+															.replace(/ö/g, 'o')
+															.replace(/ä/g, 'a')
+															.replace(/å/g, 'a')
+															.replace(/\s+/g, '-')
+													: 'article'
+											)}/${encodeURIComponent(
+												params.headline
+													? params.headline
+															.toLowerCase()
+															.replace(/ö/g, 'o')
+															.replace(/ä/g, 'a')
+															.replace(/å/g, 'a')
+															.replace(/\s+/g, '-')
+													: 'untitled'
+											)}/${params.article_id}/likes/${comment.id}`}
+										>
+											<p className="underline text-blue-400">{comment.likes} likes</p>
+										</Link>
+									</TooltipContent>
+								</Tooltip>
+							</TooltipProvider>
 						</div>
 					)}
 				</div>

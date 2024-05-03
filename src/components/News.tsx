@@ -140,23 +140,6 @@ export default function News({ data }: { data: any[] }) {
 													</ContextMenuItem>
 												</ContextMenuContent>
 											)}
-											<AlertDialogContent>
-												<AlertDialogHeader>
-													<AlertDialogTitle className="text-red-600 flex gap-2 items-center sm:flex-row flex-col">
-														<ExclamationCircleIcon className="h-6 w-6" />
-														{`This is ${news.user_name}'s news article!`}
-													</AlertDialogTitle>
-													<AlertDialogDescription>
-														{`This action cannot be undone. Do you really want to permanently delete their news article?`}
-													</AlertDialogDescription>
-												</AlertDialogHeader>
-												<AlertDialogFooter>
-													<AlertDialogCancel>Cancel</AlertDialogCancel>
-													<Button onClick={() => confirm(news.id)} asChild>
-														<AlertDialogAction type="submit">Proceed</AlertDialogAction>
-													</Button>
-												</AlertDialogFooter>
-											</AlertDialogContent>
 
 											<Link
 												href={`/${encodeURIComponent(
