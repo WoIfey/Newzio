@@ -19,7 +19,7 @@ import { toast } from 'sonner'
 import Link from 'next/link'
 import Image from 'next/image'
 import { formatDistanceToNowStrict } from 'date-fns'
-import { refresh, remove } from '@/app/actions'
+import { refresh, removeArticle } from '@/app/actions'
 import { deletedNews } from '@/utils/atoms'
 import { useAtom } from 'jotai'
 import { useEffect } from 'react'
@@ -69,7 +69,7 @@ export default function Settings({ user, userNews }: any) {
 	const confirm = async (id: string) => {
 		try {
 			setDeletePost(true)
-			await remove(id)
+			await removeArticle(id)
 			router.push('/')
 			toast(
 				<div className="flex gap-2">
@@ -233,11 +233,7 @@ export default function Settings({ user, userNews }: any) {
 																	</h1>
 																</div>
 																<div className="flex items-center mx-2">
-																	{news.type && news.url && news.type.startsWith('audio') ? (
-																		<div className="bg-slate-400 dark:bg-[#1d2022] flex justify-center items-center rounded-md h-16 w-16">
-																			<FileAudio2Icon className="w-8 h-8 text-white" />
-																		</div>
-																	) : news.type && news.type.startsWith('video') ? (
+																	{news.type && news.type.startsWith('video') ? (
 																		<video
 																			width="1080"
 																			height="720"

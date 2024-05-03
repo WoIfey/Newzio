@@ -2,20 +2,33 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { formatDistanceToNowStrict } from 'date-fns'
-import { memo } from 'react'
+import { memo, useEffect, useState } from 'react'
+import Loading from './Loading'
 
 const Sidebar = memo(function Sidebar({ news }: { news: any[] }) {
-	const shuffledNews = news.sort(() => 0.5 - Math.random())
+	const [loading, setLoading] = useState(true)
+	const [currentNews, setCurrentNews] = useState<any[]>([])
 
-	const itemsPerPage = 3
-	let currentNews = shuffledNews.slice(0, itemsPerPage)
+	useEffect(() => {
+		const shuffledNews = news.sort(() => 0.5 - Math.random())
+		const itemsPerPage = 3
+		setCurrentNews(shuffledNews.slice(0, itemsPerPage))
+		setLoading(false)
+	}, [news])
 
+	if (loading) {
+		return (
+			<div className="md:mx-28 lg:mx-40">
+				<Loading text={''} />
+			</div>
+		)
+	}
 	return (
 		<div className="flex flex-col gap-4 bg-slate-200 dark:bg-[#242729] items-center">
 			<h1 className="font-semibold text-xl bg-slate-200 dark:bg-[#242729] px-6 mt-4 md:self-start">
 				Other articles
 			</h1>
-			<div className="grid grid-cols-1 sm:grid-cols-2 md:flex md:flex-col gap-6 bg-slate-200 dark:bg-[#242729] px-6 mb-4">
+			<div className="grid grid-cols-1 sm:grid-cols-2 md:flex md:flex-col gap-6 bg-slate-200 dark:bg-[#242729] px-6 mb-6">
 				{currentNews.length > 0 ? (
 					currentNews.map(news => (
 						<div
@@ -44,18 +57,11 @@ const Sidebar = memo(function Sidebar({ news }: { news: any[] }) {
 								)}/${news.id}`}
 								className="hover:dark:text-sky-400 hover:text-sky-700 transition-all delay-150"
 							>
-								{news.type && news.url && news.type.startsWith('audio') ? (
-									<div className="bg-slate-400 dark:bg-[#1d2022] flex justify-center items-center h-52 px-4 w-full rounded-t-md">
-										<audio controls className="w-full">
-											<source src={news.url} type="audio/mpeg" />
-											Your browser does not support the audio element.
-										</audio>
-									</div>
-								) : news.type && news.type.startsWith('video') ? (
+								{news.type && news.type.startsWith('video') ? (
 									<video
 										width="1080"
 										height="720"
-										className="h-52 w-full object-fill rounded-t-md"
+										className="h-52 object-fill rounded-t-md"
 										autoPlay
 										loop
 										muted
@@ -69,10 +75,10 @@ const Sidebar = memo(function Sidebar({ news }: { news: any[] }) {
 										width={1080}
 										height={720}
 										src={news.url}
-										className="h-52 w-full object-fill rounded-t-md"
+										className="h-52 object-fill rounded-t-md"
 									/>
 								) : (
-									<div className="h-52 w-full bg-slate-400 dark:bg-[#1d2022] rounded-t-md"></div>
+									<div className="h-52 bg-slate-400 dark:bg-[#1d2022] rounded-t-md"></div>
 								)}
 								{news.tag && (
 									<span className="text-slate-800 dark:text-slate-200 absolute top-40 left-3 p-1.5 bg-slate-300 dark:bg-[#2F3335] rounded-md">
@@ -93,9 +99,6 @@ const Sidebar = memo(function Sidebar({ news }: { news: any[] }) {
 												addSuffix: true,
 											})}
 										</time>
-									</p>
-									<p className="line-clamp-2 text-base text-black dark:text-slate-100 break-words">
-										{news.lead}
 									</p>
 								</div>
 							</Link>

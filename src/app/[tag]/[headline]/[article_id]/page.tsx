@@ -1,5 +1,5 @@
 import Article from '@/components/Article'
-import { getNews, getPage } from '@/utils/handleDatabase'
+import { getComments, getLike, getNews, getPage } from '@/utils/handleDatabase'
 import { Metadata } from 'next'
 
 type Props = {
@@ -41,14 +41,18 @@ export const generateMetadata = async ({
 export default async function NewsPost({ params }: Props) {
 	let data = (await getPage(params.article_id))[0]
 	let news = await getNews()
-	/* const res = await fetch('${process.env.API_URL}/api/data', {
-		next: { revalidate: 5, tags: ['news'] },
-	})
-	const news = await res.json() */
+	let comments = await getComments(params.article_id)
+	let likes = await getLike(params.article_id)
 
 	return (
 		<div className="flex min-h-dvh md:flex-row flex-col justify-center md:pt-16 bg-[#dfdfdf] dark:bg-[#1b1b1b]">
-			<Article data={data} params={params} news={news} />
+			<Article
+				data={data}
+				params={params}
+				news={news}
+				comments={comments}
+				likes={likes}
+			/>
 		</div>
 	)
 }

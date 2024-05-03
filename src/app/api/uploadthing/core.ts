@@ -7,7 +7,6 @@ export const ourFileRouter = {
     mediaPost: f({
         image: { maxFileSize: "8MB", maxFileCount: 1 },
         video: { maxFileSize: "8MB", maxFileCount: 1 },
-        audio: { maxFileSize: "8MB", maxFileCount: 1 },
     })
         .middleware(async ({ req }) => {
             const user = await getToken({ req })

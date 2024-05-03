@@ -4,7 +4,7 @@ interface LoadingProps {
 
 export default function Loading(loadingText: LoadingProps) {
 	return (
-		<div className="bg-[#dfdfdf] dark:bg-[#1b1b1b] flex justify-center items-center min-h-dvh text-black dark:text-white gap-4">
+		<div className="min-h-dvh bg-[#dfdfdf] dark:bg-[#1b1b1b] flex justify-center items-center text-black dark:text-white gap-4">
 			<div role="status">
 				<svg
 					aria-hidden="true"

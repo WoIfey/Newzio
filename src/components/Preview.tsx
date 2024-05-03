@@ -62,7 +62,13 @@ export default function Preview({ user }: { user: any }) {
 										{tagValue && (
 											<div className="flex gap-2 sm:flex-row flex-col mb-4">
 												<div className="flex gap-2 items-center flex-row">
-													<span className="bg-[#bfccdc] dark:bg-[#404B5E] px-1.5 py-1 dark:text-white text-sm rounded-lg">
+													<span
+														className={`px-1.5 py-1 dark:text-white text-sm rounded-md ${
+															tagValue === 'Newzio'
+																? 'bg-[#73c1f8] dark:bg-[#4195D1]'
+																: 'bg-[#bfccdc] dark:bg-[#404B5E]'
+														}`}
+													>
 														{tagValue}
 													</span>
 												</div>

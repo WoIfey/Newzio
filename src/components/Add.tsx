@@ -1,7 +1,7 @@
 'use client'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import Editor from '@/components/Editor'
-import { create } from '@/app/actions'
+import { createArticle } from '@/app/actions'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
@@ -43,7 +43,7 @@ import { useAtom } from 'jotai'
 import Image from 'next/image'
 import { useSession } from 'next-auth/react'
 import { UploadDetails } from 'uploadDetails'
-import { FormFields } from 'FormFields'
+import { ArticleFields } from 'ArticleFields'
 import Preview from './Preview'
 
 interface Tag {
@@ -66,12 +66,12 @@ export default function Add({ tags }: { tags: any }) {
 		register,
 		handleSubmit,
 		formState: { errors, isSubmitting },
-	} = useForm<FormFields>()
+	} = useForm<ArticleFields>()
 
 	const { data: session } = useSession()
 	const currentUserId = session?.user?.id
 
-	const onSubmit: SubmitHandler<FormFields> = async data => {
+	const onSubmit: SubmitHandler<ArticleFields> = async data => {
 		try {
 			setTagValue('')
 			setHeadline('')
@@ -88,7 +88,7 @@ export default function Add({ tags }: { tags: any }) {
 			const user_id = session?.user.id as unknown as number
 			const user_name = session?.user.name ?? ''
 			const user_image = session?.user.image ?? ''
-			await create(
+			await createArticle(
 				data.headline,
 				data.lead,
 				data.body,
@@ -294,40 +294,6 @@ export default function Add({ tags }: { tags: any }) {
 									</Label>
 									<div className="mt-2">
 										<Editor />
-										{/* <Textarea
-											{...register('body', {
-												minLength: { value: 8, message: 'The body is too short!' },
-												maxLength: { value: 4096, message: 'The body is too long!' },
-												validate: {
-													checkStartSpace: value =>
-														!value.startsWith(' ') ||
-														'The body cannot start or end with spaces!',
-													checkEndSpace: value =>
-														!value.endsWith(' ') ||
-														'The body cannot start or end with spaces!',
-												},
-											})}
-											name="body"
-											placeholder="Write a whole essay..."
-											id="body"
-											className={`min-h-40 max-h-[768px] ${
-												body.length === 4096 ? 'border-red-500 focus:border-red-700' : ''
-											}`}
-											value={body}
-											minLength={8}
-											maxLength={4096}
-											onChange={e => setBody(e.target.value)}
-										/>
-										<span
-											className={`text-xs ${body.length === 4096 ? 'text-red-500' : ''}`}
-										>
-											{body.length}/4096
-										</span>
-										{errors.body && (
-											<div className="mt-2 text-red-500 bg-[#FFFFFF] dark:bg-[#020817] border-gray-200 dark:border-gray-800 border p-2 rounded-md">
-												{errors.body.message}
-											</div>
-										)} */}
 										<span
 											className={`text-xs ${body.length === 4096 ? 'text-red-500' : ''}`}
 										>
@@ -353,12 +319,7 @@ export default function Add({ tags }: { tags: any }) {
 											Change File
 										</Button>
 									)}
-									{fileType && fileUrl && fileType.startsWith('audio') ? (
-										<audio controls autoPlay className="w-full rounded-md">
-											<source src={fileUrl} type="audio/mpeg" />
-											Your browser does not support the audio element.
-										</audio>
-									) : fileType && fileUrl && fileType.startsWith('video') ? (
+									{fileType && fileUrl && fileType.startsWith('video') ? (
 										<video
 											width="1080"
 											height="720"
@@ -402,7 +363,7 @@ export default function Add({ tags }: { tags: any }) {
 												},
 												allowedContent({ fileTypes, isUploading }) {
 													if (isUploading) return 'Uploading file!'
-													return `${fileTypes.join(', ')} up to 8MB`
+													return `${fileTypes.join(' or ')} up to 8MB`
 												},
 											}}
 											onClientUploadComplete={res => {

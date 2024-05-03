@@ -12,13 +12,19 @@ declare module "uploadDetails" {
     }
 }
 
-declare module "FormFields" {
-    type FormFields = {
+declare module "ArticleFields" {
+    type ArticleFields = {
         headline: string
         lead: string
         body: string
         tag: string
         productImageUrl: string
         uploadDetails: any
+    }
+}
+
+declare module "CommentFields" {
+    type CommentFields = {
+        message: string
     }
 }

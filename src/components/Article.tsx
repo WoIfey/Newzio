@@ -17,7 +17,7 @@ import {
 	AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { remove } from '@/app/actions'
+import { removeArticle } from '@/app/actions'
 import { useSession } from 'next-auth/react'
 import { useAtom } from 'jotai'
 import { deletedNews } from '@/utils/atoms'
@@ -48,15 +48,20 @@ import { useEffect, useMemo, useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import Sidebar from './Sidebar'
 import Link from 'next/link'
+import Comments from './Comments'
 
 export default function Article({
 	data,
 	params,
 	news,
+	comments,
+	likes,
 }: {
 	data: any
 	params: any
 	news: any
+	comments: any
+	likes: any
 }) {
 	const [deleteArticle, setDeleteArticle] = useAtom(deletedNews)
 	const [loadingText, setLoadingText] = useState('Loading...')
@@ -73,7 +78,7 @@ export default function Article({
 
 	const confirm = async () => {
 		try {
-			await remove(data.id)
+			await removeArticle(data.id)
 			setDeleteArticle(true)
 			router.replace('/')
 			router.refresh()
@@ -112,20 +117,16 @@ export default function Article({
 
 	const { data: session } = useSession()
 	if (!data) {
-		return (
-			<div className="sm:mx-32">
-				<Loading text={loadingText} />
-			</div>
-		)
+		return <Loading text={loadingText} />
 	}
 	const currentUserId = session?.user?.id
 
 	return (
 		<>
 			<div className="md:w-[500px] lg:w-[640px] bg-[#e4ebec] dark:bg-[#2F3335] min-h-dvh">
-				<div key={data.id}>
-					<div className={`mx-6 sm:mx-8 mt-6 ${data.type ? 'mb-6' : 'mb-3'}`}>
-						<div>
+				<div key={data.id} className="flex flex-col justify-between h-full">
+					<div>
+						<div className={`mx-6 sm:mx-8 mt-6 ${data.type ? 'mb-4' : 'mb-3'}`}>
 							{data.headline && (
 								<h1 className="text-3xl font-bold mb-2 [overflow-wrap:anywhere]">
 									{data.headline}
@@ -139,16 +140,24 @@ export default function Article({
 							{data.tag && (
 								<div className="flex gap-2 sm:flex-row flex-col mb-4">
 									<div className="flex gap-2 items-center flex-row">
-										{data.tag && (
-											<span className="bg-[#bfccdc] dark:bg-[#404B5E] px-1.5 py-1 dark:text-white text-sm rounded-lg">
-												{data.tag}
-											</span>
-										)}
+										<span
+											className={`px-1.5 py-1 dark:text-white text-sm rounded-md ${
+												data.tag === 'Newzio'
+													? 'bg-[#73c1f8] dark:bg-[#4195D1]'
+													: 'bg-[#bfccdc] dark:bg-[#404B5E]'
+											}`}
+										>
+											{data.tag}
+										</span>
 									</div>
 								</div>
 							)}
 						</div>
-						<div className="flex items-center gap-2">
+						<div
+							className={`flex items-center gap-2 mx-6 sm:mx-8 ${
+								data.type ? 'mb-4' : 'mb-3'
+							}`}
+						>
 							<Link
 								href={`/author/${encodeURIComponent(
 									data.user_name
@@ -201,7 +210,7 @@ export default function Article({
 								</div>
 							</div>
 						</div>
-						<div className="mt-4 flex gap-2">
+						<div className={`flex gap-2 mx-6 sm:mx-8 ${data.type ? 'mb-6' : 'mb-3'}`}>
 							<Dialog>
 								<TooltipProvider delayDuration={100}>
 									<Tooltip>
@@ -292,49 +301,47 @@ export default function Article({
 								</AlertDialog>
 							)}
 						</div>
-					</div>
-					{data.url && (
-						<div className="flex items-center justify-center">
-							{data.type && data.url && data.type.startsWith('audio') ? (
-								<audio controls autoPlay className="px-6 w-full rounded-md">
-									<source src={data.url} type="audio/mpeg" />
-									Your browser does not support the audio element.
-								</audio>
-							) : data.type && data.type.startsWith('video') ? (
-								<video
-									width="1080"
-									height="720"
-									className="max-h-[360px] w-full shadow-xl"
-									autoPlay
-									controls
-								>
-									<source src={data.url} type="video/mp4" />
-									Your browser does not support the video tag.
-								</video>
-							) : data.type ? (
-								<Image
-									alt={data.name}
-									width={1080}
-									height={720}
-									src={data.url}
-									unoptimized
-									className="max-h-[360px] w-full object-fill shadow-xl"
-								/>
-							) : (
-								<div></div>
-							)}
+						{data.url && (
+							<div className="flex items-center justify-center">
+								{data.type && data.type.startsWith('video') ? (
+									<video
+										width="1080"
+										height="720"
+										className="max-h-[360px] w-full shadow-xl"
+										autoPlay
+										controls
+									>
+										<source src={data.url} type="video/mp4" />
+										Your browser does not support the video tag.
+									</video>
+								) : data.type ? (
+									<Image
+										alt={data.name}
+										width={1080}
+										height={720}
+										src={data.url}
+										unoptimized
+										className="max-h-[360px] w-full object-fill shadow-xl"
+									/>
+								) : (
+									<div></div>
+								)}
+							</div>
+						)}
+						<div className={`mx-6 sm:mx-8 mt-6 ${data.type ? 'mb-6' : 'mb-3'}`}>
+							<div
+								className="html [overflow-wrap:anywhere]"
+								dangerouslySetInnerHTML={{ __html: data.body }}
+							/>
 						</div>
-					)}
-					<div
-						className={`mx-6 sm:mx-8 ${
-							data.type ? 'my-4 sm:my-6' : 'sm:my-0 sm:mb-4'
-						}`}
-					>
-						<div
-							className="html [overflow-wrap:anywhere]"
-							dangerouslySetInnerHTML={{ __html: data.body }}
-						/>
 					</div>
+
+					<Comments
+						comments={comments}
+						user={session}
+						params={params}
+						likes={likes}
+					/>
 				</div>
 			</div>
 			<div className="flex-shrink-0">

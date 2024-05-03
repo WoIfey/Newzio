@@ -7,18 +7,53 @@ export async function getNews() {
 }
 
 export async function getPage(id: string) {
-    const data = await db.query('SELECT * FROM news WHERE id = $1', [id])
-    return data.rows
+    const res = await db.query('SELECT * FROM news WHERE id = $1', [id])
+    return res.rows
 }
 
 export async function getUserNews(user_id: string) {
-    const data = await db.query('SELECT * FROM news WHERE user_id = $1', [user_id])
-    return data.rows
+    const res = await db.query('SELECT * FROM news WHERE user_id = $1', [user_id])
+    return res.rows
 }
 
 export async function getTags() {
-    const data = await db.query('SELECT * FROM tags')
-    return data.rows
+    const res = await db.query('SELECT * FROM tags')
+    return res.rows
+}
+
+export async function getComments(article_id: string) {
+    const res = await db.query('SELECT * FROM comments WHERE article_id = $1', [article_id])
+    return res.rows
+}
+
+export async function getLikes(comment_id: string) {
+    const res = await db.query('SELECT * FROM likes WHERE comment_id = $1', [comment_id])
+    return res.rows
+}
+
+export async function getLike(article_id: string) {
+    const res = await db.query('SELECT * FROM likes WHERE article_id = $1', [article_id])
+    return res.rows
+}
+
+export async function saveComment(article_id: string, message: string, user_id: number, user_name: string, user_image: string) {
+    try {
+        await db.query(`INSERT INTO comments(article_id, message, user_id, user_name, user_image) VALUES($1, $2, $3, $4, $5)`, [article_id, message, user_id, user_name, user_image])
+        return 'Saved Comment'
+    } catch (error) {
+        console.log(error)
+        return "Failed to save comment."
+    }
+}
+
+export async function deleteComment(id: string) {
+    try {
+        await db.query("DELETE FROM comments WHERE id = $1", [id])
+        return 'Deleted Comment'
+    } catch (error) {
+        console.log(error)
+        return 'Failed to delete comment.'
+    }
 }
 
 export async function saveArticle(key: string, name: string, size: number, type: string, url: string, headline: string, lead: string, body: string, tag: string, user_id: number, user_name: string, user_image: string) {
@@ -80,5 +115,23 @@ export async function findUsers(email: string, password: string) {
     } catch (error) {
         console.log(error)
         return null
+    }
+}
+
+export const hasUserLikedComment = async (comment_id: string, user_id: number): Promise<boolean> => {
+    const res = await db.query('SELECT * FROM likes WHERE comment_id = $1 AND user_id = $2', [comment_id, user_id])
+    return res.rows.length > 0
+}
+
+export const toggleLike = async (comment_id: string, article_id: string, user_id: number, user_name: string, user_image: string) => {
+    const hasLiked = await hasUserLikedComment(comment_id, user_id)
+    if (hasLiked) {
+        await db.query('DELETE FROM likes WHERE comment_id = $1 AND user_id = $2', [comment_id, user_id])
+        await db.query('UPDATE comments SET likes = likes - 1 WHERE id = $1', [comment_id])
+        return 'Unliked'
+    } else {
+        await db.query('INSERT INTO likes(comment_id, article_id, user_id, user_name, user_image) VALUES($1, $2, $3, $4, $5)', [comment_id, article_id, user_id, user_name, user_image])
+        await db.query('UPDATE comments SET likes = likes + 1 WHERE id = $1', [comment_id])
+        return 'Liked'
     }
 }

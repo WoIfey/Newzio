@@ -1,5 +1,5 @@
 'use client'
-import { refresh, remove } from '@/app/actions'
+import { refresh, removeArticle } from '@/app/actions'
 import { createdNews, deletedNews } from '@/utils/atoms'
 import { useAtom } from 'jotai'
 import Image from 'next/image'
@@ -52,6 +52,8 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { useSearchParams } from 'next/navigation'
+import Loading from './Loading'
 
 export default function Profile({
 	userNews,
@@ -64,7 +66,19 @@ export default function Profile({
 	const [newArticle, setNewArticle] = useAtom(createdNews)
 	const [deleteArticle, setDeleteArticle] = useAtom(deletedNews)
 	const [currentPage, setCurrentPage] = useState(1)
-	const itemsPerPage = 15
+	const [loading, setLoading] = useState(true)
+	const page = useSearchParams()
+
+	useEffect(() => {
+		setLoading(false)
+		const pageParam = page.get('p') || '1'
+		const pageNumber = parseInt(pageParam, 10)
+		if (!isNaN(pageNumber)) {
+			setCurrentPage(pageNumber)
+		}
+	}, [page])
+
+	const itemsPerPage = 9
 
 	const startIndex = (currentPage - 1) * itemsPerPage
 	const endIndex = startIndex + itemsPerPage
@@ -87,7 +101,7 @@ export default function Profile({
 	const confirm = async (id: string) => {
 		try {
 			setDeleteArticle(true)
-			await remove(id)
+			await removeArticle(id)
 			toast(
 				<div className="flex gap-2">
 					<TrashIcon className="h-5 w-5" />
@@ -103,6 +117,9 @@ export default function Profile({
 	}
 
 	const { data: session } = useSession()
+	if (loading) {
+		return <Loading text={'Loading...'} />
+	}
 	const currentUserId = session?.user?.id
 
 	return (
@@ -122,7 +139,7 @@ export default function Profile({
 						currentNews.map(news => (
 							<div
 								key={news.id}
-								className="bg-slate-300 dark:bg-[#2F3335] text-black dark:text-white max-w-96 relative rounded-lg"
+								className="bg-slate-300 dark:bg-[#2F3335] text-black dark:text-white max-w-[23rem] relative rounded-lg"
 							>
 								<Dialog>
 									<AlertDialog>
@@ -179,18 +196,11 @@ export default function Profile({
 													)}/${news.id}`}
 													className="hover:dark:text-sky-400 hover:text-sky-700 transition-all duration-75"
 												>
-													{news.type && news.url && news.type.startsWith('audio') ? (
-														<div className="bg-slate-400 dark:bg-[#1d2022] flex justify-center items-center h-52 px-4 w-full rounded-t-md">
-															<audio controls className="w-full">
-																<source src={news.url} type="audio/mpeg" />
-																Your browser does not support the audio element.
-															</audio>
-														</div>
-													) : news.type && news.type.startsWith('video') ? (
+													{news.type && news.type.startsWith('video') ? (
 														<video
 															width="1080"
 															height="720"
-															className="h-52 w-full object-fill rounded-t-lg"
+															className="h-52 object-fill rounded-t-lg"
 															autoPlay
 															loop
 															muted
@@ -204,13 +214,19 @@ export default function Profile({
 															width={1080}
 															height={720}
 															src={news.url}
-															className="h-52 w-full object-fill rounded-t-lg"
+															className="h-52 object-fill rounded-t-lg"
 														/>
 													) : (
-														<div className="h-52 w-full bg-slate-400 dark:bg-[#1d2022] rounded-t-lg"></div>
+														<div className="h-52 bg-slate-400 dark:bg-[#1d2022] rounded-t-lg"></div>
 													)}
 													{news.tag && (
-														<span className="text-slate-800 dark:text-slate-200 absolute top-40 left-3 p-1.5 bg-slate-300 dark:bg-[#2F3335] rounded-lg">
+														<span
+															className={`text-slate-800 dark:text-slate-200 absolute top-3 left-3 p-1.5 py-0.5 rounded-md ${
+																news.tag === 'Newzio'
+																	? 'bg-[#73c1f8] dark:bg-[#4195D1]'
+																	: 'bg-slate-300 dark:bg-[#1b1f22]'
+															}`}
+														>
 															{news.tag}
 														</span>
 													)}
@@ -329,28 +345,54 @@ export default function Profile({
 							<PaginationItem className="dark:bg-[#2F3335] bg-slate-300 rounded-md cursor-pointer">
 								<PaginationPrevious
 									className="sm:px-4 px-3 hover:dark:bg-[#344045] hover:bg-[#d4d4d4]"
-									onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+									onClick={() => {
+										setCurrentPage(prev => Math.max(prev - 1, 1))
+										const newParams = new URLSearchParams(page)
+										newParams.set('p', (currentPage - 1).toString())
+										window.history.replaceState({}, '', `?${newParams.toString()}`)
+									}}
 								/>
 							</PaginationItem>
-							{Array.from({ length: totalPages }, (_, index) => (
+							{Array.from({ length: 5 }, (_, index) => (
 								<PaginationItem
-									className={`dark:bg-[#2F3335] bg-slate-300  rounded-md ${
-										currentPage === index + 1 ? 'dark:bg-sky-700 bg-blue-300' : ''
+									className={`dark:bg-[#2F3335] bg-slate-300 rounded-md ${
+										currentPage === index + Math.max(1, currentPage - 2)
+											? 'dark:bg-sky-700 bg-blue-300'
+											: ''
+									} ${
+										index + Math.max(1, currentPage - 2) > totalPages ? 'hidden' : ''
 									}`}
 									key={index}
 								>
 									<PaginationLink
-										className="hover:dark:bg-[#344045] hover:bg-[#d4d4d4] cursor-pointer"
-										onClick={() => setCurrentPage(index + 1)}
+										className={`cursor-pointer ${
+											currentPage === index + Math.max(1, currentPage - 2)
+												? 'hover:dark:bg-sky-800 hover:bg-blue-400'
+												: 'hover:dark:bg-[#344045] hover:bg-[#d4d4d4]'
+										}`}
+										onClick={() => {
+											const newPage = index + Math.max(1, currentPage - 2)
+											if (newPage <= totalPages) {
+												setCurrentPage(newPage)
+												const newParams = new URLSearchParams(page)
+												newParams.set('p', newPage.toString())
+												window.history.replaceState({}, '', `?${newParams.toString()}`)
+											}
+										}}
 									>
-										{index + 1}
+										{index + Math.max(1, currentPage - 2)}
 									</PaginationLink>
 								</PaginationItem>
 							))}
 							<PaginationItem className="dark:bg-[#2F3335] bg-slate-300 rounded-md cursor-pointer">
 								<PaginationNext
 									className="sm:px-4 px-3 hover:dark:bg-[#344045] hover:bg-[#d4d4d4]"
-									onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+									onClick={() => {
+										setCurrentPage(prev => Math.min(prev + 1, totalPages))
+										const newParams = new URLSearchParams(page)
+										newParams.set('p', (currentPage + 1).toString())
+										window.history.replaceState({}, '', `?${newParams.toString()}`)
+									}}
 								/>
 							</PaginationItem>
 						</PaginationContent>
