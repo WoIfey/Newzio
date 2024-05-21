@@ -26,6 +26,7 @@ export default function TinyMCE() {
 						'fullscreen',
 						'insertdatetime',
 						'media',
+						'lists',
 					],
 					toolbar:
 						'undo redo | fontsize | ' +

@@ -121,6 +121,7 @@ export default function TinyMCE({ value, id }: { value: any; id: any }) {
 						'fullscreen',
 						'insertdatetime',
 						'media',
+						'lists',
 					],
 					toolbar:
 						'undo redo | fontsize | ' +
