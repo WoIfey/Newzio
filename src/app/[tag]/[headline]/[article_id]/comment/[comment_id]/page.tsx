@@ -1,5 +1,7 @@
-import { getComment, getLikes } from '@/server/db'
-import Likes from '@/components/Likes'
+import { getComment, getLike } from '@/server/db'
+import Comment from '@/components/Comment'
+import { getServerSession } from 'next-auth'
+import { options } from '@/app/api/auth/[...nextauth]/options'
 import { Metadata } from 'next'
 
 type Props = {
@@ -31,8 +33,8 @@ export const generateMetadata = async ({
 				data?.message?.length > 128
 					? `${data.message.substring(0, 128)}...`
 					: data?.message,
-			url: `https://newzio.vercel.app/${params.tag}/${params.headline}/${params.article_id}/likes/${data.id}`,
-			siteName: `Newzio - Likes`,
+			url: `https://newzio.vercel.app/${params.tag}/${params.headline}/${params.article_id}/comment/${data.id}`,
+			siteName: `Newzio - Comment`,
 			images: [
 				{
 					url: `${data?.user_image}`,
@@ -48,12 +50,14 @@ export const generateMetadata = async ({
 }
 
 export default async function CommentLikes({ params }: Props) {
-	let commentLikes = await getLikes(params.comment_id)
+	let comment = (await getComment(params.comment_id))[0]
+	let likes = await getLike(params.article_id)
+	const session = await getServerSession(options)
 
 	return (
 		<main className="flex min-h-dvh flex-col items-center bg-[#dfdfdf] dark:bg-[#1b1b1b]">
 			<div className="flex flex-col lg:flex-row-reverse md:pt-16">
-				<Likes commentLikes={commentLikes} params={params} />
+				<Comment comment={comment} params={params} likes={likes} user={session} />
 			</div>
 		</main>
 	)

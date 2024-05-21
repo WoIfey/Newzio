@@ -1,5 +1,5 @@
 import Add from '@/components/Add'
-import { getTags } from '@/utils/handleDatabase'
+import { getTags } from '@/server/db'
 
 export default async function Create() {
 	let tags = await getTags()

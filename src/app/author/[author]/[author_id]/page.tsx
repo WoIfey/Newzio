@@ -1,4 +1,4 @@
-import { getUserNews } from '@/utils/handleDatabase'
+import { getUserNews } from '@/server/db'
 import Profile from '@/components/Profile'
 import { Metadata } from 'next'
 

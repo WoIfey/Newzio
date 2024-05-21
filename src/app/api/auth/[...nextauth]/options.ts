@@ -2,7 +2,7 @@ import type { NextAuthOptions, User, Session } from 'next-auth'
 import GitHubProvider from 'next-auth/providers/github'
 import DiscordProvider from 'next-auth/providers/discord'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { findUsers } from '@/utils/handleDatabase'
+import { findUsers } from '@/server/db'
 import { JWT } from 'next-auth/jwt'
 
 interface Props {
@@ -15,12 +15,10 @@ export const options: NextAuthOptions = {
         GitHubProvider({
             clientId: process.env.GITHUB_ID as string,
             clientSecret: process.env.GITHUB_SECRET as string,
-            allowDangerousEmailAccountLinking: true,
         }),
         DiscordProvider({
             clientId: process.env.DISCORD_CLIENT_ID as string,
             clientSecret: process.env.DISCORD_CLIENT_SECRET as string,
-            allowDangerousEmailAccountLinking: true,
         }),
         CredentialsProvider({
             name: "Credentials",
@@ -52,7 +50,7 @@ export const options: NextAuthOptions = {
             return Promise.resolve(session)
         },
     },
-    /* pages: {
+    pages: {
         signIn: '/auth/signin'
-    } */
+    }
 }

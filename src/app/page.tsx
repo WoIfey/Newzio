@@ -1,6 +1,6 @@
 import News from '@/components/News'
 import User from '@/components/User'
-import { getNews } from '@/utils/handleDatabase'
+import { getNews } from '@/server/db'
 import { options } from './api/auth/[...nextauth]/options'
 import { getServerSession } from 'next-auth/next'
 

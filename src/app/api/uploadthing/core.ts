@@ -1,6 +1,8 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next"
-import { UploadThingError } from "uploadthing/server"
+import { UTApi, UploadThingError } from "uploadthing/server"
 import { getToken } from "next-auth/jwt"
+
+export const utapi = new UTApi()
 
 const f = createUploadthing()
 export const ourFileRouter = {

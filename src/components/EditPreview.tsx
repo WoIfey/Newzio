@@ -1,24 +1,33 @@
 import {
-	tagInput,
-	bodyInput,
-	leadInput,
-	headlineInput,
-	fileUrlInput,
-	fileTypeValue,
+	tagEditInput,
+	bodyEditInput,
+	leadEditInput,
+	headlineEditInput,
+	fileUrlEditInput,
+	fileTypeEditValue,
 } from '@/utils/atoms'
 import { useAtom } from 'jotai'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { formatDistanceToNowStrict } from 'date-fns'
 import { ScanText } from 'lucide-react'
 
-export default function Preview({ user }: { user: any }) {
-	const [body] = useAtom(bodyInput)
-	const [tagValue] = useAtom(tagInput)
-	const [headline] = useAtom(headlineInput)
-	const [lead] = useAtom(leadInput)
-	const [fileUrl] = useAtom(fileUrlInput)
-	const [fileType] = useAtom(fileTypeValue)
+export default function EditPreview({
+	user,
+	createdTime,
+	updatedTime,
+}: {
+	user: any
+	createdTime: any
+	updatedTime: any
+}) {
+	const [body] = useAtom(bodyEditInput)
+	const [tagValue] = useAtom(tagEditInput)
+	const [headline] = useAtom(headlineEditInput)
+	const [lead] = useAtom(leadEditInput)
+	const [fileUrl] = useAtom(fileUrlEditInput)
+	const [fileType] = useAtom(fileTypeEditValue)
 
 	return (
 		<div className="md:flex md:flex-col hidden bg-[#e4ebec] dark:bg-[#2F3335]">
@@ -71,14 +80,35 @@ export default function Preview({ user }: { user: any }) {
 									</div>
 								</div>
 								<div className="flex gap-1 text-xs">
-									<p>published</p>
-									<time
-										title="soon"
-										dateTime="soon"
-										className="dark:text-slate-300 text-slate-600"
-									>
-										soon
-									</time>
+									<div className="flex gap-1">
+										{createdTime.getTime() !== updatedTime.getTime() ? (
+											<>
+												<p>edited</p>
+												<time
+													title={updatedTime.toLocaleString()}
+													dateTime={updatedTime.toLocaleString()}
+													className="dark:text-slate-300 text-slate-600"
+												>
+													{formatDistanceToNowStrict(updatedTime, {
+														addSuffix: true,
+													})}
+												</time>
+											</>
+										) : (
+											<>
+												<p>published</p>
+												<time
+													title={createdTime.toLocaleString()}
+													dateTime={createdTime.toLocaleString()}
+													className="dark:text-slate-300 text-slate-600"
+												>
+													{formatDistanceToNowStrict(createdTime, {
+														addSuffix: true,
+													})}
+												</time>
+											</>
+										)}
+									</div>
 								</div>
 							</div>
 						</div>

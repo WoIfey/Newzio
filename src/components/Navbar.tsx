@@ -1,23 +1,19 @@
 'use client'
-import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import {
 	Bars3Icon,
 	MoonIcon,
 	SunIcon,
 	XMarkIcon,
-	PlusIcon,
-	HomeIcon,
 } from '@heroicons/react/24/outline'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import Settings from './Settings'
 import { signIn, signOut, useSession } from 'next-auth/react'
-import { redirect } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useTheme } from 'next-themes'
-import { LogInIcon, LogOutIcon } from 'lucide-react'
+import { HomeIcon, LogInIcon, LogOutIcon, PlusIcon } from 'lucide-react'
 
 export default function Navbar({ userNews }: { userNews: any[] }) {
 	const [mounted, setMounted] = useState(false)
@@ -29,34 +25,63 @@ export default function Navbar({ userNews }: { userNews: any[] }) {
 		setMounted(true)
 	}, [])
 
-	if (!mounted) {
-		return (
-			<div className="h-16 md:fixed w-full z-50 flex justify-center items-center bg-[#aec7d7] dark:bg-[#192a33] text-black dark:text-white gap-4">
-				<div role="status">
-					<svg
-						aria-hidden="true"
-						className="w-8 h-8 text-gray-400 animate-spin dark:text-gray-500 fill-blue-700 dark:fill-sky-500"
-						viewBox="0 0 100 101"
-						fill="none"
-						xmlns="http://www.w3.org/2000/svg"
-					>
-						<path
-							d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-							fill="currentColor"
-						/>
-						<path
-							d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-							fill="currentFill"
-						/>
-					</svg>
-					<span className="sr-only text-lg">Loading...</span>
-				</div>
-			</div>
-		)
-	}
-
 	const toggleMobileMenu = () => {
 		setToggleMenu(!toggleMenu)
+	}
+
+	if (!mounted) {
+		return (
+			<nav className="bg-[#aec7d7] dark:bg-[#192a33] md:fixed w-full z-50">
+				<div className="mx-auto max-w-7xl px-2 sm:px-4 lg:px-8">
+					<div className="relative flex h-16 items-center justify-between">
+						<div className="flex items-center px-2 lg:px-0">
+							<div className="cursor-pointer flex-shrink-0">
+								<Image
+									className="size-10"
+									src="/icon.svg"
+									alt="Newzio"
+									width={128}
+									height={128}
+								/>
+							</div>
+							<div className="hidden sm:ml-4 sm:block">
+								<div className="flex items-center">
+									<div className="cursor-pointer flex gap-1 items-center pr-4 rounded-md px-3 py-2 text-sm font-medium text-black dark:text-gray-300 hover:text-slate-900 hover:bg-slate-300 hover:dark:bg-gray-900 hover:dark:text-white">
+										<HomeIcon className="size-6 p-1" />
+										Home
+									</div>
+									<div className="cursor-pointer flex gap-1 items-center pr-4 rounded-md px-3 py-2 text-sm font-medium text-black dark:text-gray-300 hover:text-slate-900 hover:bg-slate-300 hover:dark:bg-gray-900 hover:dark:text-white">
+										<PlusIcon className="size-6 p-1" />
+										Publish
+									</div>
+								</div>
+							</div>
+						</div>
+						<div className="text-black dark:text-white gap-4">
+							<div role="status">
+								<svg
+									aria-hidden="true"
+									className="w-8 h-8 text-gray-400 animate-spin dark:text-gray-500 fill-blue-700 dark:fill-sky-500"
+									viewBox="0 0 100 101"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path
+										d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+										fill="currentColor"
+									/>
+									<path
+										d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+										fill="currentFill"
+									/>
+								</svg>
+								<span className="sr-only text-lg">Loading...</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</nav>
+		)
 	}
 
 	return (
@@ -66,28 +91,28 @@ export default function Navbar({ userNews }: { userNews: any[] }) {
 					<div className="flex items-center px-2 lg:px-0">
 						<Link href="/" className="flex-shrink-0">
 							<Image
-								className="h-10 w-auto"
+								className="size-10"
 								src="/icon.svg"
 								alt="Newzio"
 								width={128}
 								height={128}
 							/>
 						</Link>
-						<div className="hidden sm:ml-6 sm:block">
+						<div className="hidden sm:ml-4 sm:block">
 							<div className="flex items-center">
 								<Link
 									href="/"
 									className="flex gap-1 items-center pr-4 rounded-md px-3 py-2 text-sm font-medium text-black dark:text-gray-300 hover:text-slate-900 hover:bg-slate-300 hover:dark:bg-gray-900 hover:dark:text-white"
 								>
-									<HomeIcon className="w-6 h-6 p-1" />
+									<HomeIcon className="size-6 p-1" />
 									Home
 								</Link>
 								<Link
-									href="/create/article"
+									href="/article/publish"
 									className="flex gap-1 items-center pr-4 rounded-md px-3 py-2 text-sm font-medium text-black dark:text-gray-300 hover:text-slate-900 hover:bg-slate-300 hover:dark:bg-gray-900 hover:dark:text-white"
 								>
-									<PlusIcon className="w-6 h-6 p-1" />
-									Create
+									<PlusIcon className="size-6 p-1" />
+									Publish
 								</Link>
 							</div>
 						</div>
@@ -114,6 +139,7 @@ export default function Navbar({ userNews }: { userNews: any[] }) {
 								</div>
 							</div>
 						</div> */}
+
 					<div className="flex gap-2 sm:hidden">
 						{/* Mobile menu button */}
 						<button
@@ -126,9 +152,9 @@ export default function Navbar({ userNews }: { userNews: any[] }) {
 							<span className="absolute -inset-1.5" />
 							<span className="sr-only">Toggle theme</span>
 							{theme === 'light' ? (
-								<SunIcon className="h-6 w-6 text-yellow-600" aria-hidden="true" />
+								<SunIcon className="size-6 text-yellow-600" aria-hidden="true" />
 							) : (
-								<MoonIcon className="h-6 w-6 text-gray-300" aria-hidden="true" />
+								<MoonIcon className="size-6 text-gray-300" aria-hidden="true" />
 							)}
 						</button>
 						<button
@@ -138,9 +164,9 @@ export default function Navbar({ userNews }: { userNews: any[] }) {
 							<span className="absolute -inset-0.5" />
 							<span className="sr-only">Open main menu</span>
 							{toggleMenu ? (
-								<XMarkIcon className="block h-6 w-6" aria-hidden="true" />
+								<XMarkIcon className="block size-6" aria-hidden="true" />
 							) : (
-								<Bars3Icon className="block h-6 w-6" aria-hidden="true" />
+								<Bars3Icon className="block size-6" aria-hidden="true" />
 							)}
 						</button>
 					</div>
@@ -151,14 +177,14 @@ export default function Navbar({ userNews }: { userNews: any[] }) {
 								onClick={() => {
 									setTheme(theme === 'light' ? 'dark' : 'light')
 								}}
-								className="relative flex-shrink-0 rounded-full p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+								className="relative flex-shrink-0 rounded-full p-1"
 							>
 								<span className="absolute -inset-1.5" />
 								<span className="sr-only">Toggle theme</span>
 								{theme === 'light' ? (
-									<SunIcon className="h-6 w-6 text-yellow-600" aria-hidden="true" />
+									<SunIcon className="size-6 text-yellow-600" aria-hidden="true" />
 								) : (
-									<MoonIcon className="h-6 w-6 text-gray-300" aria-hidden="true" />
+									<MoonIcon className="size-6 text-gray-300" aria-hidden="true" />
 								)}
 							</button>
 
@@ -176,25 +202,25 @@ export default function Navbar({ userNews }: { userNews: any[] }) {
 
 			{toggleMenu && (
 				<div className="sm:hidden">
-					<div className="space-y-1 px-2 pb-3 pt-3 border-t border-gray-500 dark:border-gray-700">
+					<div className="space-y-1 px-2 pb-3 pt-3 border-t border-gray-400 dark:border-gray-700">
 						<Link
 							href="/"
 							onClick={() => setToggleMenu(!toggleMenu)}
 							className="items-center gap-1 flex rounded-md px-3 py-2 text-base font-medium text-black dark:text-gray-300 hover:text-slate-900 hover:bg-slate-300 hover:dark:bg-gray-900 hover:dark:text-white"
 						>
-							<HomeIcon className="w-6 h-6 p-1" />
+							<HomeIcon className="size-6 p-1" />
 							Home
 						</Link>
 						<Link
-							href="/create/article"
+							href="/article/publish"
 							onClick={() => setToggleMenu(!toggleMenu)}
 							className="items-center gap-1 flex rounded-md px-3 py-2 text-base font-medium text-black dark:text-gray-300 hover:text-slate-900 hover:bg-slate-300 hover:dark:bg-gray-900 hover:dark:text-white"
 						>
-							<PlusIcon className="w-6 h-6 p-1" />
-							Create
+							<PlusIcon className="size-6 p-1" />
+							Publish
 						</Link>
 					</div>
-					<div className="border-t border-gray-500 dark:border-gray-700 pb-3 pt-4">
+					<div className="border-t border-gray-400 dark:border-gray-700 pb-3 pt-4">
 						{session && (
 							<div className="flex items-center justify-between px-2 mb-1">
 								<Link
@@ -231,10 +257,10 @@ export default function Navbar({ userNews }: { userNews: any[] }) {
 						<div className="space-y-1">
 							{/* <div className="pb-3 px-2 border-b border-gray-500 dark:border-gray-700">
 								<Link
-									href="#"
-									className="w-full block rounded-md px-3 py-2 mb-1 text-base font-medium text-black dark:text-gray-300 hover:text-slate-900 hover:bg-slate-300 hover:dark:bg-gray-900 hover:dark:text-white"
+								href="#"
+								className="w-full block rounded-md px-3 py-2 mb-1 text-base font-medium text-black dark:text-gray-300 hover:text-slate-900 hover:bg-slate-300 hover:dark:bg-gray-900 hover:dark:text-white"
 								>
-									Settings
+								Settings
 								</Link>
 							</div> */}
 							<div className="px-2 mb-1">
@@ -243,7 +269,7 @@ export default function Navbar({ userNews }: { userNews: any[] }) {
 										onClick={() => signOut()}
 										className="w-full flex items-center justify-center gap-1 rounded-md px-3 py-2 text-base font-medium text-black dark:text-gray-300 hover:text-red-900 hover:bg-slate-300 hover:dark:bg-gray-900 hover:dark:text-white"
 									>
-										<LogOutIcon className="w-6 h-6 p-1" />
+										<LogOutIcon className="size-6 p-1" />
 										Sign out
 									</button>
 								) : (
@@ -251,7 +277,7 @@ export default function Navbar({ userNews }: { userNews: any[] }) {
 										onClick={() => signIn()}
 										className="w-full flex items-center justify-center gap-1 rounded-md px-3 py-2 text-base font-medium text-black dark:text-gray-300 hover:text-red-900 hover:bg-slate-300 hover:dark:bg-gray-900 hover:dark:text-white"
 									>
-										<LogInIcon className="w-6 h-6 p-1" />
+										<LogInIcon className="size-6 p-1" />
 										Sign in
 									</button>
 								)}

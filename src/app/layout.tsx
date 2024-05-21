@@ -8,11 +8,10 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import AuthProvider from './context/AuthProvider'
 import { Analytics } from '@vercel/analytics/react'
-import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Toaster } from '@/components/ui/sonner'
 import { Suspense } from 'react'
 import Loading from '@/components/Loading'
-import { getUserNews } from '@/utils/handleDatabase'
+import { getUserNews } from '@/server/db'
 import { options } from './api/auth/[...nextauth]/options'
 import { getServerSession } from 'next-auth/next'
 import { ThemeProvider } from 'next-themes'
@@ -21,10 +20,10 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
 	title: 'Newzio',
-	description: 'Create your own news! | Created with next.js',
+	description: 'User generated news! | Created with next.js',
 	openGraph: {
 		title: 'Newzio',
-		description: 'Create your own news!',
+		description: 'User generated news! | Created with next.js',
 		url: 'https://newzio.vercel.app/',
 		siteName: 'Newzio',
 		images: [
@@ -63,7 +62,6 @@ export default async function RootLayout({
 							<Toaster />
 						</Suspense>
 						<Analytics />
-						<SpeedInsights />
 					</AuthProvider>
 				</ThemeProvider>
 			</body>

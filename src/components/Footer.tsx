@@ -26,7 +26,7 @@ export default function Footer() {
 								width={32}
 								height={32}
 								alt="GitHub"
-								className="h-6 w-6 dark:bg-slate-200 rounded-full"
+								className="size-6 dark:bg-slate-200 p-[1px] rounded-full"
 							/>
 						</Link>
 					))}

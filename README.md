@@ -2,7 +2,7 @@
 
 <img src="/public/icon.svg" width="64" height="64" align="right" alt="Newzio" />
 
-A news site where the users make the articles!
+News site where the users make the articles!
 
 ## Features
 

@@ -1,5 +1,5 @@
 import Article from '@/components/Article'
-import { getComments, getLike, getNews, getPage } from '@/utils/handleDatabase'
+import { getComments, getLike, getNews, getPage } from '@/server/db'
 import { Metadata } from 'next'
 
 type Props = {

@@ -1,13 +1,13 @@
 'use client'
 import {
+	AlertCircle,
+	ArrowLeftIcon,
 	Check,
-	CheckCircle2Icon,
 	ChevronsUpDown,
-	Pencil,
-	Plus,
+	PencilIcon,
 } from 'lucide-react'
-import AddEditor from '@/components/AddEditor'
-import { createArticle, fileRemove } from '@/server/actions'
+import ArticleEditor from '@/components/ArticleEditor'
+import { editArticle } from '@/server/actions'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
@@ -25,46 +25,62 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from '@/components/ui/popover'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
-import { XCircleIcon } from '@heroicons/react/24/outline'
+import { CheckIcon, XCircleIcon } from '@heroicons/react/24/outline'
 import { useForm, SubmitHandler } from 'react-hook-form'
-import { UploadDropzone } from '@/utils/uploadthing'
 import {
-	tagInput,
-	bodyInput,
-	leadInput,
-	headlineInput,
-	fileUrlInput,
-	fileTypeValue,
-	fileKeyValue,
+	bodyEditInput,
+	headlineEditInput,
+	tagEditInput,
+	leadEditInput,
+	fileUrlEditInput,
+	fileTypeEditValue,
 } from '@/utils/atoms'
 import { useAtom } from 'jotai'
 import Image from 'next/image'
 import { useSession } from 'next-auth/react'
 import { UploadDetails } from 'uploadDetails'
 import { ArticleFields } from 'ArticleFields'
-import MiniPreview from './MiniPreview'
-import Preview from './Preview'
+import MiniEditPreview from './MiniEditPreview'
+import EditPreview from './EditPreview'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from '@/components/ui/tooltip'
+import Loading from './Loading'
 
 interface Tag {
 	id: string
 	tag: string
 }
 
-export default function Add({ tags }: { tags: any }) {
+export default function Edit({ tags, initial }: { tags: any; initial: any }) {
 	const [open, setOpen] = useState(false)
-	const [body, setBody] = useAtom(bodyInput)
-	const [tagValue, setTagValue] = useAtom(tagInput)
-	const [headline, setHeadline] = useAtom(headlineInput)
-	const [lead, setLead] = useAtom(leadInput)
-	const [fileUrl, setFileUrl] = useAtom(fileUrlInput)
-	const [fileType, setFileType] = useAtom(fileTypeValue)
-	const [fileKey, setFileKey] = useAtom(fileKeyValue)
+	const [body, setBody] = useAtom(bodyEditInput)
+	const [tagValue, setTagValue] = useAtom(tagEditInput)
+	const [headline, setHeadline] = useAtom(headlineEditInput)
+	const [lead, setLead] = useAtom(leadEditInput)
+	const [fileUrl, setFileUrl] = useAtom(fileUrlEditInput)
+	const [fileType, setFileType] = useAtom(fileTypeEditValue)
 	const [loading, setLoading] = useState(false)
+	const [data, setData] = useState(true)
 	const [uploadDetails, setUploadDetails] = useState<UploadDetails | null>(null)
+
+	useEffect(() => {
+		setTagValue(initial?.tag)
+		setHeadline(initial?.headline)
+		setLead(initial?.lead)
+		setBody(initial?.body)
+		setFileUrl(initial?.url)
+		setFileType(initial?.type)
+		setData(false)
+	}, [initial])
 
 	const {
 		register,
@@ -76,43 +92,23 @@ export default function Add({ tags }: { tags: any }) {
 	const currentUserId = session?.user?.id
 	const router = useRouter()
 
-	const handleRemove = async () => {
-		await fileRemove(fileKey)
-	}
-
 	const onSubmit: SubmitHandler<ArticleFields> = async data => {
 		try {
 			data.body = body
 			data.tag = tagValue
-			if (uploadDetails) {
-				data.uploadDetails = uploadDetails
-			}
-			const user_id = session?.user.id as unknown as number
-			const user_name = session?.user.name ?? ''
-			const user_image = session?.user.image ?? ''
-			const result = await createArticle(
+			console.log(initial.id, data.headline, data.lead, data.body, data.tag)
+			const result = await editArticle(
+				initial.id,
 				data.headline,
 				data.lead,
 				data.body,
-				data.tag,
-				data.uploadDetails,
-				user_id,
-				user_name,
-				user_image
+				data.tag
 			)
-			if (result.success) {
-				setTagValue('')
-				setHeadline('')
-				setLead('')
-				setBody('')
-				setFileUrl('')
-				setFileType('')
-				setFileKey('')
-				setUploadDetails(null)
+			if (result === true) {
 				toast(
 					<div className="flex gap-2">
-						<CheckCircle2Icon className="size-5" />
-						<span>Article successfully published.</span>
+						<CheckIcon className="h-5 w-5" />
+						<span>Article successfully edited.</span>
 					</div>,
 					{
 						position: 'bottom-center',
@@ -137,13 +133,13 @@ export default function Add({ tags }: { tags: any }) {
 									.replace(/å/g, 'a')
 									.replace(/\s+/g, '-')
 							: 'untitled'
-					)}/${result.id}`
+					)}/${initial.id}`
 				)
 			} else {
 				toast(
 					<div className="flex gap-2">
-						<XCircleIcon className="size-5 text-red-500" />
-						<span>{`${result.error}`}</span>
+						<XCircleIcon className="h-5 w-5 text-red-500" />
+						<span>Failed editing article. Please try again.</span>
 					</div>,
 					{
 						position: 'bottom-center',
@@ -155,17 +151,58 @@ export default function Add({ tags }: { tags: any }) {
 		}
 	}
 
+	if (data) {
+		return <Loading text={'Loading...'} />
+	}
+
 	return (
 		<>
 			<div className="w-full md:pt-16 md:flex md:justify-center">
-				<Preview user={session} />
+				<EditPreview
+					user={session}
+					createdTime={new Date(initial.createdAt)}
+					updatedTime={new Date(initial.updatedAt)}
+				/>
 				<form
 					onSubmit={handleSubmit(onSubmit)}
 					className="md:w-[500px] lg:w-[640px] bg-[#e4e4e4] dark:bg-[#0b0d18] text-black dark:text-white shadow-sm ring-1 ring-gray-900/5 md:col-span-2"
 				>
 					<div className="flex gap-2 items-center px-4 sm:px-8 pt-6 text-xl font-bold">
-						<Plus className="size-6" />
-						<p>Publish article</p>
+						<Link
+							href={`/${encodeURIComponent(
+								initial.tag
+									? initial.tag
+											.toLowerCase()
+											.replace(/ö/g, 'o')
+											.replace(/ä/g, 'a')
+											.replace(/å/g, 'a')
+											.replace(/\s+/g, '-')
+									: 'article'
+							)}/${encodeURIComponent(
+								initial.headline
+									? initial.headline
+											.toLowerCase()
+											.replace(/ö/g, 'o')
+											.replace(/ä/g, 'a')
+											.replace(/å/g, 'a')
+											.replace(/\s+/g, '-')
+									: 'untitled'
+							)}/${initial.id}`}
+							className="rounded-full"
+						>
+							<TooltipProvider delayDuration={100}>
+								<Tooltip>
+									<TooltipTrigger className="p-1.5 bg-blue-400 dark:bg-blue-700 rounded-full hover:dark:bg-blue-800 hover:bg-blue-500 transition-all duration-100">
+										<ArrowLeftIcon className="size-6" />
+									</TooltipTrigger>
+									<TooltipContent>
+										<p>Back to Article</p>
+									</TooltipContent>
+								</Tooltip>
+							</TooltipProvider>
+						</Link>
+						<PencilIcon className="size-6 p-0.5" />
+						<p>Editing article</p>
 					</div>
 					<div className="px-4 py-6 sm:p-8">
 						<div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-6">
@@ -262,7 +299,7 @@ export default function Add({ tags }: { tags: any }) {
 										value={headline}
 										onChange={e => setHeadline(e.target.value)}
 										className={`${
-											headline.length >= 64 ? 'border-red-500 focus:border-red-700' : ''
+											headline?.length >= 64 ? 'border-red-500 focus:border-red-700' : ''
 										}`}
 									/>
 									{errors.headline && (
@@ -271,9 +308,9 @@ export default function Add({ tags }: { tags: any }) {
 										</div>
 									)}
 									<span
-										className={`text-xs ${headline.length >= 64 ? 'text-red-500' : ''}`}
+										className={`text-xs ${headline?.length >= 64 ? 'text-red-500' : ''}`}
 									>
-										{headline.length}/64
+										{headline?.length}/64
 									</span>
 								</div>
 							</div>
@@ -299,7 +336,7 @@ export default function Add({ tags }: { tags: any }) {
 										placeholder="This is such a crazy story..."
 										id="lead"
 										className={`min-h-24 max-h-40 ${
-											lead.length >= 256 ? 'border-red-500 focus:border-red-700' : ''
+											lead?.length >= 256 ? 'border-red-500 focus:border-red-700' : ''
 										}`}
 										value={lead}
 										minLength={8}
@@ -312,9 +349,9 @@ export default function Add({ tags }: { tags: any }) {
 										</div>
 									)}
 									<span
-										className={`text-xs ${lead.length >= 256 ? 'text-red-500' : ''}`}
+										className={`text-xs ${lead?.length >= 256 ? 'text-red-500' : ''}`}
 									>
-										{lead.length}/256
+										{lead?.length}/256
 									</span>
 								</div>
 							</div>
@@ -323,121 +360,53 @@ export default function Add({ tags }: { tags: any }) {
 									Body
 								</Label>
 								<div className="mt-2">
-									<AddEditor />
+									<ArticleEditor />
 									<span
-										className={`text-xs ${body.length >= 4096 ? 'text-red-500' : ''}`}
+										className={`text-xs ${body?.length >= 4096 ? 'text-red-500' : ''}`}
 									>
-										{body.length}/4096
+										{body?.length}/4096
 									</span>
 								</div>
 							</div>
 
-							<div className="col-span-full">
-								<Label htmlFor="file" className="block text-sm font-medium leading-6">
-									{'News cover'}
-								</Label>
-								{fileUrl && (
-									<Button
-										onClick={() => {
-											setFileUrl('')
-											setFileType('')
-											setUploadDetails(null)
-											handleRemove()
-											setFileKey('')
-										}}
-										className="mt-2 w-full mb-4 flex gap-1 bg-slate-300 hover:bg-slate-200 text-black dark:bg-slate-700 dark:hover:bg-slate-800 dark:text-white"
+							{fileType && (
+								<div className="col-span-full">
+									<Label
+										htmlFor="file"
+										className="block italic text-sm font-medium leading-6 mb-2"
 									>
-										<Pencil className="size-5 p-0.5" />
-										Change File
-									</Button>
-								)}
-								{fileType && fileUrl && fileType.startsWith('video') ? (
-									<video
-										width="1080"
-										height="720"
-										className="h-64 w-full rounded-md"
-										autoPlay
-										controls
-									>
-										<source src={fileUrl} type="video/mp4" />
-										Your browser does not support the video tag.
-									</video>
-								) : fileType && fileUrl ? (
-									<Image
-										src={fileUrl}
-										alt={fileType}
-										width={1280}
-										height={720}
-										className="h-64 w-full rounded-md"
-									/>
-								) : null}
-
-								{!fileUrl ? (
-									<UploadDropzone
-										className="pt-2"
-										endpoint="mediaPost"
-										appearance={{
-											uploadIcon: 'mt-6',
-											label:
-												'text-blue-600 dark:text-blue-500 hover:text-blue-700 dark:hover:text-blue-600 ',
-											button:
-												'bg-blue-300 hover:bg-blue-200 text-black dark:bg-blue-700 dark:hover:bg-blue-800 dark:text-white transition-all duration-150',
-											container:
-												'flex-col rounded-md border-blue-400 dark:border-blue-900 bg-[#FFFFFF] dark:bg-[#020817]',
-											allowedContent:
-												'flex h-8 flex-col items-center justify-center px-2 text-slate-800 dark:text-slate-300',
-										}}
-										content={{
-											label({ isUploading, isDragActive }) {
-												if (isUploading) return ''
-												if (isDragActive) return 'Drag and drop'
-												return `Upload file or drag and drop`
-											},
-											allowedContent({ fileTypes, isUploading }) {
-												if (isUploading) {
-													setLoading(true)
-													return 'Uploading file!'
-												}
-												return `${fileTypes.join(' or ')} up to 8MB`
-											},
-										}}
-										onClientUploadComplete={res => {
-											const uploadDetails = res[0]
-											setFileUrl(res[0].url)
-											setFileType(res[0].type)
-											setFileKey(res[0].key)
-
-											const convertedUploadDetails = {
-												...uploadDetails,
-												serverData: {
-													...uploadDetails.serverData,
-													id: Number(uploadDetails.serverData.id) || 0,
-													user: uploadDetails.serverData.user || '',
-												},
-											}
-											setUploadDetails(convertedUploadDetails)
-											setLoading(false)
-										}}
-										onUploadError={error => {
-											toast(
-												<div className="flex gap-2">
-													<XCircleIcon className="h-5 w-5 text-red-600" />
-													<span>
-														{`The file(s) you are trying to upload are either too many or too large`}
-													</span>
-												</div>,
-												{
-													position: 'bottom-center',
-												}
-											)
-										}}
-									/>
-								) : null}
-							</div>
+										{'News cover'}
+									</Label>
+									{fileType && fileUrl && fileType.startsWith('video') ? (
+										<video
+											width="1080"
+											height="720"
+											className="h-64 w-full rounded-md"
+											autoPlay
+											controls
+										>
+											<source src={fileUrl} type="video/mp4" />
+											Your browser does not support the video tag.
+										</video>
+									) : fileType && fileUrl ? (
+										<Image
+											src={fileUrl}
+											alt={fileType}
+											width={1280}
+											height={720}
+											className="h-64 w-full rounded-md"
+										/>
+									) : null}
+								</div>
+							)}
 						</div>
 					</div>
-					<div className="flex items-center justify-end gap-x-4 sm:gap-x-6 border-t border-gray-900/10 dark:border-gray-50/10 px-4 py-4 sm:px-8">
-						<MiniPreview user={session} />
+					<div className="flex items-center justify-end gap-x-4 sm:gap-x-6 border-t border-gray-900/10 dark:border-gray-50/10 px-4 pt-4 sm:px-8">
+						<MiniEditPreview
+							user={session}
+							createdTime={new Date(initial.createdAt)}
+							updatedTime={new Date(initial.updatedAt)}
+						/>
 						<Button
 							disabled={isSubmitting || loading}
 							type="submit"
@@ -470,12 +439,16 @@ export default function Add({ tags }: { tags: any }) {
 								</div>
 							) : (
 								<>
-									{!isSubmitting && <Plus className="size-5 p-0.5" />}
-									{isSubmitting ? 'Publishing...' : `Publish as ${session?.user?.name}`}
+									{!isSubmitting && <PencilIcon className="size-5 p-0.5" />}
+									{isSubmitting ? 'Publishing...' : `Edit article`}
 								</>
 							)}
 						</Button>
 					</div>
+					<p className="text-gray-600 dark:text-gray-400 px-4 py-3 sm:px-8 text-sm flex gap-2 items-center">
+						<AlertCircle className="text-yellow-700 dark:text-yellow-500 size-4" />
+						If you edit the article, it will be marked as edited.
+					</p>
 				</form>
 			</div>
 		</>
