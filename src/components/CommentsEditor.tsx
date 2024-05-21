@@ -165,7 +165,7 @@ export default function TinyMCE({ value, id }: { value: any; id: any }) {
 					<Button
 						disabled={isSubmitting}
 						type="submit"
-						className="flex gap-1 bg-blue-300 hover:bg-blue-200 text-black dark:bg-blue-700 dark:hover:bg-blue-800 dark:text-white"
+						className="w-full mb-3 mt-1 sm:mt-0 sm:mb-0 flex gap-1 bg-blue-300 hover:bg-blue-200 text-black dark:bg-blue-700 dark:hover:bg-blue-800 dark:text-white"
 					>
 						{!isSubmitting && <Pencil className="size-5 p-0.5" />}
 						{isSubmitting ? 'Editing...' : `Edit`}
