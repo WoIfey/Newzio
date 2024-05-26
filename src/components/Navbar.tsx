@@ -58,7 +58,9 @@ export default function Navbar({ userNews }: { userNews: any[] }) {
 								</div>
 							</div>
 						</div>
-						<Loading fullscreen={false} background={false} size={24} />
+						<div className="mr-2">
+							<Loading fullscreen={false} background={false} size={24} />
+						</div>
 					</div>
 				</div>
 			</nav>
