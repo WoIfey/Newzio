@@ -95,7 +95,9 @@ const Sidebar = memo(function Sidebar({ news }: { news: any[] }) {
 								)}
 
 								<div className="flex flex-col gap-1 p-4 hover:dark:text-sky-400 hover:text-sky-700 transition-all duration-75">
-									<h1 className="text-lg font-bold break-words">{news.headline}</h1>
+									<h1 className="text-lg font-bold [overflow-wrap:anywhere] line-clamp-2">
+										{news.headline}
+									</h1>
 									<div className="text-slate-700 dark:text-slate-300 text-xs flex gap-1 items-center">
 										<div className="flex items-center gap-1 truncate w-full">
 											<p>By {news.user_name}</p>{' '}
