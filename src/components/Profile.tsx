@@ -37,6 +37,8 @@ import { useSearchParams } from 'next/navigation'
 import Loading from './Loading'
 import { PencilIcon, Trash2Icon } from 'lucide-react'
 import NotFound from '@/app/not-found'
+import { formatLikes } from '@/utils/likes'
+import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid'
 
 export default function Profile({
 	userNews,
@@ -60,7 +62,7 @@ export default function Profile({
 		}
 	}, [page])
 
-	const itemsPerPage = 9
+	const itemsPerPage = 12
 
 	const startIndex = (currentPage - 1) * itemsPerPage
 	const endIndex = startIndex + itemsPerPage
@@ -151,6 +153,7 @@ export default function Profile({
 													</ContextMenuItem>
 												</ContextMenuContent>
 											)}
+
 											<Link
 												href={`/${encodeURIComponent(
 													news.tag
@@ -177,7 +180,7 @@ export default function Profile({
 													<video
 														width="640"
 														height="360"
-														className="h-52 object-fill rounded-t-lg"
+														className="h-52 object-cover lg:object-fill rounded-t-md"
 														autoPlay
 														loop
 														muted
@@ -191,10 +194,10 @@ export default function Profile({
 														width={640}
 														height={360}
 														src={news.url}
-														className="h-52 object-fill rounded-t-lg"
+														className="h-52 object-cover lg:object-fill rounded-t-md"
 													/>
 												) : (
-													<div className="h-52 bg-slate-400 dark:bg-[#1d2022] rounded-t-lg"></div>
+													<div className="h-52 bg-slate-400 dark:bg-[#1d2022] rounded-t-md"></div>
 												)}
 												{news.tag && (
 													<span
@@ -208,11 +211,11 @@ export default function Profile({
 													</span>
 												)}
 												<div className="flex flex-col gap-1 p-4 hover:dark:text-sky-400 hover:text-sky-700 transition-all duration-75">
-													<h1 className="text-2xl font-bold [overflow-wrap:anywhere]">
+													<h1 className="text-2xl font-bold [overflow-wrap:anywhere] line-clamp-2">
 														{news.headline}
 													</h1>
 													<div className="text-slate-700 dark:text-slate-300 text-xs flex gap-1 items-center">
-														<div className="flex gap-1">
+														<div className="flex items-center gap-1 truncate w-full">
 															By {news.user_name}{' '}
 															{new Date(news.createdAt).getTime() !==
 															new Date(news.updatedAt).getTime() ? (
@@ -243,12 +246,17 @@ export default function Profile({
 																</>
 															)}
 														</div>
+														<div className="flex items-center gap-1">
+															<HeartIconSolid className="size-4" />
+															<p className="text-sm">{formatLikes(news.likes)}</p>
+														</div>
 													</div>
-													<p className="line-clamp-2 text-black dark:text-slate-100 [overflow-wrap:anywhere]">
-														{news.lead}
-													</p>
+													<div className="line-clamp-2 text-black dark:text-slate-100 [overflow-wrap:anywhere] flex justify-between items-end gap-2">
+														<p>{news.lead}</p>
+													</div>
 												</div>
 											</Link>
+
 											{currentUserId === news.user_id && (
 												<>
 													<ContextMenuContent>
@@ -273,12 +281,13 @@ export default function Profile({
 												</>
 											)}
 										</ContextMenuTrigger>
+
 										<AlertDialogContent>
 											<AlertDialogHeader>
 												<AlertDialogTitle className="text-red-600 flex gap-1 items-center sm:flex-row flex-col">
 													<Trash2Icon className="size-6 sm:mr-1" />
 													<p>Permanently delete</p>
-													<span className="line-clamp-1 max-w-60 [overflow-wrap:anywhere]">
+													<span className="line-clamp-1 sm:max-w-60 [overflow-wrap:anywhere]">
 														{news.headline}
 													</span>
 												</AlertDialogTitle>
@@ -306,8 +315,8 @@ export default function Profile({
 						<>
 							<div></div>
 							<div className="text-center">
-								<h1 className="font-bold text-2xl">{`User not found!`}</h1>
-								<p>{`It looks like ${params.author} isn't an author yet!`}</p>
+								<h1 className="font-bold text-2xl">{`No articles available!`}</h1>
+								<p>{`There seems to be an issue fetching articles!`}</p>
 							</div>
 						</>
 					)}

@@ -60,6 +60,8 @@ import {
 	PaginationPrevious,
 } from '@/components/ui/pagination'
 import Loading from './Loading'
+import { formatLikes } from '@/utils/likes'
+import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid'
 
 export default function Settings({ user, userNews }: any) {
 	const router = useRouter()
@@ -265,14 +267,18 @@ export default function Settings({ user, userNews }: any) {
 															)}/${news.id}`}
 															className="hover:dark:text-sky-400 hover:text-sky-700 transition-all duration-75 bg-slate-300 dark:bg-[#2F3335] rounded-md flex"
 														>
-															<div className="flex flex-col gap-1 p-4 hover:dark:text-sky-400 hover:text-sky-700 transition-all duration-75 w-[75%]">
+															<div
+																className={`flex flex-col gap-1 p-4 hover:dark:text-sky-400 hover:text-sky-700 transition-all duration-75 bg-slate-300 dark:bg-[#2F3335] rounded-md ${
+																	news.type ? 'w-[77%]' : 'w-full'
+																}`}
+															>
 																<div className="flex gap-1">
 																	{news.tag && (
-																		<span className="text-black dark:text-white text-xs">
+																		<span className="text-black dark:text-white text-xs text-nowrap">
 																			{news.tag}
 																		</span>
 																	)}
-																	<div className="text-slate-700 dark:text-slate-300 text-xs gap-1 items-center">
+																	<div className="text-slate-700 dark:text-slate-300 text-xs flex gap-1 truncate justify-between w-full">
 																		<div className="flex gap-1">
 																			{new Date(news.createdAt).getTime() !==
 																			new Date(news.updatedAt).getTime() ? (
@@ -302,6 +308,10 @@ export default function Settings({ user, userNews }: any) {
 																				</>
 																			)}
 																		</div>
+																		<div className="flex items-center gap-1">
+																			<HeartIconSolid className="size-3" />
+																			<p className="text-xs">{formatLikes(news.likes)}</p>
+																		</div>
 																	</div>
 																</div>
 																<h1 className="text-xl font-bold [overflow-wrap:anywhere] line-clamp-1 self-start">
@@ -329,9 +339,7 @@ export default function Settings({ user, userNews }: any) {
 																		src={news.url}
 																		className="[overflow-wrap:anywhere] line-clamp-2 size-16 object-cover rounded-md"
 																	/>
-																) : (
-																	<div></div>
-																)}
+																) : null}
 															</div>
 														</Link>
 														<ContextMenuContent>

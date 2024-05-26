@@ -187,7 +187,7 @@ export default function News({ data }: { data: any[] }) {
 													{news.headline}
 												</h1>
 												<div className="text-slate-700 dark:text-slate-300 text-xs flex gap-1 items-center">
-													<div className="flex gap-1">
+													<div className="flex items-center gap-1 truncate w-full">
 														By {news.user_name}{' '}
 														{new Date(news.createdAt).getTime() !==
 														new Date(news.updatedAt).getTime() ? (
@@ -218,13 +218,13 @@ export default function News({ data }: { data: any[] }) {
 															</>
 														)}
 													</div>
-												</div>
-												<div className="line-clamp-2 text-black dark:text-slate-100 [overflow-wrap:anywhere] flex justify-between items-end gap-2">
-													<p>{news.lead}</p>
 													<div className="flex items-center gap-1">
 														<HeartIconSolid className="size-4" />
 														<p className="text-sm">{formatLikes(news.likes)}</p>
 													</div>
+												</div>
+												<div className="line-clamp-2 text-black dark:text-slate-100 [overflow-wrap:anywhere] flex justify-between items-end gap-2">
+													<p>{news.lead}</p>
 												</div>
 											</div>
 										</Link>
