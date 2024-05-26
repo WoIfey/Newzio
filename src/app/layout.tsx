@@ -54,7 +54,9 @@ export default async function RootLayout({
 			<body className={inter.className}>
 				<ThemeProvider defaultTheme="system" attribute="class">
 					<AuthProvider>
-						<Suspense fallback={<Loading text={'Loading...'} />}>
+						<Suspense
+							fallback={<Loading fullscreen={true} background={true} size={64} />}
+						>
 							<Navbar userNews={userNews} />
 							<NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
 							{children}

@@ -6,6 +6,10 @@
   @apply leading-8;
 }
 
+.html pre {
+  @apply whitespace-pre-wrap break-words mb-[0.67em] mt-[0.67em];
+}
+
 .html h1 {
   @apply text-[2em] mb-[0.67em] mt-[0.67em] font-bold;
 }
@@ -35,13 +39,12 @@
 }
 
 .html ul {
-  @apply list-disc list-inside;
+  @apply list-disc list-inside mb-[1em] mt-[1em] pl-6;
 }
 
 .html ol {
-  @apply list-decimal list-inside;
+  @apply list-decimal list-inside mb-[1em] mt-[1em] pl-6;
 }
-
 
 @layer base {
   :root {

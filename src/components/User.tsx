@@ -9,6 +9,7 @@ import {
 	ChevronDoubleLeftIcon,
 	ChevronDoubleRightIcon,
 } from '@heroicons/react/24/outline'
+import { LogIn } from 'lucide-react'
 
 const User = memo(function User({
 	data,
@@ -138,7 +139,11 @@ const User = memo(function User({
 										Login now to start creating your own news along with other users.
 									</p>
 								</div>
-								<Button className="w-full" onClick={() => signIn()}>
+								<Button
+									className="w-full flex gap-1 bg-blue-300 hover:bg-blue-200 text-black dark:bg-blue-700 dark:hover:bg-blue-800 dark:text-white"
+									onClick={() => signIn()}
+								>
+									<LogIn className="size-5 p-0.5" />
 									Sign in
 								</Button>
 							</div>

@@ -28,10 +28,3 @@ declare module "CommentFields" {
         message: string
     }
 }
-
-declare module "EditFields" {
-    type EditFields = {
-        id: string
-        message: string
-    }
-}

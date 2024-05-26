@@ -1,4 +1,4 @@
-import { getComment, getLikes } from '@/server/db'
+import { getComment, getCommentLikes } from '@/server/db'
 import Likes from '@/components/Likes'
 import { Metadata } from 'next'
 
@@ -31,7 +31,7 @@ export const generateMetadata = async ({
 				data?.message?.length > 128
 					? `${data.message.substring(0, 128)}...`
 					: data?.message,
-			url: `https://newzio.vercel.app/${params.tag}/${params.headline}/${params.article_id}/likes/${data.id}`,
+			url: `https://newzio.vercel.app/${params.tag}/${params.headline}/${params.article_id}/likes/${data?.id}`,
 			siteName: `Newzio - Likes`,
 			images: [
 				{
@@ -48,7 +48,7 @@ export const generateMetadata = async ({
 }
 
 export default async function CommentLikes({ params }: Props) {
-	let commentLikes = await getLikes(params.comment_id)
+	let commentLikes = await getCommentLikes(params.comment_id)
 
 	return (
 		<main className="flex min-h-dvh flex-col items-center bg-[#dfdfdf] dark:bg-[#1b1b1b]">

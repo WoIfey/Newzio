@@ -50,7 +50,7 @@ export default function Likes({
 	const totalPages = Math.ceil(commentLikes.length / itemsPerPage)
 
 	if (loading) {
-		return <Loading text={'Loading...'} />
+		return <Loading fullscreen={true} background={true} size={64} />
 	}
 	return (
 		<div className="flex flex-col">

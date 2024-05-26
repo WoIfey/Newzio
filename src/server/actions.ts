@@ -1,5 +1,5 @@
 'use server'
-import { deleteArticle, deleteComment, findEmail, findUsers, registerUser, saveArticle, saveComment, toggleLike, updateArticle, updateComment } from "@/server/db"
+import { deleteArticle, deleteComment, findEmail, registerUser, saveArticle, saveComment, toggleCommentLike, toggleArticleLike, updateArticle, updateComment } from "@/server/db"
 import { UploadDetails } from "uploadDetails"
 import { utapi } from "@/app/api/uploadthing/core"
 
@@ -92,8 +92,12 @@ export const editComment = async (
     }
 }
 
-export const like = async (id: string, user_id: number, user_name: string, user_image: string, article_id: string) => {
-    await toggleLike(id, article_id, user_id, user_name, user_image)
+export const commentLike = async (id: string, user_id: number, user_name: string, user_image: string, article_id: string) => {
+    await toggleCommentLike(id, article_id, user_id, user_name, user_image)
+}
+
+export const articleLike = async (user_id: number, user_name: string, user_image: string, article_id: string) => {
+    await toggleArticleLike(article_id, user_id, user_name, user_image)
 }
 
 export const register = async (name: string, email: string, password: string) => {

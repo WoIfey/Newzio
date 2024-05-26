@@ -1,4 +1,4 @@
-import { getComment, getLike } from '@/server/db'
+import { getComment, getCommentLike } from '@/server/db'
 import Comment from '@/components/Comment'
 import { getServerSession } from 'next-auth'
 import { options } from '@/app/api/auth/[...nextauth]/options'
@@ -33,7 +33,7 @@ export const generateMetadata = async ({
 				data?.message?.length > 128
 					? `${data.message.substring(0, 128)}...`
 					: data?.message,
-			url: `https://newzio.vercel.app/${params.tag}/${params.headline}/${params.article_id}/comment/${data.id}`,
+			url: `https://newzio.vercel.app/${params.tag}/${params.headline}/${params.article_id}/comment/${data?.id}`,
 			siteName: `Newzio - Comment`,
 			images: [
 				{
@@ -51,7 +51,7 @@ export const generateMetadata = async ({
 
 export default async function CommentLikes({ params }: Props) {
 	let comment = (await getComment(params.comment_id))[0]
-	let likes = await getLike(params.article_id)
+	let likes = await getCommentLike(params.article_id)
 	const session = await getServerSession(options)
 
 	return (

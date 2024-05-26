@@ -19,7 +19,7 @@ const Sidebar = memo(function Sidebar({ news }: { news: any[] }) {
 	if (loading) {
 		return (
 			<div className="md:mx-28 lg:mx-40">
-				<Loading text={''} />
+				<Loading fullscreen={true} background={true} size={64} />
 			</div>
 		)
 	}

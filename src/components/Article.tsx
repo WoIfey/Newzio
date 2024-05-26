@@ -12,7 +12,7 @@ import {
 	AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { fileRemove, removeArticle } from '@/server/actions'
+import { articleLike, fileRemove, removeArticle } from '@/server/actions'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import {
@@ -29,6 +29,7 @@ import {
 	Share2Icon,
 	Trash2Icon,
 	ClipboardCheckIcon,
+	AlertCircleIcon,
 } from 'lucide-react'
 import {
 	Dialog,
@@ -40,6 +41,8 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '@/components/ui/dialog'
+import { HeartIcon as HeartIconOutline } from '@heroicons/react/24/outline'
+import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -48,27 +51,33 @@ import Link from 'next/link'
 import Comments from './Comments'
 import NotFound from '@/app/not-found'
 import { useState } from 'react'
+import Loading from './Loading'
+import { formatLikes } from '@/utils/likes'
 
 export default function Article({
 	data,
 	params,
 	news,
 	comments,
-	likes,
+	articleLikes,
+	commentLikes,
 }: {
 	data: any
 	params: any
 	news: any
 	comments: any
-	likes: any
+	articleLikes: any
+	commentLikes: any
 }) {
 	const router = useRouter()
 	const [loading, setLoading] = useState(false)
+	const [likeLoading, setLikeLoading] = useState(false)
 
 	const confirm = async () => {
 		try {
 			setLoading(true)
 			await Promise.all([fileRemove(data.key), removeArticle(data.id)])
+			toast.dismiss('delete-begin')
 			router.push('/')
 			toast(
 				<div className="flex gap-2">
@@ -76,7 +85,7 @@ export default function Article({
 					<span>Article successfully deleted.</span>
 				</div>,
 				{
-					position: 'bottom-center',
+					position: 'bottom-left',
 				}
 			)
 			setLoading(false)
@@ -96,7 +105,7 @@ export default function Article({
 					<span>Article copied to clipboard.</span>
 				</div>,
 				{
-					position: 'bottom-center',
+					position: 'bottom-left',
 				}
 			)
 		} catch (error) {
@@ -105,6 +114,20 @@ export default function Article({
 	}
 
 	const { data: session } = useSession()
+	if (loading) {
+		toast(
+			<Loading
+				fullscreen={false}
+				background={false}
+				text="Deleting article..."
+				size={16}
+			/>,
+			{
+				position: 'bottom-left',
+				id: 'delete-begin',
+			}
+		)
+	}
 	if (!data) {
 		return (
 			<NotFound
@@ -115,6 +138,16 @@ export default function Article({
 	}
 	const currentUserId = session?.user?.id
 
+	const handleLike = async (article_id: string) => {
+		const user_id = session?.user.id as unknown as number
+		const user_name = session?.user.name ?? ''
+		const user_image = session?.user.image ?? ''
+		setLikeLoading(true)
+		await articleLike(user_id, user_name, user_image, article_id)
+		router.refresh()
+		setLikeLoading(false)
+	}
+
 	return (
 		<>
 			<div className="md:w-[500px] lg:w-[640px] bg-[#e4ebec] dark:bg-[#2F3335] min-h-dvh">
@@ -124,11 +157,52 @@ export default function Article({
 				>
 					<div>
 						<div className={`mx-6 sm:mx-8 mt-6 ${data.type ? 'mb-4' : 'mb-3'}`}>
-							{data.headline && (
-								<h1 className="text-3xl font-bold mb-2 [overflow-wrap:anywhere]">
-									{data.headline}
-								</h1>
-							)}
+							<div className="flex justify-between items-start gap-2">
+								{data.headline && (
+									<h1 className="text-3xl font-bold [overflow-wrap:anywhere]">
+										{data.headline}
+									</h1>
+								)}
+								<button
+									onClick={() => {
+										if (!session) {
+											toast(
+												<div className="flex gap-2">
+													<AlertCircleIcon className="size-5 text-yellow-500" />
+													<span>Please sign in to like this article.</span>
+												</div>,
+												{
+													position: 'bottom-left',
+												}
+											)
+										} else {
+											handleLike(params.article_id)
+										}
+									}}
+									className="hover:text-red-600 flex gap-1 items-center mt-1"
+								>
+									<div className="flex gap-1 items-center">
+										{likeLoading ? (
+											<div className="mr-1">
+												<Loading fullscreen={false} background={false} size={16} />
+											</div>
+										) : (
+											<>
+												{articleLikes.some(
+													(like: any) => like.user_id === currentUserId
+												) ? (
+													<HeartIconSolid className="size-5" />
+												) : (
+													<HeartIconOutline className="size-5" />
+												)}
+											</>
+										)}
+										<p className="text-black dark:text-white">
+											{formatLikes(data.likes)}
+										</p>
+									</div>
+								</button>
+							</div>
 							{data.lead && (
 								<p className="leading-7 font-extralight [overflow-wrap:anywhere] mb-2">
 									{data.lead}
@@ -292,28 +366,10 @@ export default function Article({
 												className="bg-red-400 dark:bg-red-700 rounded-full p-1.5 hover:dark:bg-red-800 hover:bg-red-500 transition-all duration-100"
 												asChild
 											>
-												<AlertDialogTrigger>
+												<AlertDialogTrigger disabled={loading}>
 													{loading ? (
-														<div className="flex items-center gap-2 text-black dark:text-white p-1">
-															<div role="status">
-																<svg
-																	aria-hidden="true"
-																	className="size-4 text-gray-400 animate-spin dark:text-gray-500 fill-blue-700 dark:fill-sky-500"
-																	viewBox="0 0 100 101"
-																	fill="none"
-																	xmlns="http://www.w3.org/2000/svg"
-																>
-																	<path
-																		d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-																		fill="currentColor"
-																	/>
-																	<path
-																		d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-																		fill="currentFill"
-																	/>
-																</svg>
-																<span className="sr-only text-2xl">Loading...</span>
-															</div>
+														<div className="px-1">
+															<Loading fullscreen={false} background={false} size={16} />
 														</div>
 													) : (
 														<Trash2Icon className="size-6 p-0.5" />
@@ -403,7 +459,7 @@ export default function Article({
 						comments={comments}
 						user={session}
 						params={params}
-						likes={likes}
+						commentLikes={commentLikes}
 					/>
 				</div>
 			</div>

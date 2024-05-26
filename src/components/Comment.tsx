@@ -8,9 +8,9 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { ArrowLeftIcon, Copy } from 'lucide-react'
+import { ArrowLeftIcon, Copy, LinkIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { like, removeComment } from '@/server/actions'
+import { commentLike, removeComment } from '@/server/actions'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import {
@@ -51,8 +51,10 @@ import { useRouter } from 'next/navigation'
 import { AlertCircleIcon } from 'lucide-react'
 import { editState } from '@/utils/atoms'
 import { useAtom } from 'jotai'
-import CommentsEditor from './CommentsEditor'
+import CommentsEditor from '@/components/editors/CommentsEditor'
 import NotFound from '@/app/not-found'
+import Loading from './Loading'
+import { formatLikes } from '@/utils/likes'
 
 export default function Likes({
 	comment,
@@ -75,13 +77,14 @@ export default function Likes({
 			setDataLoading(true)
 			const result = await removeComment(id)
 			if (result === true) {
+				toast.dismiss('delete-begin')
 				toast(
 					<div className="flex gap-2">
 						<Trash2Icon className="size-5 text-red-500" />
 						<span>Comment successfully deleted.</span>
 					</div>,
 					{
-						position: 'bottom-center',
+						position: 'bottom-left',
 					}
 				)
 			} else {
@@ -91,7 +94,7 @@ export default function Likes({
 						<span>Failed deleting comment. Please try again.</span>
 					</div>,
 					{
-						position: 'bottom-center',
+						position: 'bottom-left',
 					}
 				)
 			}
@@ -113,7 +116,7 @@ export default function Likes({
 					<span>Comment copied to clipboard.</span>
 				</div>,
 				{
-					position: 'bottom-center',
+					position: 'bottom-left',
 				}
 			)
 		} catch (error) {
@@ -126,39 +129,22 @@ export default function Likes({
 		const user_name = user?.user.name ?? ''
 		const user_image = user?.user.image ?? ''
 		setLikeLoading(prev => ({ ...prev, [id]: true }))
-		await like(id, user_id, user_name, user_image, article_id)
+		await commentLike(id, user_id, user_name, user_image, article_id)
 		router.refresh()
 		setLikeLoading(prev => ({ ...prev, [id]: false }))
 	}
 
 	if (dataLoading) {
 		toast(
-			<div className="flex gap-2">
-				<div className="flex items-center gap-2 text-black dark:text-white mr-1">
-					<div role="status">
-						<svg
-							aria-hidden="true"
-							className="size-4 text-gray-400 animate-spin dark:text-gray-500 fill-blue-700 dark:fill-sky-500"
-							viewBox="0 0 100 101"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-						>
-							<path
-								d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-								fill="currentColor"
-							/>
-							<path
-								d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-								fill="currentFill"
-							/>
-						</svg>
-						<span className="sr-only text-2xl">Deleting comment...</span>
-					</div>
-					<div className="text-black dark:text-white">Deleting comment...</div>
-				</div>
-			</div>,
+			<Loading
+				fullscreen={false}
+				background={false}
+				text="Deleting comment..."
+				size={16}
+			/>,
 			{
-				position: 'bottom-center',
+				position: 'bottom-left',
+				id: 'delete-begin',
 			}
 		)
 	}
@@ -263,24 +249,25 @@ export default function Likes({
 							<div className="flex items-center gap-2">
 								<Link
 									href={`/author/${encodeURIComponent(
-										comment?.user_name
-											? comment?.user_name
+										comment.user_name
+											? comment.user_name
 													.toLowerCase()
 													.replace(/ö/g, 'o')
 													.replace(/ä/g, 'a')
 													.replace(/å/g, 'a')
 													.replace(/\s+/g, '-')
 											: 'unknown'
-									)}/${comment?.user_id}`}
+									)}/${comment.user_id}`}
 								>
-									<p className="text-sm font-bold">{comment?.user_name}</p>
+									<p className="text-sm font-bold">{comment.user_name}</p>
 								</Link>
+								<span className="text-black dark:text-white text-sm">{`•`}</span>
 								<time
-									title={new Date(comment?.createdAt).toLocaleString()}
-									dateTime={new Date(comment?.createdAt).toLocaleString()}
+									title={new Date(comment.createdAt).toLocaleString()}
+									dateTime={new Date(comment.createdAt).toLocaleString()}
 									className="dark:text-slate-300 text-slate-600 text-sm"
 								>
-									{formatDistanceToNowStrict(new Date(comment?.createdAt), {
+									{formatDistanceToNowStrict(new Date(comment.createdAt), {
 										addSuffix: true,
 									})}
 								</time>
@@ -304,8 +291,8 @@ export default function Likes({
 														onClick={() => share(comment?.id)}
 														className="gap-x-1"
 													>
-														<Copy className="size-4" />
-														Link
+														<LinkIcon className="size-4" />
+														Copy Link
 													</MenubarItem>
 												</MenubarSubContent>
 											</MenubarSub>
@@ -396,8 +383,8 @@ export default function Likes({
 							</>
 						)}
 					</div>
-					{editMode !== comment?.id && (
-						<div className="flex gap-2">
+					{editMode !== comment.id && (
+						<div className="flex items-center gap-2">
 							<div className="flex gap-1 items-center">
 								<button
 									onClick={() => {
@@ -408,47 +395,36 @@ export default function Likes({
 													<span>Please sign in to like this comment.</span>
 												</div>,
 												{
-													position: 'bottom-center',
+													position: 'bottom-left',
 												}
 											)
 										} else {
-											handleLike(comment?.id, params?.article_id)
+											handleLike(comment.id, params.article_id)
 										}
 									}}
 									className="hover:text-red-600 flex gap-1 items-center"
 								>
-									{likes.some(
-										(like: any) =>
-											like?.comment_id === comment?.id && like?.user_id === currentUserId
-									) ? (
-										<HeartIconSolid className="size-5" />
-									) : (
-										<HeartIconOutline className="size-5" />
-									)}
-									<p className="text-black dark:text-white text-sm">{comment?.likes}</p>
-									{likeLoading[comment?.id] && (
-										<div className="ml-1 text-black dark:text-white">
-											<div role="status">
-												<svg
-													aria-hidden="true"
-													className="size-4 text-gray-400 animate-spin dark:text-gray-500 fill-blue-700 dark:fill-sky-500"
-													viewBox="0 0 100 101"
-													fill="none"
-													xmlns="http://www.w3.org/2000/svg"
-												>
-													<path
-														d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-														fill="currentColor"
-													/>
-													<path
-														d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-														fill="currentFill"
-													/>
-												</svg>
-												<span className="sr-only text-2xl">Loading...</span>
+									<div className="flex gap-1 items-center">
+										{likeLoading[comment.id] ? (
+											<div className="mr-1">
+												<Loading fullscreen={false} background={false} size={16} />
 											</div>
-										</div>
-									)}
+										) : (
+											<>
+												{likes.some(
+													(like: any) =>
+														like.comment_id === comment.id && like.user_id === currentUserId
+												) ? (
+													<HeartIconSolid className="size-5" />
+												) : (
+													<HeartIconOutline className="size-5" />
+												)}
+											</>
+										)}
+										<p className="text-black dark:text-white text-sm">
+											{formatLikes(comment.likes)}
+										</p>
+									</div>
 								</button>
 							</div>
 						</div>

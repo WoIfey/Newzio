@@ -43,9 +43,9 @@ export default function TinyMCE() {
 					paste_data_images: false,
 					setup: function (editor) {
 						editor.on('change', function (e) {
-							if (editor.getContent().length > 256) {
-								editor.getContent().slice(0, 256)
-								setText("You can't go above 256 characters!")
+							if (editor.getContent().length > 512) {
+								editor.getContent().slice(0, 512)
+								setText("You can't go above 512 characters!")
 							} else {
 								setText('')
 							}
