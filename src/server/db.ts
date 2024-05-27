@@ -151,7 +151,7 @@ export async function updateArticle(
     }
 }
 
-export async function registerUser(name: string, email: string, password: string) {
+export async function registerUsers(name: string, email: string, password: string) {
     try {
         const hashedPassword = await bcrypt.hash(password, 10)
         await db.query("INSERT INTO users(name, email, password) VALUES ($1, $2, $3)", [name, email, hashedPassword])

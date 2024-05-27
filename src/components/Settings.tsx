@@ -169,8 +169,10 @@ export default function Settings({ user, userNews }: any) {
 									</Avatar>
 									<SheetTitle>
 										<div className="flex flex-col">
-											<h1 className="text-base">{user?.user.name}</h1>
-											<p className="text-xs text-gray-600 dark:text-gray-400">
+											<h1 className="text-base [overflow-wrap:anywhere]">
+												{user?.user.name}
+											</h1>
+											<p className="text-xs text-gray-600 dark:text-gray-400 [overflow-wrap:anywhere]">
 												{user?.user.email}
 											</p>
 										</div>

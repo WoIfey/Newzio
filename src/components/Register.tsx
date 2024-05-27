@@ -2,14 +2,16 @@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { register } from '@/server/actions'
+import { registerUser } from '@/server/actions'
 import { signIn } from 'next-auth/react'
 import { toast } from 'sonner'
-import { AlertCircle, CheckCircle2, LogIn } from 'lucide-react'
+import { AlertCircle, CheckCircle2, LogIn, XCircle } from 'lucide-react'
 import Image from 'next/image'
 import Loading from './Loading'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import { Register } from 'Register'
 
 type Props = {
 	callbackUrl?: string
@@ -18,27 +20,19 @@ type Props = {
 
 export default function Login(props: Props) {
 	const [loading, setLoading] = useState(false)
-	const name = useRef('')
-	const email = useRef('')
-	const password = useRef('')
+	const {
+		register,
+		handleSubmit,
+		formState: { errors, isSubmitting },
+	} = useForm<Register>()
 
-	const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault()
-		if (
-			!name.current.trim() ||
-			!email.current.trim() ||
-			!password.current.trim() ||
-			!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email.current) ||
-			password.current.length < 8
-		) {
-			return
-		}
+	const onSubmit: SubmitHandler<Register> = async data => {
 		setLoading(true)
-		const success = await register(name.current, email.current, password.current)
+		const success = await registerUser(data.name, data.email, data.password)
 		if (success) {
 			await signIn('credentials', {
-				email: email.current,
-				password: password.current,
+				email: data.email,
+				password: data.password,
 				redirect: true,
 				callbackUrl: props.callbackUrl,
 			})
@@ -83,17 +77,7 @@ export default function Login(props: Props) {
 						<h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
 							Sign Up
 						</h1>
-						{!!props.error && <p className="text-red-500">Email already exists.</p>}
-						<form
-							onSubmit={onSubmit}
-							onKeyUp={e => {
-								if (e.key === 'Enter') {
-									e.preventDefault()
-									onSubmit(e)
-								}
-							}}
-							className="flex flex-col gap-6"
-						>
+						<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
 							<div>
 								<Label
 									htmlFor="name"
@@ -102,14 +86,30 @@ export default function Login(props: Props) {
 									Username
 								</Label>
 								<Input
+									{...register('name', {
+										required: 'There is no name!',
+										minLength: {
+											value: 8,
+											message: 'The name might be too short!',
+										},
+										maxLength: { value: 32, message: 'The name is too long!' },
+										validate: {
+											checkStartSpace: value =>
+												!value.startsWith(' ') || 'Name cannot start or end with spaces!',
+											checkEndSpace: value =>
+												!value.endsWith(' ') || 'Name cannot start or end with spaces!',
+										},
+									})}
 									type="name"
 									name="name"
 									id="name"
 									placeholder="name"
-									onChange={e => (name.current = e.target.value)}
+									minLength={8}
+									maxLength={32}
 									required
 								/>
 							</div>
+							{errors.name && <p className="text-red-500">{errors.name.message}</p>}
 							<div>
 								<Label
 									htmlFor="email"
@@ -118,14 +118,30 @@ export default function Login(props: Props) {
 									Email
 								</Label>
 								<Input
+									{...register('email', {
+										required: 'There is no email!',
+										minLength: {
+											value: 3,
+											message: 'The email might be too short!',
+										},
+										maxLength: { value: 320, message: 'The email is too long!' },
+										validate: {
+											checkStartSpace: value =>
+												!value.startsWith(' ') || 'Email cannot start or end with spaces!',
+											checkEndSpace: value =>
+												!value.endsWith(' ') || 'Email cannot start or end with spaces!',
+										},
+									})}
 									type="email"
 									name="email"
 									id="email"
 									placeholder="name@email.com"
-									onChange={e => (email.current = e.target.value)}
+									minLength={3}
+									maxLength={320}
 									required
 								/>
 							</div>
+							{errors.email && <p className="text-red-500">{errors.email.message}</p>}
 							<div>
 								<Label
 									htmlFor="password"
@@ -134,21 +150,39 @@ export default function Login(props: Props) {
 									Password
 								</Label>
 								<Input
+									{...register('password', {
+										required: 'There is no password!',
+										minLength: {
+											value: 8,
+											message: 'The password might be too short!',
+										},
+										maxLength: { value: 128, message: 'The password is too long!' },
+										validate: {
+											checkStartSpace: value =>
+												!value.startsWith(' ') ||
+												'Password cannot start or end with spaces!',
+											checkEndSpace: value =>
+												!value.endsWith(' ') || 'Password cannot start or end with spaces!',
+										},
+									})}
 									type="password"
 									name="password"
 									id="password"
 									placeholder="••••••••"
 									minLength={8}
-									onChange={e => (password.current = e.target.value)}
+									maxLength={128}
 									required
 								/>
 							</div>
+							{errors.password && (
+								<p className="text-red-500">{errors.password.message}</p>
+							)}
 							{/* <div className="flex items-center justify-end">
 							<a
-								href="#"
-								className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-500"
+							href="#"
+							className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-500"
 							>
-								Forgot password?
+							Forgot password?
 							</a>
 						</div> */}
 							<Button

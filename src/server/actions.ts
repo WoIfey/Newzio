@@ -1,5 +1,5 @@
 'use server'
-import { deleteArticle, deleteComment, findEmail, registerUser, saveArticle, saveComment, toggleCommentLike, toggleArticleLike, updateArticle, updateComment } from "@/server/db"
+import { deleteArticle, deleteComment, findEmail, registerUsers, saveArticle, saveComment, toggleCommentLike, toggleArticleLike, updateArticle, updateComment } from "@/server/db"
 import { UploadDetails } from "uploadDetails"
 import { utapi } from "@/app/api/uploadthing/core"
 
@@ -100,10 +100,10 @@ export const articleLike = async (user_id: number, user_name: string, user_image
     await toggleArticleLike(article_id, user_id, user_name, user_image)
 }
 
-export const register = async (name: string, email: string, password: string) => {
+export const registerUser = async (name: string, email: string, password: string) => {
     const existingUser = await findEmail(email)
     if (!existingUser) {
-        const result = await registerUser(name, email, password)
+        const result = await registerUsers(name, email, password)
         if (result === 'User Registered') {
             return true
         } else {
