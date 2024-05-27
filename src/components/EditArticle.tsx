@@ -162,6 +162,7 @@ export default function Edit({ tags, initial }: { tags: any; initial: any }) {
 					user={session}
 					createdTime={new Date(initial.createdAt)}
 					updatedTime={new Date(initial.updatedAt)}
+					likes={initial.likes}
 				/>
 				<form
 					onSubmit={handleSubmit(onSubmit)}
@@ -321,7 +322,7 @@ export default function Edit({ tags, initial }: { tags: any; initial: any }) {
 								<div className="mt-2">
 									<Textarea
 										{...register('lead', {
-											minLength: { value: 8, message: 'The lead is too short!' },
+											minLength: { value: 4, message: 'The lead is too short!' },
 											maxLength: { value: 256, message: 'The lead is too long!' },
 											validate: {
 												checkStartSpace: value =>
@@ -339,7 +340,7 @@ export default function Edit({ tags, initial }: { tags: any; initial: any }) {
 											lead?.length >= 256 ? 'border-red-500 focus:border-red-700' : ''
 										}`}
 										value={lead}
-										minLength={8}
+										minLength={4}
 										maxLength={256}
 										onChange={e => setLead(e.target.value)}
 									/>
@@ -406,6 +407,7 @@ export default function Edit({ tags, initial }: { tags: any; initial: any }) {
 							user={session}
 							createdTime={new Date(initial.createdAt)}
 							updatedTime={new Date(initial.updatedAt)}
+							likes={initial.likes}
 						/>
 						<Button
 							disabled={isSubmitting || loading}

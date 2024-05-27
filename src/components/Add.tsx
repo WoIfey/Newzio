@@ -285,7 +285,7 @@ export default function Add({ tags }: { tags: any }) {
 								<div className="mt-2">
 									<Textarea
 										{...register('lead', {
-											minLength: { value: 8, message: 'The lead is too short!' },
+											minLength: { value: 4, message: 'The lead is too short!' },
 											maxLength: { value: 256, message: 'The lead is too long!' },
 											validate: {
 												checkStartSpace: value =>
@@ -303,7 +303,7 @@ export default function Add({ tags }: { tags: any }) {
 											lead.length >= 256 ? 'border-red-500 focus:border-red-700' : ''
 										}`}
 										value={lead}
-										minLength={8}
+										minLength={4}
 										maxLength={256}
 										onChange={e => setLead(e.target.value)}
 									/>
