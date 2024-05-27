@@ -7,7 +7,7 @@
 }
 
 .html pre {
-  @apply whitespace-pre-wrap break-words mb-[0.67em] mt-[0.67em];
+  @apply whitespace-pre-wrap [overflow-wrap:anywhere] mb-[0.67em] mt-[0.67em];
 }
 
 .html h1 {

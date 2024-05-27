@@ -223,8 +223,10 @@ export default function News({ data }: { data: any[] }) {
 														<p className="text-sm">{formatLikes(news.likes)}</p>
 													</div>
 												</div>
-												<div className="line-clamp-2 text-black dark:text-slate-100 [overflow-wrap:anywhere] flex justify-between items-end gap-2">
-													<p>{news.lead}</p>
+												<div className="text-black dark:text-slate-100">
+													<p className="line-clamp-2 [overflow-wrap:anywhere]">
+														{news.lead}
+													</p>
 												</div>
 											</div>
 										</Link>
