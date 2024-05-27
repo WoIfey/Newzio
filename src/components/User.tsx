@@ -121,7 +121,10 @@ const User = memo(function User({
 			) : (
 				<>
 					{!showSignIn && (
-						<button onClick={() => setShowSignIn(!showSignIn)}>
+						<button
+							onClick={() => setShowSignIn(!showSignIn)}
+							className="hidden lg:flex"
+						>
 							<ChevronDoubleRightIcon className="size-7 my-4 mx-2" />
 						</button>
 					)}

@@ -9,6 +9,8 @@ import Image from 'next/image'
 import { toast } from 'sonner'
 import { CheckCircle2, LogIn, XCircle } from 'lucide-react'
 import Loading from './Loading'
+import { SignIn } from 'SignIn'
+import { SubmitHandler, useForm } from 'react-hook-form'
 
 type Props = {
 	callbackUrl?: string
@@ -17,44 +19,50 @@ type Props = {
 
 export default function Login(props: Props) {
 	const [loading, setLoading] = useState(false)
-	const email = useRef('')
-	const password = useRef('')
 
-	const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault()
-		if (
-			!email.current.trim() ||
-			!password.current.trim() ||
-			!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email.current) ||
-			password.current.length < 8
-		) {
-			return
-		}
+	const {
+		register,
+		handleSubmit,
+		formState: { errors, isSubmitting },
+	} = useForm<SignIn>()
+
+	const onSubmit: SubmitHandler<SignIn> = async data => {
 		setLoading(true)
 		await signIn('credentials', {
-			email: email.current,
-			password: password.current,
+			email: data.email,
+			password: data.password,
 			redirect: true,
 			callbackUrl: props.callbackUrl,
 		})
-		toast(
-			<div className="flex gap-2">
-				<CheckCircle2 className="size-5" />
-				<span>Successfully signed in!</span>
-			</div>,
-			{
-				position: 'bottom-left',
-			}
-		)
 		setLoading(false)
 	}
 
 	useEffect(() => {
-		if (props.error) {
+		if (props.error === 'CredentialsSignin') {
 			toast(
 				<div className="flex gap-2">
 					<XCircle className="size-5 text-red-500" />
-					<span>Wrong password or email.</span>
+					<span>Wrong email or password.</span>
+				</div>,
+				{
+					position: 'bottom-left',
+				}
+			)
+		} else if (props.error === 'Callback') {
+			toast(
+				<div className="flex gap-2">
+					<XCircle className="size-5 text-red-500" />
+					<span>Cancelled login.</span>
+				</div>,
+				{
+					position: 'bottom-left',
+				}
+			)
+		} else if (props.error) {
+			toast(
+				<div className="flex gap-2">
+					<XCircle className="size-5 text-red-500" />
+					<span>{props.error}</span>
 				</div>,
 				{
 					position: 'bottom-left',
@@ -116,16 +124,7 @@ export default function Login(props: Props) {
 							<p className="text-gray-500 dark:text-gray-400">or</p>
 							<div className="flex-1 border-b-2 rounded-xl border-gray-300 dark:border-gray-600"></div>
 						</div>
-						<form
-							onSubmit={onSubmit}
-							onKeyUp={e => {
-								if (e.key === 'Enter') {
-									e.preventDefault()
-									onSubmit(e)
-								}
-							}}
-							className="flex flex-col gap-6"
-						>
+						<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
 							<div>
 								<Label
 									htmlFor="email"
@@ -134,14 +133,30 @@ export default function Login(props: Props) {
 									Email
 								</Label>
 								<Input
+									{...register('email', {
+										required: 'There is no email!',
+										minLength: {
+											value: 3,
+											message: 'The email might be too short!',
+										},
+										maxLength: { value: 320, message: 'The email is too long!' },
+										validate: {
+											checkStartSpace: value =>
+												!value.startsWith(' ') || 'Email cannot start or end with spaces!',
+											checkEndSpace: value =>
+												!value.endsWith(' ') || 'Email cannot start or end with spaces!',
+										},
+									})}
 									type="email"
 									name="email"
 									id="email"
 									placeholder="name@email.com"
-									onChange={e => (email.current = e.target.value)}
+									minLength={3}
+									maxLength={320}
 									required
 								/>
 							</div>
+							{errors.email && <p className="text-red-500">{errors.email.message}</p>}
 							<div>
 								<Label
 									htmlFor="password"
@@ -150,15 +165,33 @@ export default function Login(props: Props) {
 									Password
 								</Label>
 								<Input
+									{...register('password', {
+										required: 'There is no password!',
+										minLength: {
+											value: 8,
+											message: 'The password might be too short!',
+										},
+										maxLength: { value: 128, message: 'The password is too long!' },
+										validate: {
+											checkStartSpace: value =>
+												!value.startsWith(' ') ||
+												'Password cannot start or end with spaces!',
+											checkEndSpace: value =>
+												!value.endsWith(' ') || 'Password cannot start or end with spaces!',
+										},
+									})}
 									type="password"
 									name="password"
 									id="password"
 									placeholder="••••••••"
 									minLength={8}
-									onChange={e => (password.current = e.target.value)}
+									maxLength={128}
 									required
 								/>
 							</div>
+							{errors.password && (
+								<p className="text-red-500">{errors.password.message}</p>
+							)}
 							{/* <div className="flex items-center justify-end">
 							<a
 								href="#"

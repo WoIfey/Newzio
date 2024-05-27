@@ -291,7 +291,7 @@ export default function Comments({
 							{isSubmitting ? (
 								<p className="ml-1">Sending...</p>
 							) : (
-								<p>
+								<p className="[overflow-wrap:anywhere] truncate">
 									{editMode ? 'Editing comment...' : `Comment as ${user?.user.name}`}
 								</p>
 							)}
@@ -325,7 +325,7 @@ export default function Comments({
 									</AvatarFallback>
 								</Avatar>
 							</Link>
-							<div className="flex items-center gap-2">
+							<div className="flex sm:flex-row flex-col sm:items-center gap-2 truncate max-w-40 sm:max-w-80">
 								<Link
 									href={`/author/${encodeURIComponent(
 										comment.user_name
@@ -337,10 +337,11 @@ export default function Comments({
 													.replace(/\s+/g, '-')
 											: 'unknown'
 									)}/${comment.user_id}`}
+									className="truncate"
 								>
-									<p className="text-sm font-bold">{comment.user_name}</p>
+									<p className="text-sm font-bold truncate">{comment.user_name}</p>
 								</Link>
-								<span className="text-black dark:text-white text-sm">{`•`}</span>
+								<span className="text-black dark:text-white text-sm sm:block hidden">{`•`}</span>
 								<time
 									title={new Date(comment.createdAt).toLocaleString()}
 									dateTime={new Date(comment.createdAt).toLocaleString()}
