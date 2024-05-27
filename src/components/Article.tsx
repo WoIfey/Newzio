@@ -204,12 +204,12 @@ export default function Article({
 								</button>
 							</div>
 							{data.lead && (
-								<p className="leading-7 font-extralight [overflow-wrap:anywhere] mb-2">
+								<p className="leading-7 font-extralight [overflow-wrap:anywhere]">
 									{data.lead}
 								</p>
 							)}
 							{data.tag && (
-								<div className="flex gap-2 sm:flex-row flex-col mb-4">
+								<div className="flex gap-2 sm:flex-row flex-col mb-4 mt-2">
 									<div className="flex gap-2 items-center flex-row">
 										<span
 											className={`px-1.5 py-1 dark:text-white text-sm rounded-md ${
