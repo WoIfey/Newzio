@@ -11,9 +11,10 @@ import { editState } from '@/utils/atoms'
 import { useAtom } from 'jotai'
 import { useRouter } from 'next/navigation'
 import Loading from '../Loading'
+import { profanity } from '@/utils/profanity'
 
 export default function TinyMCE({ value, id }: { value: any; id: any }) {
-	const [message, setMessage] = useState(value)
+	let [message, setMessage] = useState(value)
 	const [text, setText] = useState('')
 	const [editMode, setEditMode] = useAtom(editState)
 	const [loading, setLoading] = useState(false)
@@ -26,6 +27,9 @@ export default function TinyMCE({ value, id }: { value: any; id: any }) {
 		formState: { errors, isSubmitting },
 	} = useForm<CommentFields>()
 
+	if (profanity.exists(message)) {
+		message = profanity.censor(message)
+	}
 	const onSubmit: SubmitHandler<CommentFields> = async data => {
 		try {
 			if (message.length === 0) {

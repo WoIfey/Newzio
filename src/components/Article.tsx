@@ -247,10 +247,10 @@ export default function Article({
 								</Avatar>
 							</Link>
 							<div className="text-xs flex flex-col gap-1">
-								<div className="flex gap-1">
+								<div className="flex gap-1 truncate max-w-40 sm:max-w-52">
 									<p>By</p>
 									<Link
-										className="hover:dark:text-sky-400 hover:text-sky-700 transition-all duration-75"
+										className="hover:dark:text-sky-400 hover:text-sky-700 transition-all duration-75 truncate"
 										href={`/author/${encodeURIComponent(
 											data.user_name
 												? data.user_name

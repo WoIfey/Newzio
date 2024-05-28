@@ -3,11 +3,16 @@ import { useAtom } from 'jotai'
 import { bodyEditInput } from '@/utils/atoms'
 import { useTheme } from 'next-themes'
 import { useState } from 'react'
+import { profanity } from '@/utils/profanity'
 
 export default function TinyMCE() {
-	const [body, setBody] = useAtom(bodyEditInput)
+	let [body, setBody] = useAtom(bodyEditInput)
 	const [text, setText] = useState('')
 	const { theme } = useTheme()
+
+	if (profanity.exists(body)) {
+		body = profanity.censor(body)
+	}
 
 	return (
 		<>

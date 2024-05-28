@@ -90,9 +90,9 @@ export default function EditPreview({
 								<AvatarFallback>{user?.user?.name?.charAt(0) ?? ''}</AvatarFallback>
 							</Avatar>
 							<div className="text-xs flex flex-col gap-1">
-								<div className="flex gap-1">
+								<div className="flex gap-1 truncate max-w-40 sm:max-w-52">
 									<p>By</p>
-									<div className="hover:dark:text-sky-400 hover:text-sky-700 transition-all duration-75">
+									<div className="hover:dark:text-sky-400 hover:text-sky-700 transition-all duration-75 truncate">
 										{user?.user?.name}
 									</div>
 								</div>
