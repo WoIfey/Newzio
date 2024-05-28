@@ -107,7 +107,7 @@ const User = memo(function User({
 															{news.user_name.charAt(0) ?? ''}
 														</AvatarFallback>
 													</Avatar>
-													<p>{news.user_name}</p>
+													<p className="truncate">{news.user_name}</p>
 													<p className="dark:text-white text-black">({count})</p>
 												</Link>
 											</div>
@@ -185,7 +185,7 @@ const User = memo(function User({
 																{news.user_name.charAt(0) ?? ''}
 															</AvatarFallback>
 														</Avatar>
-														<p>{news.user_name}</p>
+														<p className="truncate">{news.user_name}</p>
 														<p className="dark:text-white text-black">({count})</p>
 													</Link>
 												</div>

@@ -216,7 +216,7 @@ export default function Profile({
 													</h1>
 													<div className="text-slate-700 dark:text-slate-300 text-xs flex gap-1 items-center">
 														<div className="flex items-center gap-1 truncate w-full">
-															By {news.user_name}{' '}
+															<p className="truncate">By {news.user_name}</p>
 															{new Date(news.createdAt).getTime() !==
 															new Date(news.updatedAt).getTime() ? (
 																<>

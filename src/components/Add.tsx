@@ -49,6 +49,7 @@ import MiniPreview from '@/components/previews/MiniPreview'
 import Preview from '@/components/previews/Preview'
 import { useRouter } from 'next/navigation'
 import Loading from './Loading'
+import { profanity } from '@/utils/profanity'
 
 interface Tag {
 	id: string
@@ -59,8 +60,8 @@ export default function Add({ tags }: { tags: any }) {
 	const [open, setOpen] = useState(false)
 	const [body, setBody] = useAtom(bodyInput)
 	const [tagValue, setTagValue] = useAtom(tagInput)
-	const [headline, setHeadline] = useAtom(headlineInput)
-	const [lead, setLead] = useAtom(leadInput)
+	let [headline, setHeadline] = useAtom(headlineInput)
+	let [lead, setLead] = useAtom(leadInput)
 	const [fileUrl, setFileUrl] = useAtom(fileUrlInput)
 	const [fileType, setFileType] = useAtom(fileTypeValue)
 	const [fileKey, setFileKey] = useAtom(fileKeyValue)
@@ -81,6 +82,10 @@ export default function Add({ tags }: { tags: any }) {
 		await fileRemove(fileKey)
 	}
 
+	if (profanity.exists(headline) || profanity.exists(lead)) {
+		headline = profanity.censor(headline)
+		lead = profanity.censor(lead)
+	}
 	const onSubmit: SubmitHandler<ArticleFields> = async data => {
 		try {
 			data.body = body

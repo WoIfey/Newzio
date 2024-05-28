@@ -54,6 +54,7 @@ import {
 	TooltipTrigger,
 } from '@/components/ui/tooltip'
 import Loading from './Loading'
+import { profanity } from '@/utils/profanity'
 
 interface Tag {
 	id: string
@@ -64,8 +65,8 @@ export default function Edit({ tags, initial }: { tags: any; initial: any }) {
 	const [open, setOpen] = useState(false)
 	const [body, setBody] = useAtom(bodyEditInput)
 	const [tagValue, setTagValue] = useAtom(tagEditInput)
-	const [headline, setHeadline] = useAtom(headlineEditInput)
-	const [lead, setLead] = useAtom(leadEditInput)
+	let [headline, setHeadline] = useAtom(headlineEditInput)
+	let [lead, setLead] = useAtom(leadEditInput)
 	const [fileUrl, setFileUrl] = useAtom(fileUrlEditInput)
 	const [fileType, setFileType] = useAtom(fileTypeEditValue)
 	const [loading, setLoading] = useState(false)
@@ -92,6 +93,10 @@ export default function Edit({ tags, initial }: { tags: any; initial: any }) {
 	const currentUserId = session?.user?.id
 	const router = useRouter()
 
+	if (profanity.exists(headline) || profanity.exists(lead)) {
+		headline = profanity.censor(headline)
+		lead = profanity.censor(lead)
+	}
 	const onSubmit: SubmitHandler<ArticleFields> = async data => {
 		try {
 			data.body = body
