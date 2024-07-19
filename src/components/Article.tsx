@@ -13,7 +13,6 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { articleLike, fileRemove, removeArticle } from '@/server/actions'
-import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import {
 	Tooltip,
@@ -61,6 +60,8 @@ export default function Article({
 	comments,
 	articleLikes,
 	commentLikes,
+	words,
+	session,
 }: {
 	data: any
 	params: any
@@ -68,6 +69,8 @@ export default function Article({
 	comments: any
 	articleLikes: any
 	commentLikes: any
+	words: any
+	session: any
 }) {
 	const router = useRouter()
 	const [loading, setLoading] = useState(false)
@@ -112,8 +115,6 @@ export default function Article({
 			console.error('Failed to share article:', error)
 		}
 	}
-
-	const { data: session } = useSession()
 	if (loading) {
 		toast(
 			<Loading
@@ -459,6 +460,7 @@ export default function Article({
 						comments={comments}
 						user={session}
 						params={params}
+						words={words}
 						commentLikes={commentLikes}
 					/>
 				</div>

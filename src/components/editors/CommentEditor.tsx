@@ -5,10 +5,18 @@ import { useTheme } from 'next-themes'
 import { useState } from 'react'
 import { profanity } from '@/utils/profanity'
 
-export default function TinyMCE() {
+interface Word {
+	word: string
+}
+
+export default function TinyMCE({ words }: { words: any }) {
 	let [message, setMessage] = useAtom(commentInput)
 	const [text, setText] = useState('')
 	const { theme } = useTheme()
+
+	const acceptedWords = words.map((badWord: Word) => badWord.word)
+	profanity.whitelist.addWords(acceptedWords)
+
 	if (profanity.exists(message)) {
 		message = profanity.censor(message)
 	}

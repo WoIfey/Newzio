@@ -46,6 +46,11 @@ export async function getArticleLikes(article_id: string) {
     return res.rows
 }
 
+export async function getProfanityWords() {
+    const res = await db.query("SELECT * FROM profanity")
+    return res.rows
+}
+
 export async function saveComment(article_id: string, message: string, user_id: number, user_name: string, user_image: string) {
     try {
         await db.query(`INSERT INTO comments(article_id, message, user_id, user_name, user_image) VALUES($1, $2, $3, $4, $5)`, [article_id, message, user_id, user_name, user_image])

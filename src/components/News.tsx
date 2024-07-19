@@ -9,7 +9,6 @@ import {
 	ContextMenuItem,
 	ContextMenuTrigger,
 } from '@/components/ui/context-menu'
-import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 import {
 	AlertDialog,
@@ -38,7 +37,7 @@ import Loading from './Loading'
 import { PencilIcon, Trash2Icon } from 'lucide-react'
 import { formatLikes } from '@/utils/likes'
 
-export default function News({ data }: { data: any[] }) {
+export default function News({ data, session }: { data: any[]; session: any }) {
 	data.sort((a: any, b: any) => b.id - a.id)
 	const [currentPage, setCurrentPage] = useState(1)
 	const [loading, setLoading] = useState(true)
@@ -81,7 +80,6 @@ export default function News({ data }: { data: any[] }) {
 			console.error('Failed to delete article:', error)
 		}
 	}
-	const { data: session } = useSession()
 	if (loading) {
 		return <Loading fullscreen={true} background={true} size={64} />
 	}

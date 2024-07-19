@@ -58,7 +58,7 @@ export default async function RootLayout({
 						<Suspense
 							fallback={<Loading fullscreen={true} background={true} size={64} />}
 						>
-							<Navbar userNews={userNews} />
+							<Navbar userNews={userNews} session={session} />
 							<NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
 							{children}
 							<Footer />

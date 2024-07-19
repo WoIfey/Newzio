@@ -68,11 +68,13 @@ export default function Comments({
 	comments,
 	user,
 	params,
+	words,
 	commentLikes,
 }: {
 	comments: any
 	user: any
 	params: any
+	words: any
 	commentLikes: any
 }) {
 	comments.sort((a: any, b: any) => b.id - a.id)
@@ -268,7 +270,7 @@ export default function Comments({
 								</AvatarFallback>
 							</Avatar>
 							<div className="w-full mb-1">
-								<CommentEditor />
+								<CommentEditor words={words} />
 							</div>
 						</div>
 						<span
@@ -495,7 +497,7 @@ export default function Comments({
 					<div className="flex items-center gap-1">
 						{editMode === comment.id && (
 							<div className="flex gap-2 flex-col w-full">
-								<CommentsEditor value={comment.message} id={comment.id} />
+								<CommentsEditor value={comment.message} words={words} id={comment.id} />
 							</div>
 						)}
 						{editMode !== comment.id && (

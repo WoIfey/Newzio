@@ -56,15 +56,17 @@ import NotFound from '@/app/not-found'
 import Loading from './Loading'
 import { formatLikes } from '@/utils/likes'
 
-export default function Likes({
+export default function Comment({
 	comment,
 	params,
 	likes,
+	words,
 	user,
 }: {
 	comment: any
 	params: any
 	likes: any
+	words: any
 	user: any
 }) {
 	const [dataLoading, setDataLoading] = useState(false)
@@ -189,7 +191,7 @@ export default function Likes({
 								<ArrowLeftIcon className="size-6" />
 							</TooltipTrigger>
 							<TooltipContent>
-								<p>Back to Article</p>
+								<p className="font-normal">Back to Article</p>
 							</TooltipContent>
 						</Tooltip>
 					</TooltipProvider>
@@ -246,7 +248,7 @@ export default function Likes({
 									</AvatarFallback>
 								</Avatar>
 							</Link>
-							<div className="flex items-center gap-2">
+							<div className="flex sm:flex-row flex-col sm:items-center gap-2 truncate max-w-40 sm:max-w-80">
 								<Link
 									href={`/author/${encodeURIComponent(
 										comment.user_name
@@ -258,10 +260,11 @@ export default function Likes({
 													.replace(/\s+/g, '-')
 											: 'unknown'
 									)}/${comment.user_id}`}
+									className="truncate"
 								>
-									<p className="text-sm font-bold">{comment.user_name}</p>
+									<p className="text-sm font-bold truncate">{comment.user_name}</p>
 								</Link>
-								<span className="text-black dark:text-white text-sm">{`•`}</span>
+								<span className="text-black dark:text-white text-sm sm:block hidden">{`•`}</span>
 								<time
 									title={new Date(comment.createdAt).toLocaleString()}
 									dateTime={new Date(comment.createdAt).toLocaleString()}
@@ -363,7 +366,11 @@ export default function Likes({
 					<div className="flex items-center gap-1">
 						{editMode === comment?.id && (
 							<div className="flex gap-2 flex-col w-full">
-								<CommentsEditor value={comment?.message} id={comment?.id} />
+								<CommentsEditor
+									value={comment?.message}
+									words={words}
+									id={comment?.id}
+								/>
 							</div>
 						)}
 						{editMode !== comment?.id && (
