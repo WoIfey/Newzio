@@ -1,4 +1,4 @@
-import { getComment, getCommentLike } from '@/server/db'
+import { getComment, getCommentLike, getProfanityWords } from '@/server/db'
 import Comment from '@/components/Comment'
 import { getServerSession } from 'next-auth'
 import { options } from '@/app/api/auth/[...nextauth]/options'
@@ -52,12 +52,19 @@ export const generateMetadata = async ({
 export default async function CommentLikes({ params }: Props) {
 	let comment = (await getComment(params.comment_id))[0]
 	let likes = await getCommentLike(params.article_id)
+	let words = await getProfanityWords()
 	const session = await getServerSession(options)
 
 	return (
 		<main className="flex min-h-dvh flex-col items-center bg-[#dfdfdf] dark:bg-[#1b1b1b]">
 			<div className="flex flex-col lg:flex-row-reverse md:pt-16">
-				<Comment comment={comment} params={params} likes={likes} user={session} />
+				<Comment
+					comment={comment}
+					params={params}
+					likes={likes}
+					words={words}
+					user={session}
+				/>
 			</div>
 		</main>
 	)

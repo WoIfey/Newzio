@@ -1,6 +1,6 @@
 import NotFound from '@/app/not-found'
 import EditArticle from '@/components/EditArticle'
-import { getPage, getTags } from '@/server/db'
+import { getPage, getProfanityWords, getTags } from '@/server/db'
 import { options } from '@/app/api/auth/[...nextauth]/options'
 import { getServerSession } from 'next-auth/next'
 
@@ -14,6 +14,7 @@ export default async function Edit({ params }: Props) {
 	const session = await getServerSession(options)
 	let data = (await getPage(params.article_id))[0]
 	let tags = await getTags()
+	let words = await getProfanityWords()
 
 	if (!data) {
 		return (
@@ -35,7 +36,7 @@ export default async function Edit({ params }: Props) {
 
 	return (
 		<div className="flex min-h-dvh flex-col items-center bg-[#dfdfdf] dark:bg-[#1b1b1b]">
-			<EditArticle tags={tags} initial={data} />
+			<EditArticle tags={tags} initial={data} words={words} session={session} />
 		</div>
 	)
 }

@@ -13,7 +13,19 @@ import { useRouter } from 'next/navigation'
 import Loading from '../Loading'
 import { profanity } from '@/utils/profanity'
 
-export default function TinyMCE({ value, id }: { value: any; id: any }) {
+interface Word {
+	word: string
+}
+
+export default function TinyMCE({
+	value,
+	words,
+	id,
+}: {
+	value: any
+	words: any
+	id: any
+}) {
 	let [message, setMessage] = useState(value)
 	const [text, setText] = useState('')
 	const [editMode, setEditMode] = useAtom(editState)
@@ -26,6 +38,9 @@ export default function TinyMCE({ value, id }: { value: any; id: any }) {
 		handleSubmit,
 		formState: { errors, isSubmitting },
 	} = useForm<CommentFields>()
+
+	const acceptedWords = words.map((badWord: Word) => badWord.word)
+	profanity.whitelist.addWords(acceptedWords)
 
 	if (profanity.exists(message)) {
 		message = profanity.censor(message)

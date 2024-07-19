@@ -8,19 +8,39 @@ import {
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import Settings from './Settings'
-import { signIn, signOut, useSession } from 'next-auth/react'
+import { signIn, signOut } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useTheme } from 'next-themes'
-import { HomeIcon, LogInIcon, LogOutIcon, PlusIcon } from 'lucide-react'
+import {
+	Check,
+	HomeIcon,
+	LogInIcon,
+	LogOutIcon,
+	Moon,
+	PlusIcon,
+	Sun,
+	SunMoon,
+} from 'lucide-react'
 import Loading from './Loading'
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
-export default function Navbar({ userNews }: { userNews: any[] }) {
+export default function Navbar({
+	userNews,
+	session,
+}: {
+	userNews: any[]
+	session: any
+}) {
 	const [mounted, setMounted] = useState(false)
 	const [toggleMenu, setToggleMenu] = useState(false)
 	const { theme, setTheme } = useTheme()
-	const { data: session } = useSession()
 
 	useEffect(() => {
 		setMounted(true)
@@ -155,24 +175,57 @@ export default function Navbar({ userNews }: { userNews: any[] }) {
 					</div>
 					<div className="hidden sm:ml-4 sm:block">
 						<div className="flex items-center">
-							<button
-								type="button"
-								onClick={() => {
-									setTheme(theme === 'light' ? 'dark' : 'light')
-								}}
-								className="relative flex-shrink-0 rounded-full p-1"
-							>
-								<span className="absolute -inset-1.5" />
-								<span className="sr-only">Toggle theme</span>
-								{theme === 'light' ? (
-									<SunIcon className="size-6 text-yellow-600" aria-hidden="true" />
-								) : (
-									<MoonIcon className="size-6 text-gray-300" aria-hidden="true" />
-								)}
-							</button>
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<Button
+										variant="outline"
+										size="icon"
+										className="bg-transparent border-none outline-none hover:bg-transparent"
+									>
+										<Sun className="text-yellow-600 size-6 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+										<Moon className="text-gray-300 absolute size-6 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+										<span className="sr-only">Toggle theme</span>
+									</Button>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent>
+									<DropdownMenuItem
+										onClick={() => setTheme('light')}
+										className="flex items-center gap-1"
+									>
+										<p className="mb-0.5">Light</p>
+										<Check
+											className={`text-gray-800 size-4 ${
+												theme === 'light' ? 'block' : 'hidden'
+											}`}
+										/>
+									</DropdownMenuItem>
+									<DropdownMenuItem
+										onClick={() => setTheme('dark')}
+										className="flex items-center gap-1"
+									>
+										<p className="mb-0.5">Dark</p>
+										<Check
+											className={`text-gray-300 size-4 ${
+												theme === 'dark' ? 'block' : 'hidden'
+											}`}
+										/>
+									</DropdownMenuItem>
+									<DropdownMenuItem
+										onClick={() => setTheme('system')}
+										className="flex items-center gap-1"
+									>
+										<p className="mb-0.5">System</p>
+										<Check
+											className={`text-gray-800 dark:text-gray-300 size-4 ${
+												theme === 'system' ? 'block' : 'hidden'
+											}`}
+										/>
+									</DropdownMenuItem>
+								</DropdownMenuContent>
+							</DropdownMenu>
 
 							{/* Profile dropdown */}
-							<div className="relative ml-4 flex-shrink-0">
+							<div className="relative ml-3 flex-shrink-0">
 								<div className="relative flex rounded-full">
 									<span className="sr-only">Open user menu</span>
 									<Settings user={session} userNews={userNews} />

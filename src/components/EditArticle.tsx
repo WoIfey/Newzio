@@ -40,7 +40,6 @@ import {
 } from '@/utils/atoms'
 import { useAtom } from 'jotai'
 import Image from 'next/image'
-import { useSession } from 'next-auth/react'
 import { UploadDetails } from 'uploadDetails'
 import { ArticleFields } from 'ArticleFields'
 import MiniEditPreview from '@/components/previews/MiniEditPreview'
@@ -60,8 +59,21 @@ interface Tag {
 	id: string
 	tag: string
 }
+interface Word {
+	word: string
+}
 
-export default function Edit({ tags, initial }: { tags: any; initial: any }) {
+export default function Edit({
+	tags,
+	initial,
+	session,
+	words,
+}: {
+	tags: any
+	initial: any
+	session: any
+	words: any
+}) {
 	const [open, setOpen] = useState(false)
 	const [body, setBody] = useAtom(bodyEditInput)
 	const [tagValue, setTagValue] = useAtom(tagEditInput)
@@ -88,10 +100,11 @@ export default function Edit({ tags, initial }: { tags: any; initial: any }) {
 		handleSubmit,
 		formState: { errors, isSubmitting },
 	} = useForm<ArticleFields>()
-
-	const { data: session } = useSession()
 	const currentUserId = session?.user?.id
 	const router = useRouter()
+
+	const acceptedWords = words.map((badWord: Word) => badWord.word)
+	profanity.whitelist.addWords(acceptedWords)
 
 	if (profanity.exists(headline) || profanity.exists(lead)) {
 		headline = profanity.censor(headline)
@@ -366,7 +379,7 @@ export default function Edit({ tags, initial }: { tags: any; initial: any }) {
 									Body
 								</Label>
 								<div className="mt-2">
-									<ArticleEditor />
+									<ArticleEditor words={acceptedWords} />
 									<span
 										className={`text-xs ${body?.length >= 4096 ? 'text-red-500' : ''}`}
 									>

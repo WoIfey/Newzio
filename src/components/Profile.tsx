@@ -9,7 +9,6 @@ import {
 	ContextMenuItem,
 	ContextMenuTrigger,
 } from '@/components/ui/context-menu'
-import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 import {
 	AlertDialog,
@@ -43,9 +42,11 @@ import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid'
 export default function Profile({
 	userNews,
 	params,
+	session,
 }: {
 	userNews: any[]
 	params: any
+	session: any
 }) {
 	userNews.sort((a: any, b: any) => b.id - a.id)
 	const [currentPage, setCurrentPage] = useState(1)
@@ -88,8 +89,6 @@ export default function Profile({
 			console.error('Failed to delete article:', error)
 		}
 	}
-
-	const { data: session } = useSession()
 	if (loading) {
 		return <Loading fullscreen={true} background={true} size={64} />
 	}

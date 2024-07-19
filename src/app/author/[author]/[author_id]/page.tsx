@@ -1,6 +1,8 @@
 import { getUserNews } from '@/server/db'
 import Profile from '@/components/Profile'
 import { Metadata } from 'next'
+import { options } from '@/app/api/auth/[...nextauth]/options'
+import { getServerSession } from 'next-auth/next'
 
 type Props = {
 	params: {
@@ -36,12 +38,13 @@ export const generateMetadata = async ({
 }
 
 export default async function Author({ params }: Props) {
+	const session = await getServerSession(options)
 	let userNews = await getUserNews(params.author_id)
 
 	return (
 		<main className="flex min-h-dvh flex-col items-center bg-[#dfdfdf] dark:bg-[#1b1b1b]">
 			<div className="flex flex-col lg:flex-row-reverse md:pt-16">
-				<Profile userNews={userNews} params={params} />
+				<Profile userNews={userNews} params={params} session={session} />
 			</div>
 		</main>
 	)

@@ -14,7 +14,7 @@ export default async function Home() {
 				<div className="flex-shrink-0">
 					<User data={news} session={session} />
 				</div>
-				<News data={news} />
+				<News data={news} session={session} />
 			</div>
 		</main>
 	)

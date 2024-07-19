@@ -42,7 +42,6 @@ import {
 } from '@/utils/atoms'
 import { useAtom } from 'jotai'
 import Image from 'next/image'
-import { useSession } from 'next-auth/react'
 import { UploadDetails } from 'uploadDetails'
 import { ArticleFields } from 'ArticleFields'
 import MiniPreview from '@/components/previews/MiniPreview'
@@ -55,8 +54,19 @@ interface Tag {
 	id: string
 	tag: string
 }
+interface Word {
+	word: string
+}
 
-export default function Add({ tags }: { tags: any }) {
+export default function Add({
+	tags,
+	words,
+	session,
+}: {
+	tags: any
+	words: any
+	session: any
+}) {
 	const [open, setOpen] = useState(false)
 	const [body, setBody] = useAtom(bodyInput)
 	const [tagValue, setTagValue] = useAtom(tagInput)
@@ -74,13 +84,15 @@ export default function Add({ tags }: { tags: any }) {
 		formState: { errors, isSubmitting },
 	} = useForm<ArticleFields>()
 
-	const { data: session } = useSession()
 	const currentUserId = session?.user?.id
 	const router = useRouter()
 
 	const handleRemove = async () => {
 		await fileRemove(fileKey)
 	}
+
+	const acceptedWords = words.map((badWord: Word) => badWord.word)
+	profanity.whitelist.addWords(acceptedWords)
 
 	if (profanity.exists(headline) || profanity.exists(lead)) {
 		headline = profanity.censor(headline)
@@ -329,7 +341,7 @@ export default function Add({ tags }: { tags: any }) {
 									Body
 								</Label>
 								<div className="mt-2">
-									<AddEditor />
+									<AddEditor words={acceptedWords} />
 									<span
 										className={`text-xs ${body.length >= 4096 ? 'text-red-500' : ''}`}
 									>

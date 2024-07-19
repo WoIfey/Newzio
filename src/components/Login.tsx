@@ -89,41 +89,6 @@ export default function Login(props: Props) {
 						<h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
 							Sign in
 						</h1>
-						<div className="flex flex-col sm:flex-row items-center gap-2">
-							<Button
-								onClick={() => signIn('github', { callbackUrl: props.callbackUrl })}
-								className="w-full gap-x-2 hover:dark:bg-slate-900"
-								variant="outline"
-							>
-								<Image
-									width={32}
-									height={32}
-									src="/github.svg"
-									alt="GitHub"
-									className="size-5 bg-slate-200 p-[1px] rounded-full"
-								/>
-								<p className="max-[640px]:truncate">Log in with GitHub</p>
-							</Button>
-							<Button
-								onClick={() => signIn('discord', { callbackUrl: props.callbackUrl })}
-								className="w-full gap-x-2 hover:dark:bg-slate-900"
-								variant="outline"
-							>
-								<Image
-									width={32}
-									height={32}
-									src="/discord.svg"
-									alt="Discord"
-									className="size-5"
-								/>
-								<p className="max-[640px]:truncate">Log in with Discord</p>
-							</Button>
-						</div>
-						<div className="flex w-full items-center space-x-4">
-							<div className="flex-1 border-b-2 rounded-xl border-gray-300 dark:border-gray-600"></div>
-							<p className="text-gray-500 dark:text-gray-400">or</p>
-							<div className="flex-1 border-b-2 rounded-xl border-gray-300 dark:border-gray-600"></div>
-						</div>
 						<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
 							<div>
 								<Label
@@ -196,10 +161,10 @@ export default function Login(props: Props) {
 							<a
 								href="#"
 								className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-500"
-							>
+								>
 								Forgot password?
-							</a>
-						</div> */}
+								</a>
+								</div> */}
 							<Button
 								type="submit"
 								className="w-full flex gap-1 bg-blue-300 hover:bg-blue-200 text-black dark:bg-blue-700 dark:hover:bg-blue-800 dark:text-white"
@@ -213,6 +178,41 @@ export default function Login(props: Props) {
 								{loading ? <p className="ml-1">Logging in...</p> : `Log in`}
 							</Button>
 						</form>
+						<div className="flex w-full items-center space-x-4">
+							<div className="flex-1 border-b-2 rounded-xl border-gray-300 dark:border-gray-600"></div>
+							<p className="text-gray-500 dark:text-gray-400">or</p>
+							<div className="flex-1 border-b-2 rounded-xl border-gray-300 dark:border-gray-600"></div>
+						</div>
+						<div className="flex flex-col sm:flex-row items-center gap-2">
+							<Button
+								onClick={() => signIn('github', { callbackUrl: props.callbackUrl })}
+								className="w-full gap-x-2 hover:dark:bg-slate-900"
+								variant="outline"
+							>
+								<Image
+									width={32}
+									height={32}
+									src="/github.svg"
+									alt="GitHub"
+									className="size-5 p-[1px] dark:invert"
+								/>
+								<p className="max-[640px]:truncate">Log in with GitHub</p>
+							</Button>
+							<Button
+								onClick={() => signIn('discord', { callbackUrl: props.callbackUrl })}
+								className="w-full gap-x-2 hover:dark:bg-slate-900"
+								variant="outline"
+							>
+								<Image
+									width={32}
+									height={32}
+									src="/discord.svg"
+									alt="Discord"
+									className="size-5"
+								/>
+								<p className="max-[640px]:truncate">Log in with Discord</p>
+							</Button>
+						</div>
 						<p className="text-sm font-light text-gray-500 dark:text-gray-400">
 							{`New to Newzio? `}
 							<Link

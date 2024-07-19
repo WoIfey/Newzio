@@ -1,10 +1,13 @@
 import Article from '@/components/Article'
+import { options } from '@/app/api/auth/[...nextauth]/options'
+import { getServerSession } from 'next-auth/next'
 import {
 	getComments,
 	getCommentLike,
 	getNews,
 	getPage,
 	getArticleLikes,
+	getProfanityWords,
 } from '@/server/db'
 import { Metadata } from 'next'
 
@@ -50,6 +53,8 @@ export default async function NewsPost({ params }: Props) {
 	let comments = await getComments(params.article_id)
 	let commentLikes = await getCommentLike(params.article_id)
 	let articleLikes = await getArticleLikes(params.article_id)
+	let words = await getProfanityWords()
+	const session = await getServerSession(options)
 
 	return (
 		<div className="flex min-h-dvh md:flex-row flex-col justify-center md:pt-16 bg-[#dfdfdf] dark:bg-[#1b1b1b]">
@@ -60,6 +65,8 @@ export default async function NewsPost({ params }: Props) {
 				comments={comments}
 				commentLikes={commentLikes}
 				articleLikes={articleLikes}
+				words={words}
+				session={session}
 			/>
 		</div>
 	)
