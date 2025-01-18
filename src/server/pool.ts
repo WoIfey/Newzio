@@ -5,12 +5,8 @@ export const db = new Pool({
     user: process.env.USER,
     password: process.env.PASSWORD,
     database: process.env.DATABASE,
-    port: 10867,
+    port: 5432,
     ssl: {
         rejectUnauthorized: true,
-        ca: process.env.SSL
     },
-    max: 1,
-    idleTimeoutMillis: 1000,
-    connectionTimeoutMillis: 15000,
 })
