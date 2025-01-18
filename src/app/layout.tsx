@@ -7,7 +7,6 @@ import { ourFileRouter } from '@/app/api/uploadthing/core'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import AuthProvider from './context/AuthProvider'
-import { Analytics } from '@vercel/analytics/react'
 import { Toaster } from '@/components/ui/sonner'
 import { Suspense } from 'react'
 import Loading from '@/components/Loading'
@@ -65,7 +64,6 @@ export default async function RootLayout({
 							<Toaster />
 							<Dev />
 						</Suspense>
-						<Analytics />
 					</AuthProvider>
 				</ThemeProvider>
 			</body>

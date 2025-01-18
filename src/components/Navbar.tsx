@@ -175,51 +175,30 @@ export default function Navbar({
 					</div>
 					<div className="hidden sm:ml-4 sm:block">
 						<div className="flex items-center">
-							<DropdownMenu>
+							<DropdownMenu modal={false}>
 								<DropdownMenuTrigger asChild>
 									<Button
 										variant="outline"
 										size="icon"
-										className="bg-transparent border-none outline-none hover:bg-transparent"
+										className="bg-transparent border-none outline-none hover:bg-transparent rounded-full"
 									>
-										<Sun className="text-yellow-600 size-6 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-										<Moon className="text-gray-300 absolute size-6 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+										<Sun className="size-6 text-yellow-600 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+										<Moon className="absolute text-gray-300 size-6 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
 										<span className="sr-only">Toggle theme</span>
 									</Button>
 								</DropdownMenuTrigger>
-								<DropdownMenuContent>
-									<DropdownMenuItem
-										onClick={() => setTheme('light')}
-										className="flex items-center gap-1"
-									>
-										<p className="mb-0.5">Light</p>
-										<Check
-											className={`text-gray-800 size-4 ${
-												theme === 'light' ? 'block' : 'hidden'
-											}`}
-										/>
+								<DropdownMenuContent align="end">
+									<DropdownMenuItem onClick={() => setTheme('light')}>
+										Light
+										{theme === 'light' && <Check className="ml-2 size-4" />}
 									</DropdownMenuItem>
-									<DropdownMenuItem
-										onClick={() => setTheme('dark')}
-										className="flex items-center gap-1"
-									>
-										<p className="mb-0.5">Dark</p>
-										<Check
-											className={`text-gray-300 size-4 ${
-												theme === 'dark' ? 'block' : 'hidden'
-											}`}
-										/>
+									<DropdownMenuItem onClick={() => setTheme('dark')}>
+										Dark
+										{theme === 'dark' && <Check className="ml-2 size-4" />}
 									</DropdownMenuItem>
-									<DropdownMenuItem
-										onClick={() => setTheme('system')}
-										className="flex items-center gap-1"
-									>
-										<p className="mb-0.5">System</p>
-										<Check
-											className={`text-gray-800 dark:text-gray-300 size-4 ${
-												theme === 'system' ? 'block' : 'hidden'
-											}`}
-										/>
+									<DropdownMenuItem onClick={() => setTheme('system')}>
+										System
+										{theme === 'system' && <Check className="ml-2 size-4" />}
 									</DropdownMenuItem>
 								</DropdownMenuContent>
 							</DropdownMenu>
