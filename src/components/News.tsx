@@ -22,7 +22,6 @@ import {
 	AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid'
 import { formatDistanceToNowStrict } from 'date-fns'
 import {
 	Pagination,
@@ -34,7 +33,7 @@ import {
 } from '@/components/ui/pagination'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Loading from './Loading'
-import { PencilIcon, Trash2Icon } from 'lucide-react'
+import { Heart, PencilIcon, Trash2Icon } from 'lucide-react'
 import { formatLikes } from '@/utils/likes'
 
 export default function News({ data, session }: { data: any[]; session: any }) {
@@ -111,7 +110,7 @@ export default function News({ data, session }: { data: any[]; session: any }) {
 							<AlertDialog>
 								<ContextMenu>
 									<ContextMenuTrigger>
-										{currentUserId !== news.user_id && currentUserId === '87246869' && (
+										{currentUserId !== news.userId && currentUserId === '87246869' && (
 											<ContextMenuContent>
 												<ContextMenuItem asChild>
 													<AlertDialogTrigger asChild>
@@ -186,7 +185,7 @@ export default function News({ data, session }: { data: any[]; session: any }) {
 												</h1>
 												<div className="text-slate-700 dark:text-slate-300 text-xs flex gap-1 items-center">
 													<div className="flex items-center gap-1 truncate w-full">
-														<p className="truncate">By {news.user_name}</p>
+														<p className="truncate">By {news.userName}</p>
 														{new Date(news.createdAt).getTime() !==
 														new Date(news.updatedAt).getTime() ? (
 															<>
@@ -217,7 +216,7 @@ export default function News({ data, session }: { data: any[]; session: any }) {
 														)}
 													</div>
 													<div className="flex items-center gap-1">
-														<HeartIconSolid className="size-4" />
+														<Heart className="size-4 fill-black" />
 														<p className="text-sm">{formatLikes(news.likes)}</p>
 													</div>
 												</div>
@@ -229,7 +228,7 @@ export default function News({ data, session }: { data: any[]; session: any }) {
 											</div>
 										</Link>
 
-										{currentUserId === news.user_id && (
+										{currentUserId === news.userId && (
 											<>
 												<ContextMenuContent>
 													<ContextMenuItem asChild>

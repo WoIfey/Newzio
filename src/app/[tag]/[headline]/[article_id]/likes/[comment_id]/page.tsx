@@ -16,7 +16,7 @@ export const generateMetadata = async ({
 }: Props): Promise<Metadata> => {
 	let data = (await getComment(params.comment_id))[0]
 	return {
-		title: `Comment by ${data?.user_name} with ${
+		title: `Comment by ${data?.userName} with ${
 			data?.likes === 1 ? '1 like' : data?.likes + ' likes'
 		}`,
 		description:
@@ -24,7 +24,7 @@ export const generateMetadata = async ({
 				? `${data.message.substring(0, 128)}...`
 				: data?.message,
 		openGraph: {
-			title: `Comment by ${data?.user_name} with ${
+			title: `Comment by ${data?.userName} with ${
 				data?.likes === 1 ? '1 like' : data?.likes + ' likes'
 			}`,
 			description:
@@ -35,7 +35,7 @@ export const generateMetadata = async ({
 			siteName: `Newzio - Likes`,
 			images: [
 				{
-					url: `${data?.user_image}`,
+					url: `${data?.userImage}`,
 					width: 1280,
 					height: 720,
 					alt: 'Thumbnail',

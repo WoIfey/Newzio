@@ -1,8 +1,8 @@
 import { getComment, getCommentLike, getProfanityWords } from '@/server/db'
 import Comment from '@/components/Comment'
-import { getServerSession } from 'next-auth'
-import { options } from '@/app/api/auth/[...nextauth]/options'
 import { Metadata } from 'next'
+import { auth } from '@/lib/auth'
+import { headers } from 'next/headers'
 
 type Props = {
 	params: {
@@ -18,7 +18,7 @@ export const generateMetadata = async ({
 }: Props): Promise<Metadata> => {
 	let data = (await getComment(params.comment_id))[0]
 	return {
-		title: `Comment by ${data?.user_name} with ${
+		title: `Comment by ${data?.userName} with ${
 			data?.likes === 1 ? '1 like' : data?.likes + ' likes'
 		}`,
 		description:
@@ -26,7 +26,7 @@ export const generateMetadata = async ({
 				? `${data.message.substring(0, 128)}...`
 				: data?.message,
 		openGraph: {
-			title: `Comment by ${data?.user_name} with ${
+			title: `Comment by ${data?.userName} with ${
 				data?.likes === 1 ? '1 like' : data?.likes + ' likes'
 			}`,
 			description:
@@ -37,7 +37,7 @@ export const generateMetadata = async ({
 			siteName: `Newzio - Comment`,
 			images: [
 				{
-					url: `${data?.user_image}`,
+					url: `${data?.userImage}`,
 					width: 1280,
 					height: 720,
 					alt: 'Thumbnail',
@@ -50,10 +50,12 @@ export const generateMetadata = async ({
 }
 
 export default async function CommentLikes({ params }: Props) {
+	const session = await auth.api.getSession({
+		headers: await headers(),
+	})
 	let comment = (await getComment(params.comment_id))[0]
 	let likes = await getCommentLike(params.article_id)
 	let words = await getProfanityWords()
-	const session = await getServerSession(options)
 
 	return (
 		<main className="flex min-h-dvh flex-col items-center bg-[#dfdfdf] dark:bg-[#1b1b1b]">

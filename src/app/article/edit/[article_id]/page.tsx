@@ -1,8 +1,8 @@
 import NotFound from '@/app/not-found'
 import EditArticle from '@/components/EditArticle'
+import { auth } from '@/lib/auth'
+import { headers } from 'next/headers'
 import { getPage, getProfanityWords, getTags } from '@/server/db'
-import { options } from '@/app/api/auth/[...nextauth]/options'
-import { getServerSession } from 'next-auth/next'
 
 type Props = {
 	params: {
@@ -11,7 +11,9 @@ type Props = {
 }
 
 export default async function Edit({ params }: Props) {
-	const session = await getServerSession(options)
+	const session = await auth.api.getSession({
+		headers: await headers(),
+	})
 	let data = (await getPage(params.article_id))[0]
 	let tags = await getTags()
 	let words = await getProfanityWords()
@@ -25,7 +27,7 @@ export default async function Edit({ params }: Props) {
 		)
 	}
 
-	if (!session || !session.user || session.user.id !== data?.user_id) {
+	if (!session || !session.user || session.user.id !== data?.userId) {
 		return (
 			<NotFound
 				h1="Nuh uh!"

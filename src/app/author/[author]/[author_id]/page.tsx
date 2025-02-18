@@ -1,8 +1,8 @@
 import { getUserNews } from '@/server/db'
 import Profile from '@/components/Profile'
 import { Metadata } from 'next'
-import { options } from '@/app/api/auth/[...nextauth]/options'
-import { getServerSession } from 'next-auth/next'
+import { auth } from '@/lib/auth'
+import { headers } from 'next/headers'
 
 type Props = {
 	params: {
@@ -16,16 +16,16 @@ export const generateMetadata = async ({
 }: Props): Promise<Metadata> => {
 	let data = (await getUserNews(params.author_id))[0]
 	return {
-		title: `${data?.user_name ?? params.author} - Newzio`,
-		description: `Check out ${data?.user_name ?? params.author}'s articles!`,
+		title: `${data?.userName ?? params.author} - Newzio`,
+		description: `Check out ${data?.userName ?? params.author}'s articles!`,
 		openGraph: {
-			title: `${data?.user_name ?? params.author}`,
-			description: `Check out ${data?.user_name ?? params.author}'s articles!`,
+			title: `${data?.userName ?? params.author}`,
+			description: `Check out ${data?.userName ?? params.author}'s articles!`,
 			url: `https://newzio.vercel.app/author/${params.author}/${params.author_id}`,
 			siteName: `Newzio - Author`,
 			images: [
 				{
-					url: `${data?.user_image}`,
+					url: `${data?.userImage}`,
 					width: 1280,
 					height: 720,
 					alt: 'Thumbnail',
@@ -38,7 +38,9 @@ export const generateMetadata = async ({
 }
 
 export default async function Author({ params }: Props) {
-	const session = await getServerSession(options)
+	const session = await auth.api.getSession({
+		headers: await headers(),
+	})
 	let userNews = await getUserNews(params.author_id)
 
 	return (
