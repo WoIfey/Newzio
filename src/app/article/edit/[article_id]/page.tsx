@@ -5,16 +5,19 @@ import { headers } from 'next/headers'
 import { getPage, getProfanityWords, getTags } from '@/server/db'
 
 type Props = {
-	params: {
-		article_id: string
-	}
+	params: Promise<{
+		tag: string
+		headline: string
+		article: string
+	}>
 }
 
 export default async function Edit({ params }: Props) {
 	const session = await auth.api.getSession({
 		headers: await headers(),
 	})
-	let data = (await getPage(params.article_id))[0]
+	const id = await params
+	let data = (await getPage(id.article))[0]
 	let tags = await getTags()
 	let words = await getProfanityWords()
 
@@ -37,8 +40,8 @@ export default async function Edit({ params }: Props) {
 	}
 
 	return (
-		<div className="flex min-h-dvh flex-col items-center bg-[#dfdfdf] dark:bg-[#1b1b1b]">
-			<EditArticle tags={tags} initial={data} words={words} session={session} />
+		<div className="flex min-h-dvh w-full dark:bg-[#1b1b1b] bg-[#dfdfdf]">
+			<EditArticle tags={tags} initial={data} session={session} words={words} />
 		</div>
 	)
 }

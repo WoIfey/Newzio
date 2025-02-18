@@ -5,18 +5,19 @@ import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 
 type Props = {
-	params: {
+	params: Promise<{
 		tag: string
 		headline: string
-		article_id: string
-		comment_id: string
-	}
+		article: string
+		comment: string
+	}>
 }
 
 export const generateMetadata = async ({
 	params,
 }: Props): Promise<Metadata> => {
-	let data = (await getComment(params.comment_id))[0]
+	const id = await params
+	let data = (await getComment(id.comment))[0]
 	return {
 		title: `Comment by ${data?.userName} with ${
 			data?.likes === 1 ? '1 like' : data?.likes + ' likes'
@@ -33,7 +34,7 @@ export const generateMetadata = async ({
 				data?.message?.length > 128
 					? `${data.message.substring(0, 128)}...`
 					: data?.message,
-			url: `https://newzio.vercel.app/${params.tag}/${params.headline}/${params.article_id}/comment/${data?.id}`,
+			url: `https://newzio.vercel.app/${id.tag}/${id.headline}/${id.article}/comment/${data?.id}`,
 			siteName: `Newzio - Comment`,
 			images: [
 				{
@@ -53,8 +54,9 @@ export default async function CommentLikes({ params }: Props) {
 	const session = await auth.api.getSession({
 		headers: await headers(),
 	})
-	let comment = (await getComment(params.comment_id))[0]
-	let likes = await getCommentLike(params.article_id)
+	const id = await params
+	let comment = (await getComment(id.comment))[0]
+	let likes = await getCommentLike(id.article)
 	let words = await getProfanityWords()
 
 	return (
@@ -62,7 +64,7 @@ export default async function CommentLikes({ params }: Props) {
 			<div className="flex flex-col lg:flex-row-reverse md:pt-16">
 				<Comment
 					comment={comment}
-					params={params}
+					params={id}
 					likes={likes}
 					words={words}
 					user={session}
