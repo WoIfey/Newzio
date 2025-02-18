@@ -4,15 +4,11 @@ import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { getPage, getProfanityWords, getTags } from '@/server/db'
 
-type Props = {
-	params: Promise<{
-		tag: string
-		headline: string
-		article: string
-	}>
-}
-
-export default async function Edit({ params }: Props) {
+export default async function Edit({
+	params,
+}: {
+	params: Promise<{ article: string }>
+}) {
 	const session = await auth.api.getSession({
 		headers: await headers(),
 	})

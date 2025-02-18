@@ -4,16 +4,11 @@ import { Metadata } from 'next'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 
-type Props = {
-	params: Promise<{
-		author: string
-		author_id: string
-	}>
-}
-
 export const generateMetadata = async ({
 	params,
-}: Props): Promise<Metadata> => {
+}: {
+	params: Promise<{ author: string; author_id: string }>
+}): Promise<Metadata> => {
 	const id = await params
 	let data = (await getUserNews(id.author_id))[0]
 	return {
@@ -38,7 +33,11 @@ export const generateMetadata = async ({
 	}
 }
 
-export default async function Author({ params }: Props) {
+export default async function Author({
+	params,
+}: {
+	params: Promise<{ author: string; author_id: string }>
+}) {
 	const session = await auth.api.getSession({
 		headers: await headers(),
 	})

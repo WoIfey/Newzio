@@ -2,18 +2,16 @@ import { getComment, getCommentLikes } from '@/server/db'
 import Likes from '@/components/Likes'
 import { Metadata } from 'next'
 
-type Props = {
+export const generateMetadata = async ({
+	params,
+}: {
 	params: Promise<{
 		tag: string
 		headline: string
 		article: string
 		comment: string
 	}>
-}
-
-export const generateMetadata = async ({
-	params,
-}: Props): Promise<Metadata> => {
+}): Promise<Metadata> => {
 	const id = await params
 	let data = (await getComment(id.comment))[0]
 	return {
@@ -48,7 +46,16 @@ export const generateMetadata = async ({
 	}
 }
 
-export default async function CommentLikes({ params }: Props) {
+export default async function CommentLikes({
+	params,
+}: {
+	params: Promise<{
+		tag: string
+		headline: string
+		article: string
+		comment: string
+	}>
+}) {
 	const id = await params
 	let commentLikes = await getCommentLikes(id.comment)
 

@@ -11,17 +11,11 @@ import {
 } from '@/server/db'
 import { Metadata } from 'next'
 
-type Props = {
-	params: Promise<{
-		tag: string
-		headline: string
-		article: string
-	}>
-}
-
 export const generateMetadata = async ({
 	params,
-}: Props): Promise<Metadata> => {
+}: {
+	params: Promise<{ tag: string; headline: string; article: string }>
+}): Promise<Metadata> => {
 	const id = await params
 	let data = (await getPage(id.article))[0]
 	return {
@@ -48,11 +42,15 @@ export const generateMetadata = async ({
 	}
 }
 
-export default async function Page({ params }: Props) {
-	const id = await params
+export default async function Page({
+	params,
+}: {
+	params: Promise<{ tag: string; headline: string; article: string }>
+}) {
 	const session = await auth.api.getSession({
 		headers: await headers(),
 	})
+	const id = await params
 	let data = (await getPage(id.article))[0]
 	let news = await getNews()
 	let comments = await getComments(id.article)

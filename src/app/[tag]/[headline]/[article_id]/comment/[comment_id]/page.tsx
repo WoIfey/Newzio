@@ -4,18 +4,16 @@ import { Metadata } from 'next'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 
-type Props = {
+export const generateMetadata = async ({
+	params,
+}: {
 	params: Promise<{
 		tag: string
 		headline: string
 		article: string
 		comment: string
 	}>
-}
-
-export const generateMetadata = async ({
-	params,
-}: Props): Promise<Metadata> => {
+}): Promise<Metadata> => {
 	const id = await params
 	let data = (await getComment(id.comment))[0]
 	return {
@@ -50,7 +48,16 @@ export const generateMetadata = async ({
 	}
 }
 
-export default async function CommentLikes({ params }: Props) {
+export default async function CommentLikes({
+	params,
+}: {
+	params: Promise<{
+		tag: string
+		headline: string
+		article: string
+		comment: string
+	}>
+}) {
 	const session = await auth.api.getSession({
 		headers: await headers(),
 	})
