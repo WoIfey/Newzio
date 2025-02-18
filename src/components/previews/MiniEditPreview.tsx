@@ -21,8 +21,13 @@ import {
 } from '@/components/ui/dialog'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { formatDistanceToNowStrict } from 'date-fns'
-import { PencilIcon, ScanText, Share2Icon, Trash2Icon } from 'lucide-react'
-import { HeartIcon as HeartIconOutline } from '@heroicons/react/24/outline'
+import {
+	Heart,
+	PencilIcon,
+	ScanText,
+	Share2Icon,
+	Trash2Icon,
+} from 'lucide-react'
 import {
 	Tooltip,
 	TooltipContent,
@@ -75,7 +80,7 @@ export default function EditMiniPreview({
 										)}
 										<div className="cursor-pointer hover:text-red-600 flex gap-1 items-center mt-1">
 											<div className="flex gap-1 items-center">
-												<HeartIconOutline className="size-5" />
+												<Heart className="size-5 fill-black" />
 												<p className="text-black dark:text-white">{formatLikes(likes)}</p>
 											</div>
 										</div>

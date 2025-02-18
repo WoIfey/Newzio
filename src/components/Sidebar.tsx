@@ -5,7 +5,7 @@ import { formatDistanceToNowStrict } from 'date-fns'
 import { memo, useEffect, useState } from 'react'
 import Loading from './Loading'
 import { formatLikes } from '@/utils/likes'
-import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid'
+import { Heart } from 'lucide-react'
 
 const Sidebar = memo(function Sidebar({ news }: { news: any[] }) {
 	const [loading, setLoading] = useState(true)
@@ -100,7 +100,7 @@ const Sidebar = memo(function Sidebar({ news }: { news: any[] }) {
 									</h1>
 									<div className="text-slate-700 dark:text-slate-300 text-xs flex gap-1 items-center">
 										<div className="flex items-center gap-1 truncate w-full">
-											<p className="truncate">By {news.user_name}</p>
+											<p className="truncate">By {news.userName}</p>
 											{new Date(news.createdAt).getTime() !==
 											new Date(news.updatedAt).getTime() ? (
 												<>
@@ -131,7 +131,7 @@ const Sidebar = memo(function Sidebar({ news }: { news: any[] }) {
 											)}
 										</div>
 										<div className="flex items-center gap-1">
-											<HeartIconSolid className="size-4" />
+											<Heart className="size-4 fill-black" />
 											<p className="text-sm">{formatLikes(news.likes)}</p>
 										</div>
 									</div>

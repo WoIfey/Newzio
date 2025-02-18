@@ -1,29 +1,24 @@
 'use client'
 import {
-	Bars3Icon,
-	MoonIcon,
-	SunIcon,
-	XMarkIcon,
-} from '@heroicons/react/24/outline'
+	Menu,
+	X,
+	Sun,
+	Moon,
+	Home,
+	Plus,
+	LogIn,
+	LogOut,
+	Check,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import Settings from './Settings'
-import { signIn, signOut } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useTheme } from 'next-themes'
-import {
-	Check,
-	HomeIcon,
-	LogInIcon,
-	LogOutIcon,
-	Moon,
-	PlusIcon,
-	Sun,
-	SunMoon,
-} from 'lucide-react'
 import Loading from './Loading'
+import { authClient } from '@/lib/auth-client'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -68,11 +63,11 @@ export default function Navbar({
 							<div className="hidden sm:ml-4 sm:block">
 								<div className="flex items-center">
 									<div className="cursor-pointer flex gap-1 items-center pr-4 rounded-md px-3 py-2 text-sm font-medium text-black dark:text-gray-300 hover:text-slate-900 hover:bg-slate-300 hover:dark:bg-gray-900 hover:dark:text-white">
-										<HomeIcon className="size-6 p-1" />
+										<Home className="size-6 p-1" />
 										Home
 									</div>
 									<div className="cursor-pointer flex gap-1 items-center pr-4 rounded-md px-3 py-2 text-sm font-medium text-black dark:text-gray-300 hover:text-slate-900 hover:bg-slate-300 hover:dark:bg-gray-900 hover:dark:text-white">
-										<PlusIcon className="size-6 p-1" />
+										<Plus className="size-6 p-1" />
 										Publish
 									</div>
 								</div>
@@ -107,14 +102,14 @@ export default function Navbar({
 									href="/"
 									className="flex gap-1 items-center pr-4 rounded-md px-3 py-2 text-sm font-medium text-black dark:text-gray-300 hover:text-slate-900 hover:bg-slate-300 hover:dark:bg-gray-900 hover:dark:text-white"
 								>
-									<HomeIcon className="size-6 p-1" />
+									<Home className="size-6 p-1" />
 									Home
 								</Link>
 								<Link
 									href="/article/publish"
 									className="flex gap-1 items-center pr-4 rounded-md px-3 py-2 text-sm font-medium text-black dark:text-gray-300 hover:text-slate-900 hover:bg-slate-300 hover:dark:bg-gray-900 hover:dark:text-white"
 								>
-									<PlusIcon className="size-6 p-1" />
+									<Plus className="size-6 p-1" />
 									Publish
 								</Link>
 							</div>
@@ -155,9 +150,9 @@ export default function Navbar({
 							<span className="absolute -inset-1.5" />
 							<span className="sr-only">Toggle theme</span>
 							{theme === 'light' ? (
-								<SunIcon className="size-6 text-yellow-600" aria-hidden="true" />
+								<Sun className="size-6 text-yellow-600" aria-hidden="true" />
 							) : (
-								<MoonIcon className="size-6 text-gray-300" aria-hidden="true" />
+								<Moon className="size-6 text-gray-300" aria-hidden="true" />
 							)}
 						</button>
 						<button
@@ -167,9 +162,9 @@ export default function Navbar({
 							<span className="absolute -inset-0.5" />
 							<span className="sr-only">Open main menu</span>
 							{toggleMenu ? (
-								<XMarkIcon className="block size-6" aria-hidden="true" />
+								<X className="block size-6" aria-hidden="true" />
 							) : (
-								<Bars3Icon className="block size-6" aria-hidden="true" />
+								<Menu className="block size-6" aria-hidden="true" />
 							)}
 						</button>
 					</div>
@@ -223,7 +218,7 @@ export default function Navbar({
 							onClick={() => setToggleMenu(!toggleMenu)}
 							className="items-center gap-1 flex rounded-md px-3 py-2 text-base font-medium text-black dark:text-gray-300 hover:text-slate-900 hover:bg-slate-300 hover:dark:bg-gray-900 hover:dark:text-white"
 						>
-							<HomeIcon className="size-6 p-1" />
+							<Home className="size-6 p-1" />
 							Home
 						</Link>
 						<Link
@@ -231,7 +226,7 @@ export default function Navbar({
 							onClick={() => setToggleMenu(!toggleMenu)}
 							className="items-center gap-1 flex rounded-md px-3 py-2 text-base font-medium text-black dark:text-gray-300 hover:text-slate-900 hover:bg-slate-300 hover:dark:bg-gray-900 hover:dark:text-white"
 						>
-							<PlusIcon className="size-6 p-1" />
+							<Plus className="size-6 p-1" />
 							Publish
 						</Link>
 					</div>
@@ -281,18 +276,26 @@ export default function Navbar({
 							<div className="px-2 mb-1">
 								{session ? (
 									<button
-										onClick={() => signOut()}
+										onClick={() => authClient.signOut()}
 										className="w-full flex items-center justify-center gap-1 rounded-md px-3 py-2 text-base font-medium text-black dark:text-gray-300 hover:text-red-900 hover:bg-slate-300 hover:dark:bg-gray-900 hover:dark:text-white"
 									>
-										<LogOutIcon className="size-6 p-1" />
+										<LogOut className="size-6 p-1" />
 										Sign out
 									</button>
 								) : (
 									<button
-										onClick={() => signIn()}
+										onClick={async () => {
+											try {
+												await authClient.signIn.social({
+													provider: 'github',
+												})
+											} catch (error) {
+												console.error('Failed to sign in:', error)
+											}
+										}}
 										className="w-full flex items-center justify-center gap-1 rounded-md px-3 py-2 text-base font-medium text-black dark:text-gray-300 hover:text-red-900 hover:bg-slate-300 hover:dark:bg-gray-900 hover:dark:text-white"
 									>
-										<LogInIcon className="size-6 p-1" />
+										<LogIn className="size-6 p-1" />
 										Sign in
 									</button>
 								)}

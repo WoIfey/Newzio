@@ -1,41 +1,21 @@
-import { OctagonAlert } from 'lucide-react'
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from '@/components/ui/tooltip'
-import Link from 'next/link'
+import { Construction } from 'lucide-react'
 
 export default function Dev() {
 	return (
-		<>
-			{process.env.DEV === 'true' && (
-				<TooltipProvider delayDuration={100}>
-					<Tooltip>
-						<TooltipTrigger asChild>
-							<div className="fixed bottom-0 bg-slate-950 p-2 rounded-tr-md">
-								<OctagonAlert className="size-6 text-yellow-400 cursor-pointer" />
-							</div>
-						</TooltipTrigger>
-						<TooltipContent>
-							<div>
-								<p>You are currently viewing a development build.</p>
-								<p className="text-slate-300 text-xs">
-									Get out of the development build{' '}
-									<Link
-										href={'https://newzio.vercel.app/'}
-										className="text-blue-500 underline"
-									>
-										here
-									</Link>
-									.
-								</p>
-							</div>
-						</TooltipContent>
-					</Tooltip>
-				</TooltipProvider>
-			)}
-		</>
+		<div className="h-screen flex items-center justify-center bg-gradient-to-b from-sky-900 to-sky-900/10">
+			<div className="absolute top-0 z-[-2] h-screen w-screen bg-[#000000] bg-[radial-gradient(#ffffff33_1px,#00091d_1px)] bg-[size:20px_20px]"></div>
+			<div className="max-w-2xl mx-auto text-center p-8 space-y-8">
+				<div className="relative">
+					<div className="flex justify-center mb-6">
+						<Construction className="h-16 w-16 text-orange-500" />
+					</div>
+				</div>
+
+				<div className="space-y-4">
+					<h1 className="text-5xl font-bold text-orange-500">Under Construction</h1>
+					<p className="text-xl text-white">Check back later.</p>
+				</div>
+			</div>
+		</div>
 	)
 }

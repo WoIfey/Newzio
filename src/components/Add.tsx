@@ -5,6 +5,7 @@ import {
 	ChevronsUpDown,
 	Pencil,
 	Plus,
+	XCircleIcon,
 } from 'lucide-react'
 import AddEditor from '@/components/editors/AddEditor'
 import { createArticle, fileRemove } from '@/server/actions'
@@ -25,10 +26,11 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from '@/components/ui/popover'
+import Preview from '@/components/previews/Preview'
+import MiniPreview from '@/components/previews/MiniPreview'
 import { useState } from 'react'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
-import { XCircleIcon } from '@heroicons/react/24/outline'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { UploadDropzone } from '@/utils/uploadthing'
 import {
@@ -42,10 +44,6 @@ import {
 } from '@/utils/atoms'
 import { useAtom } from 'jotai'
 import Image from 'next/image'
-import { UploadDetails } from 'uploadDetails'
-import { ArticleFields } from 'ArticleFields'
-import MiniPreview from '@/components/previews/MiniPreview'
-import Preview from '@/components/previews/Preview'
 import { useRouter } from 'next/navigation'
 import Loading from './Loading'
 import { profanity } from '@/utils/profanity'
@@ -56,6 +54,25 @@ interface Tag {
 }
 interface Word {
 	word: string
+}
+
+interface UploadDetails {
+	key: string
+	name: string
+	size: number
+	type: string
+	url: string
+	serverData: {
+		uploadedBy: string
+	}
+}
+
+interface ArticleFields {
+	headline: string
+	lead: string
+	body: string
+	tag: string
+	uploadDetails?: UploadDetails
 }
 
 export default function Add({
@@ -105,7 +122,7 @@ export default function Add({
 			if (uploadDetails) {
 				data.uploadDetails = uploadDetails
 			}
-			const user_id = session?.user.id as unknown as number
+			const user_id = session?.user.id ?? ''
 			const user_name = session?.user.name ?? ''
 			const user_image = session?.user.image ?? ''
 			const result = await createArticle(
@@ -113,10 +130,18 @@ export default function Add({
 				data.lead,
 				data.body,
 				data.tag,
-				data.uploadDetails,
 				user_id,
 				user_name,
-				user_image
+				user_image,
+				uploadDetails
+					? {
+							key: uploadDetails.key,
+							name: uploadDetails.name,
+							size: uploadDetails.size,
+							type: uploadDetails.type,
+							url: uploadDetails.url,
+					  }
+					: undefined
 			)
 			if (result.success) {
 				setTagValue('')
@@ -425,15 +450,12 @@ export default function Add({
 											setFileType(res[0].type)
 											setFileKey(res[0].key)
 
-											const convertedUploadDetails = {
+											setUploadDetails({
 												...uploadDetails,
 												serverData: {
-													...uploadDetails.serverData,
-													id: Number(uploadDetails.serverData.id) || 0,
-													user: uploadDetails.serverData.user || '',
+													uploadedBy: uploadDetails.serverData.uploadedBy,
 												},
-											}
-											setUploadDetails(convertedUploadDetails)
+											})
 											setLoading(false)
 										}}
 										onUploadError={error => {

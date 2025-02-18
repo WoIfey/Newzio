@@ -1,22 +1,27 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
+import { Toaster } from '@/components/ui/sonner'
+import { auth } from '@/lib/auth'
+import { headers } from 'next/headers'
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
 import { extractRouterConfig } from 'uploadthing/server'
 import { ourFileRouter } from '@/app/api/uploadthing/core'
-import Navbar from '../components/Navbar'
-import Footer from '../components/Footer'
-import AuthProvider from './context/AuthProvider'
-import { Toaster } from '@/components/ui/sonner'
-import { Suspense } from 'react'
-import Loading from '@/components/Loading'
+import Navbar from '@/components/Navbar'
 import { getUserNews } from '@/server/db'
-import { options } from './api/auth/[...nextauth]/options'
-import { getServerSession } from 'next-auth/next'
 import { ThemeProvider } from 'next-themes'
+import Footer from '@/components/Footer'
 import Dev from '@/components/Dev'
 
-const inter = Inter({ subsets: ['latin'] })
+const geistSans = Geist({
+	variable: '--font-geist-sans',
+	subsets: ['latin'],
+})
+
+const geistMono = Geist_Mono({
+	variable: '--font-geist-mono',
+	subsets: ['latin'],
+})
 
 export const metadata: Metadata = {
 	title: 'Newzio',
@@ -44,27 +49,30 @@ export default async function RootLayout({
 }: Readonly<{
 	children: React.ReactNode
 }>) {
-	const session = await getServerSession(options)
-	let userNews = []
-	if (session?.user.id) {
-		userNews = await getUserNews(session.user.id)
+	const session = await auth.api.getSession({
+		headers: await headers(),
+	})
+	let userNews = await getUserNews(session?.user?.id || '')
+
+	if (process.env.DEV === 'true') {
+		return (
+			<html lang="en" suppressHydrationWarning>
+				<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+					<Dev />
+				</body>
+			</html>
+		)
 	}
+
 	return (
 		<html lang="en" suppressHydrationWarning>
-			<body className={inter.className}>
+			<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
 				<ThemeProvider defaultTheme="system" attribute="class">
-					<AuthProvider>
-						<Suspense
-							fallback={<Loading fullscreen={true} background={true} size={64} />}
-						>
-							<Navbar userNews={userNews} session={session} />
-							<NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
-							{children}
-							<Footer />
-							<Toaster />
-							<Dev />
-						</Suspense>
-					</AuthProvider>
+					<Navbar userNews={userNews} session={session} />
+					<NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
+					{children}
+					<Footer />
+					<Toaster />
 				</ThemeProvider>
 			</body>
 		</html>

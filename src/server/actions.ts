@@ -1,6 +1,5 @@
 'use server'
-import { deleteArticle, deleteComment, findEmail, registerUsers, saveArticle, saveComment, toggleCommentLike, toggleArticleLike, updateArticle, updateComment } from "@/server/db"
-import { UploadDetails } from "uploadDetails"
+import { deleteArticle, deleteComment, saveArticle, saveComment, toggleCommentLike, toggleArticleLike, updateArticle, updateComment } from "@/server/db"
 import { utapi } from "@/app/api/uploadthing/core"
 
 export const createArticle = async (
@@ -8,10 +7,16 @@ export const createArticle = async (
     lead: string,
     body: string,
     tag: string,
-    uploadDetails: UploadDetails,
-    user_id: number,
+    user_id: string,
     user_name: string,
-    user_image: string
+    user_image: string,
+    uploadDetails?: {
+        key?: string;
+        name?: string;
+        size?: number;
+        type?: string;
+        url?: string;
+    },
 ) => {
     const result = await saveArticle(
         uploadDetails?.key,
@@ -68,7 +73,7 @@ export const removeComment = async (id: string) => {
     }
 }
 
-export const createComment = async (article_id: string, message: string, user_id: number, user_name: string, user_image: string) => {
+export const createComment = async (article_id: string, message: string, user_id: string, user_name: string, user_image: string) => {
     const result = await saveComment(article_id, message, user_id, user_name, user_image)
     if (result === 'Saved Comment') {
         return true
@@ -92,26 +97,12 @@ export const editComment = async (
     }
 }
 
-export const commentLike = async (id: string, user_id: number, user_name: string, user_image: string, article_id: string) => {
+export const commentLike = async (id: string, user_id: string, user_name: string, user_image: string, article_id: string) => {
     await toggleCommentLike(id, article_id, user_id, user_name, user_image)
 }
 
-export const articleLike = async (user_id: number, user_name: string, user_image: string, article_id: string) => {
+export const articleLike = async (user_id: string, user_name: string, user_image: string, article_id: string) => {
     await toggleArticleLike(article_id, user_id, user_name, user_image)
-}
-
-export const registerUser = async (name: string, email: string, password: string) => {
-    const existingUser = await findEmail(email)
-    if (!existingUser) {
-        const result = await registerUsers(name, email, password)
-        if (result === 'User Registered') {
-            return true
-        } else {
-            return false
-        }
-    }
-
-    return false
 }
 
 export const fileRemove = async (imageKey: string) => {

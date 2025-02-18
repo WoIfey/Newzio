@@ -2,16 +2,15 @@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
-import { registerUser } from '@/server/actions'
-import { signIn } from 'next-auth/react'
-import { toast } from 'sonner'
-import { AlertCircle, CheckCircle2, LogIn, XCircle } from 'lucide-react'
 import Image from 'next/image'
+import { toast } from 'sonner'
+import { AlertCircle, LogIn } from 'lucide-react'
 import Loading from './Loading'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { Register } from 'Register'
+import { authClient } from '@/lib/auth-client'
 
 type Props = {
 	callbackUrl?: string
@@ -23,33 +22,45 @@ export default function Login(props: Props) {
 	const {
 		register,
 		handleSubmit,
-		formState: { errors, isSubmitting },
+		formState: { errors },
 	} = useForm<Register>()
 
 	const onSubmit: SubmitHandler<Register> = async data => {
 		setLoading(true)
-		const success = await registerUser(data.name, data.email, data.password)
-		if (success) {
-			await signIn('credentials', {
+		try {
+			const result = await authClient.signUp.email({
 				email: data.email,
 				password: data.password,
-				redirect: true,
-				callbackUrl: props.callbackUrl,
+				name: data.name,
 			})
-			toast(
-				<div className="flex gap-2">
-					<CheckCircle2 className="size-5" />
-					<span>Successfully registered user!</span>
-				</div>,
-				{
-					position: 'bottom-left',
+
+			if (result.error) {
+				toast(
+					<div className="flex gap-2">
+						<AlertCircle className="size-5 text-yellow-500" />
+						<span>{result.error.message || 'Registration failed'}</span>
+					</div>,
+					{
+						position: 'bottom-left',
+					}
+				)
+			} else {
+				// Automatically sign in after registration
+				const signInResult = await authClient.signIn.email({
+					email: data.email,
+					password: data.password,
+					callbackURL: props.callbackUrl,
+				})
+
+				if (!signInResult.error) {
+					window.location.href = props.callbackUrl || '/'
 				}
-			)
-		} else {
+			}
+		} catch (error) {
 			toast(
 				<div className="flex gap-2">
-					<AlertCircle className="size-5 text-yellow-500" />
-					<span>Email already exists. Please use a different email.</span>
+					<AlertCircle className="size-5 text-red-500" />
+					<span>An error occurred during registration</span>
 				</div>,
 				{
 					position: 'bottom-left',

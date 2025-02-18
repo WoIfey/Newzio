@@ -8,17 +8,18 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { ArrowLeftIcon, Copy, LinkIcon } from 'lucide-react'
+import {
+	ArrowLeftIcon,
+	Copy,
+	EllipsisIcon,
+	Heart,
+	LinkIcon,
+	XCircleIcon,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { commentLike, removeComment } from '@/server/actions'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import {
-	XCircleIcon,
-	EllipsisHorizontalIcon,
-} from '@heroicons/react/24/outline'
-import { HeartIcon as HeartIconOutline } from '@heroicons/react/24/outline'
-import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid'
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -127,7 +128,7 @@ export default function Comment({
 	}
 
 	const handleLike = async (id: string, article_id: string) => {
-		const user_id = user?.user.id as unknown as number
+		const user_id = user?.user.id ?? ''
 		const user_name = user?.user.name ?? ''
 		const user_image = user?.user.image ?? ''
 		setLikeLoading(prev => ({ ...prev, [id]: true }))
@@ -231,38 +232,38 @@ export default function Comment({
 						<div className="flex items-center gap-3">
 							<Link
 								href={`/author/${encodeURIComponent(
-									comment?.user_name
-										? comment?.user_name
+									comment?.userName
+										? comment?.userName
 												.toLowerCase()
 												.replace(/ö/g, 'o')
 												.replace(/ä/g, 'a')
 												.replace(/å/g, 'a')
 												.replace(/\s+/g, '-')
 										: 'unknown'
-								)}/${comment?.user_id}`}
+								)}/${comment?.userId}`}
 							>
 								<Avatar className="size-8">
-									<AvatarImage src={comment?.user_image ?? undefined} />
+									<AvatarImage src={comment?.userImage ?? undefined} />
 									<AvatarFallback className="font-normal text-base bg-slate-200 dark:bg-slate-600 dark:text-white text-black">
-										{comment?.user_name.charAt(0)}
+										{comment?.userName.charAt(0)}
 									</AvatarFallback>
 								</Avatar>
 							</Link>
 							<div className="flex sm:flex-row flex-col sm:items-center gap-2 truncate max-w-40 sm:max-w-80">
 								<Link
 									href={`/author/${encodeURIComponent(
-										comment.user_name
-											? comment.user_name
+										comment.userName
+											? comment.userName
 													.toLowerCase()
 													.replace(/ö/g, 'o')
 													.replace(/ä/g, 'a')
 													.replace(/å/g, 'a')
 													.replace(/\s+/g, '-')
 											: 'unknown'
-									)}/${comment.user_id}`}
+									)}/${comment.userId}`}
 									className="truncate"
 								>
-									<p className="text-sm font-bold truncate">{comment.user_name}</p>
+									<p className="text-sm font-bold truncate">{comment.userName}</p>
 								</Link>
 								<span className="text-black dark:text-white text-sm sm:block hidden">{`•`}</span>
 								<time
@@ -281,7 +282,7 @@ export default function Comment({
 								<Menubar className="border-none items-start hover:dark:bg-slate-700 hover:bg-slate-200">
 									<MenubarMenu>
 										<MenubarTrigger className="cursor-pointer items-start px-1 py-1">
-											<EllipsisHorizontalIcon className="size-6" />
+											<EllipsisIcon className="size-6" />
 										</MenubarTrigger>
 										<MenubarContent>
 											<MenubarSub>
@@ -299,11 +300,11 @@ export default function Comment({
 													</MenubarItem>
 												</MenubarSubContent>
 											</MenubarSub>
-											{user?.user.id === comment?.user_id && <MenubarSeparator />}
-											{currentUserId !== comment?.user_id &&
+											{user?.user.id === comment?.userId && <MenubarSeparator />}
+											{currentUserId !== comment?.userId &&
 												currentUserId === '87246869' && <MenubarSeparator />}
 											<div>
-												{user?.user.id === comment?.user_id && (
+												{user?.user.id === comment?.userId && (
 													<>
 														<MenubarItem
 															className="gap-x-1"
@@ -322,7 +323,7 @@ export default function Comment({
 														</AlertDialogTrigger>
 													</>
 												)}
-												{currentUserId !== comment?.user_id &&
+												{currentUserId !== comment?.userId &&
 													currentUserId === '87246869' && (
 														<>
 															<AlertDialogTrigger asChild>
@@ -420,11 +421,11 @@ export default function Comment({
 											<>
 												{likes.some(
 													(like: any) =>
-														like.comment_id === comment.id && like.user_id === currentUserId
+														like.comment_id === comment.id && like.userId === currentUserId
 												) ? (
-													<HeartIconSolid className="size-5" />
+													<Heart className="size-5 fill-black" />
 												) : (
-													<HeartIconOutline className="size-5" />
+													<Heart className="size-5" />
 												)}
 											</>
 										)}

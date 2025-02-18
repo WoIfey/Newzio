@@ -124,13 +124,13 @@ export default function Likes({
 							<div className="flex justify-between items-center gap-3">
 								<div className="flex gap-3">
 									<Avatar>
-										<AvatarImage src={comment.user_image ?? undefined} />
+										<AvatarImage src={comment.userImage ?? undefined} />
 										<AvatarFallback className="font-normal text-base bg-slate-200 dark:bg-slate-600 dark:text-white text-black">
-											{comment?.user_name.charAt(0)}
+											{comment?.userName.charAt(0)}
 										</AvatarFallback>
 									</Avatar>
 									<div className="flex flex-col">
-										<p>{comment.user_name}</p>
+										<p>{comment.userName}</p>
 										<time
 											title={new Date(comment.likedAt).toLocaleString()}
 											dateTime={new Date(comment.likedAt).toLocaleString()}
