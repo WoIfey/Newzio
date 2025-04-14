@@ -1,13 +1,11 @@
 import News from '@/components/News'
 import User from '@/components/User'
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
 import { getNews } from '@/server/db'
+import { options } from './api/auth/[...nextauth]/options'
+import { getServerSession } from 'next-auth/next'
 
 export default async function Home() {
-	const session = await auth.api.getSession({
-		headers: await headers(),
-	})
+	const session = await getServerSession(options)
 	let news = await getNews()
 
 	return (

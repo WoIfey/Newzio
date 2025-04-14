@@ -3,10 +3,8 @@ import {
 	AlertCircle,
 	ArrowLeftIcon,
 	Check,
-	CheckIcon,
 	ChevronsUpDown,
 	PencilIcon,
-	XCircleIcon,
 } from 'lucide-react'
 import ArticleEditor from '@/components/editors/ArticleEditor'
 import { editArticle } from '@/server/actions'
@@ -30,6 +28,7 @@ import {
 import { useEffect, useState } from 'react'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
+import { CheckIcon, XCircleIcon } from '@heroicons/react/24/outline'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import {
 	bodyEditInput,

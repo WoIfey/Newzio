@@ -9,13 +9,8 @@ import {
 import { useAtom } from 'jotai'
 import Image from 'next/image'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import {
-	Heart,
-	PencilIcon,
-	ScanText,
-	Share2Icon,
-	Trash2Icon,
-} from 'lucide-react'
+import { PencilIcon, ScanText, Share2Icon, Trash2Icon } from 'lucide-react'
+import { HeartIcon as HeartIconOutline } from '@heroicons/react/24/outline'
 import {
 	Tooltip,
 	TooltipContent,
@@ -49,7 +44,7 @@ export default function Preview({ user }: { user: any }) {
 								)}
 								<div className="cursor-pointer hover:text-red-600 flex gap-1 items-center mt-1">
 									<div className="flex gap-1 items-center">
-										<Heart className="size-5 fill-black" />
+										<HeartIconOutline className="size-5" />
 										<p className="text-black dark:text-white">0</p>
 									</div>
 								</div>

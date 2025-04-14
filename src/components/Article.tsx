@@ -29,7 +29,6 @@ import {
 	Trash2Icon,
 	ClipboardCheckIcon,
 	AlertCircleIcon,
-	Heart,
 } from 'lucide-react'
 import {
 	Dialog,
@@ -41,6 +40,8 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '@/components/ui/dialog'
+import { HeartIcon as HeartIconOutline } from '@heroicons/react/24/outline'
+import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -139,7 +140,7 @@ export default function Article({
 	const currentUserId = session?.user?.id
 
 	const handleLike = async (article_id: string) => {
-		const user_id = session?.user.id ?? ''
+		const user_id = session?.user.id as unknown as number
 		const user_name = session?.user.name ?? ''
 		const user_image = session?.user.image ?? ''
 		setLikeLoading(true)
@@ -188,10 +189,12 @@ export default function Article({
 											</div>
 										) : (
 											<>
-												{articleLikes.some((like: any) => like.userId === currentUserId) ? (
-													<Heart className="size-5 fill-black" />
+												{articleLikes.some(
+													(like: any) => like.user_id === currentUserId
+												) ? (
+													<HeartIconSolid className="size-5" />
 												) : (
-													<Heart className="size-5" />
+													<HeartIconOutline className="size-5" />
 												)}
 											</>
 										)}
@@ -229,19 +232,19 @@ export default function Article({
 						>
 							<Link
 								href={`/author/${encodeURIComponent(
-									data.userName
-										? data.userName
+									data.user_name
+										? data.user_name
 												.toLowerCase()
 												.replace(/ö/g, 'o')
 												.replace(/ä/g, 'a')
 												.replace(/å/g, 'a')
 												.replace(/\s+/g, '-')
 										: 'unknown'
-								)}/${data.userId}`}
+								)}/${data.user_id}`}
 							>
 								<Avatar>
-									<AvatarImage src={data.userImage ?? undefined} />
-									<AvatarFallback>{data.userName.charAt(0) ?? ''}</AvatarFallback>
+									<AvatarImage src={data.user_image ?? undefined} />
+									<AvatarFallback>{data.user_name.charAt(0) ?? ''}</AvatarFallback>
 								</Avatar>
 							</Link>
 							<div className="text-xs flex flex-col gap-1">
@@ -250,17 +253,17 @@ export default function Article({
 									<Link
 										className="hover:dark:text-sky-400 hover:text-sky-700 transition-all duration-75 truncate"
 										href={`/author/${encodeURIComponent(
-											data.userName
-												? data.userName
+											data.user_name
+												? data.user_name
 														.toLowerCase()
 														.replace(/ö/g, 'o')
 														.replace(/ä/g, 'a')
 														.replace(/å/g, 'a')
 														.replace(/\s+/g, '-')
 												: 'unknown'
-										)}/${data.userId}`}
+										)}/${data.user_id}`}
 									>
-										{data.userName}
+										{data.user_name}
 									</Link>
 								</div>
 								<div className="flex gap-1 text-xs">
@@ -356,7 +359,7 @@ export default function Article({
 									</DialogFooter>
 								</DialogContent>
 							</Dialog>
-							{currentUserId === data.userId && (
+							{currentUserId === data.user_id && (
 								<AlertDialog>
 									<TooltipProvider delayDuration={100}>
 										<Tooltip>
