@@ -7,7 +7,7 @@ import { signIn } from 'next-auth/react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { toast } from 'sonner'
-import { CheckCircle2, LogIn, XCircle } from 'lucide-react'
+import { LogIn, TriangleAlert, XCircle } from 'lucide-react'
 import Loading from './Loading'
 import { SignIn } from 'SignIn'
 import { SubmitHandler, useForm } from 'react-hook-form'
@@ -23,7 +23,7 @@ export default function Login(props: Props) {
 	const {
 		register,
 		handleSubmit,
-		formState: { errors, isSubmitting },
+		formState: { errors },
 	} = useForm<SignIn>()
 
 	const onSubmit: SubmitHandler<SignIn> = async data => {
@@ -84,6 +84,14 @@ export default function Login(props: Props) {
 					/>
 					<p>Newzio</p>
 				</div>
+				<p className="text-sm pb-4">
+					<TriangleAlert
+						className="me-3 -mt-0.5 inline-flex text-amber-500"
+						size={16}
+						aria-hidden="true"
+					/>
+					You can no longer sign in.
+				</p>
 				<div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 min-[500px]:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
 					<div className="p-6 space-y-4 md:space-y-6 sm:p-8">
 						<h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
@@ -119,6 +127,7 @@ export default function Login(props: Props) {
 									minLength={3}
 									maxLength={320}
 									required
+									disabled
 								/>
 							</div>
 							{errors.email && <p className="text-red-500">{errors.email.message}</p>}
@@ -152,6 +161,7 @@ export default function Login(props: Props) {
 									minLength={8}
 									maxLength={128}
 									required
+									disabled
 								/>
 							</div>
 							{errors.password && (
@@ -166,9 +176,9 @@ export default function Login(props: Props) {
 								</a>
 								</div> */}
 							<Button
-								type="submit"
+								// type="submit"
 								className="w-full flex gap-1 bg-blue-300 hover:bg-blue-200 text-black dark:bg-blue-700 dark:hover:bg-blue-800 dark:text-white"
-								disabled={loading}
+								disabled
 							>
 								{loading ? (
 									<Loading fullscreen={false} background={false} size={16} />
@@ -185,9 +195,10 @@ export default function Login(props: Props) {
 						</div>
 						<div className="flex flex-col sm:flex-row items-center gap-2">
 							<Button
-								onClick={() => signIn('github', { callbackUrl: props.callbackUrl })}
+								// onClick={() => signIn('github', { callbackUrl: props.callbackUrl })}
 								className="w-full gap-x-2 hover:dark:bg-slate-900"
 								variant="outline"
+								disabled
 							>
 								<Image
 									width={32}
@@ -197,20 +208,6 @@ export default function Login(props: Props) {
 									className="size-5 p-[1px] dark:invert"
 								/>
 								<p className="max-[640px]:truncate">Log in with GitHub</p>
-							</Button>
-							<Button
-								onClick={() => signIn('discord', { callbackUrl: props.callbackUrl })}
-								className="w-full gap-x-2 hover:dark:bg-slate-900"
-								variant="outline"
-							>
-								<Image
-									width={32}
-									height={32}
-									src="/discord.svg"
-									alt="Discord"
-									className="size-5"
-								/>
-								<p className="max-[640px]:truncate">Log in with Discord</p>
 							</Button>
 						</div>
 						<p className="text-sm font-light text-gray-500 dark:text-gray-400">

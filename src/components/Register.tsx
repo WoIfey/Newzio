@@ -2,12 +2,12 @@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { registerUser } from '@/server/actions'
 import { signIn } from 'next-auth/react'
 import { toast } from 'sonner'
-import { AlertCircle, CheckCircle2, LogIn, XCircle } from 'lucide-react'
+import { AlertCircle, CheckCircle2, LogIn, TriangleAlert } from 'lucide-react'
 import Image from 'next/image'
 import Loading from './Loading'
 import { SubmitHandler, useForm } from 'react-hook-form'
@@ -72,6 +72,14 @@ export default function Login(props: Props) {
 					/>
 					<p>Newzio</p>
 				</div>
+				<p className="text-sm pb-4">
+					<TriangleAlert
+						className="me-3 -mt-0.5 inline-flex text-amber-500"
+						size={16}
+						aria-hidden="true"
+					/>
+					You can no longer sign in.
+				</p>
 				<div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
 					<div className="p-6 space-y-4 md:space-y-6 sm:p-8">
 						<h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
@@ -107,6 +115,7 @@ export default function Login(props: Props) {
 									minLength={8}
 									maxLength={32}
 									required
+									disabled
 								/>
 							</div>
 							{errors.name && <p className="text-red-500">{errors.name.message}</p>}
@@ -139,6 +148,7 @@ export default function Login(props: Props) {
 									minLength={3}
 									maxLength={320}
 									required
+									disabled
 								/>
 							</div>
 							{errors.email && <p className="text-red-500">{errors.email.message}</p>}
@@ -172,6 +182,7 @@ export default function Login(props: Props) {
 									minLength={8}
 									maxLength={128}
 									required
+									disabled
 								/>
 							</div>
 							{errors.password && (
@@ -186,9 +197,9 @@ export default function Login(props: Props) {
 							</a>
 						</div> */}
 							<Button
-								type="submit"
+								// type="submit"
 								className="w-full flex gap-1 bg-blue-300 hover:bg-blue-200 text-black dark:bg-blue-700 dark:hover:bg-blue-800 dark:text-white"
-								disabled={loading}
+								disabled
 							>
 								{loading ? (
 									<Loading fullscreen={false} background={false} size={16} />

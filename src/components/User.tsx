@@ -144,7 +144,8 @@ const User = memo(function User({
 								</div>
 								<Button
 									className="w-full flex gap-1 bg-blue-300 hover:bg-blue-200 text-black dark:bg-blue-700 dark:hover:bg-blue-800 dark:text-white"
-									onClick={() => signIn()}
+									// onClick={() => signIn()}
+									disabled
 								>
 									<LogIn className="size-5 p-0.5" />
 									Sign in

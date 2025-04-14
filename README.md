@@ -1,3 +1,6 @@
+> [!WARNING]
+> This repository is no longer being worked on and will be continued under a different repository.
+
 # Newzio
 
 <img src="/public/icon.svg" width="64" height="64" align="right" alt="Newzio" />

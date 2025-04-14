@@ -21,7 +21,6 @@ import {
 	Moon,
 	PlusIcon,
 	Sun,
-	SunMoon,
 } from 'lucide-react'
 import Loading from './Loading'
 import {
@@ -289,7 +288,8 @@ export default function Navbar({
 									</button>
 								) : (
 									<button
-										onClick={() => signIn()}
+										// onClick={() => signIn()}
+										disabled
 										className="w-full flex items-center justify-center gap-1 rounded-md px-3 py-2 text-base font-medium text-black dark:text-gray-300 hover:text-red-900 hover:bg-slate-300 hover:dark:bg-gray-900 hover:dark:text-white"
 									>
 										<LogInIcon className="size-6 p-1" />

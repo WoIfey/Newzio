@@ -15,6 +15,7 @@ import { options } from './api/auth/[...nextauth]/options'
 import { getServerSession } from 'next-auth/next'
 import { ThemeProvider } from 'next-themes'
 import Dev from '@/components/Dev'
+import Notice from '@/components/Notice'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -62,6 +63,7 @@ export default async function RootLayout({
 							{children}
 							<Footer />
 							<Toaster />
+							<Notice />
 							<Dev />
 						</Suspense>
 					</AuthProvider>

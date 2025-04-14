@@ -234,7 +234,8 @@ export default function Settings({ user, userNews }: any) {
 							{!user && (
 								<Button
 									className="w-full flex gap-1 mt-3 bg-blue-300 hover:bg-blue-200 text-black dark:bg-blue-700 dark:hover:bg-blue-800 dark:text-white"
-									onClick={() => signIn()}
+									// onClick={() => signIn()}
+									disabled
 								>
 									<LogIn className="size-6 p-1" />
 									Sign in
