@@ -8,16 +8,8 @@ import {
 	SheetTrigger,
 } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
-import {
-	User,
-	Settings as SettingsIcon,
-	CheckCircle,
-	LogOut,
-	Pencil,
-	Trash2,
-	X,
-	Heart,
-} from 'lucide-react'
+import { signIn, signOut } from 'next-auth/react'
+import { UserIcon, CheckCircleIcon } from '@heroicons/react/24/outline'
 import { toast } from 'sonner'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -29,6 +21,7 @@ import {
 	ContextMenuItem,
 	ContextMenuTrigger,
 } from '@/components/ui/context-menu'
+import { XMarkIcon } from '@heroicons/react/24/outline'
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -50,6 +43,13 @@ import {
 	DialogTrigger,
 } from '@/components/ui/dialog'
 import { useRouter } from 'next/navigation'
+import {
+	LogIn,
+	LogOut,
+	PencilIcon,
+	SettingsIcon,
+	Trash2Icon,
+} from 'lucide-react'
 import { useState } from 'react'
 import {
 	Pagination,
@@ -61,7 +61,7 @@ import {
 } from '@/components/ui/pagination'
 import Loading from './Loading'
 import { formatLikes } from '@/utils/likes'
-import { authClient } from '@/lib/auth-client'
+import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid'
 
 export default function Settings({ user, userNews }: any) {
 	const router = useRouter()
@@ -84,7 +84,7 @@ export default function Settings({ user, userNews }: any) {
 			toast.dismiss('delete-begin')
 			toast(
 				<div className="flex gap-2">
-					<Trash2 className="text-red-500 size-5" />
+					<Trash2Icon className="text-red-500 size-5" />
 					<span>Article successfully deleted.</span>
 				</div>,
 				{
@@ -94,7 +94,7 @@ export default function Settings({ user, userNews }: any) {
 		} catch (error) {
 			toast(
 				<div className="flex gap-2">
-					<X className="size-5" />
+					<XMarkIcon className="size-5" />
 					<span>Failed to delete news.</span>
 				</div>,
 				{
@@ -123,14 +123,14 @@ export default function Settings({ user, userNews }: any) {
 			<SheetTrigger>
 				{user && (
 					<Avatar>
-						<AvatarImage src={user?.user?.image ?? undefined} />
+						<AvatarImage src={user?.user.image ?? undefined} />
 						<AvatarFallback className="bg-slate-200 dark:bg-slate-600">
-							{user?.user?.name?.charAt(0) ?? ''}
+							{user?.user.name.charAt(0) ?? ''}
 						</AvatarFallback>
 					</Avatar>
 				)}
 				{!user && (
-					<User className="size-6 text-gray-700 hover:text-gray-500 dark:text-gray-300 hover:dark:text-white" />
+					<UserIcon className="size-6 text-gray-700 hover:text-gray-500 dark:text-gray-300 hover:dark:text-white" />
 				)}
 			</SheetTrigger>
 			<SheetContent className="bg-[#dfdfdf] dark:bg-[#1b1b1b] p-5">
@@ -150,30 +150,30 @@ export default function Settings({ user, userNews }: any) {
 							<div className="flex items-center gap-1">
 								<Link
 									href={`/author/${encodeURIComponent(
-										user?.user?.name
-											? user.user?.name
+										user?.user.name
+											? user?.user.name
 													.toLowerCase()
 													.replace(/ö/g, 'o')
 													.replace(/ä/g, 'a')
 													.replace(/å/g, 'a')
 													.replace(/\s+/g, '-')
 											: 'unknown'
-									)}/${user?.user?.id}`}
+									)}/${user?.user.id}`}
 									className="w-full flex items-center gap-3 text-black dark:text-gray-300 hover:text-slate-900 hover:bg-slate-300 hover:dark:bg-[#2F3335] p-2 pl-0 hover:dark:text-white rounded-md transition-all duration-75"
 								>
 									<Avatar className="size-12">
-										<AvatarImage src={user?.user?.image ?? undefined} />
+										<AvatarImage src={user?.user.image ?? undefined} />
 										<AvatarFallback className="bg-slate-200 dark:bg-slate-600">
-											{user?.user?.name?.charAt(0) ?? ''}
+											{user?.user.name.charAt(0) ?? ''}
 										</AvatarFallback>
 									</Avatar>
 									<SheetTitle>
 										<div className="flex flex-col">
 											<h1 className="text-base [overflow-wrap:anywhere]">
-												{user?.user?.name}
+												{user?.user.name}
 											</h1>
 											<p className="text-xs text-gray-600 dark:text-gray-400 [overflow-wrap:anywhere]">
-												{user?.user?.email}
+												{user?.user.email}
 											</p>
 										</div>
 									</SheetTitle>
@@ -198,14 +198,14 @@ export default function Settings({ user, userNews }: any) {
 										onClick={() => {
 											toast(
 												<div className="flex gap-2">
-													<CheckCircle className="size-5" />
+													<CheckCircleIcon className="size-5" />
 													<span>You have been signed out.</span>
 												</div>,
 												{
 													position: 'bottom-left',
 												}
 											)
-											authClient.signOut()
+											signOut()
 										}}
 									>
 										<LogOut className="size-6 p-1" />
@@ -231,15 +231,16 @@ export default function Settings({ user, userNews }: any) {
 									</div>
 								</div>
 							)}
-							{/* {!user && (
+							{!user && (
 								<Button
 									className="w-full flex gap-1 mt-3 bg-blue-300 hover:bg-blue-200 text-black dark:bg-blue-700 dark:hover:bg-blue-800 dark:text-white"
-									onClick={() => authClient.signIn()}
+									// onClick={() => signIn()}
+									disabled
 								>
 									<LogIn className="size-6 p-1" />
 									Sign in
 								</Button>
-							)} */}
+							)}
 							<div className="flex flex-col gap-3">
 								{user &&
 									(currentNews.length > 0 ? (
@@ -311,7 +312,7 @@ export default function Settings({ user, userNews }: any) {
 																			)}
 																		</div>
 																		<div className="flex items-center gap-1">
-																			<Heart className="size-3" />
+																			<HeartIconSolid className="size-3" />
 																			<p className="text-xs">{formatLikes(news.likes)}</p>
 																		</div>
 																	</div>
@@ -350,14 +351,14 @@ export default function Settings({ user, userNews }: any) {
 																	href={`/article/edit/${news.id}`}
 																	className="cursor-pointer pr-3"
 																>
-																	<Pencil className="size-6 p-1" />
+																	<PencilIcon className="size-6 p-1" />
 																	<p className="mb-0.5">Edit Article</p>
 																</Link>
 															</ContextMenuItem>
 															<ContextMenuItem asChild>
 																<AlertDialogTrigger asChild>
 																	<div className="cursor-pointer pr-3">
-																		<Trash2 className="size-6 text-red-600 p-1" />
+																		<Trash2Icon className="size-6 text-red-600 p-1" />
 																		<p className="mb-0.5">Delete Article</p>
 																	</div>
 																</AlertDialogTrigger>
@@ -368,7 +369,7 @@ export default function Settings({ user, userNews }: any) {
 													<AlertDialogContent>
 														<AlertDialogHeader>
 															<AlertDialogTitle className="text-red-600 flex gap-1 items-center sm:flex-row flex-col">
-																<Trash2 className="size-6 sm:mr-1" />
+																<Trash2Icon className="size-6 sm:mr-1" />
 																<p>Permanently delete</p>
 																<span className="line-clamp-1 max-w-60 [overflow-wrap:anywhere]">
 																	{news.headline}

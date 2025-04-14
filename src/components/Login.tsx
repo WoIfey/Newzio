@@ -3,13 +3,14 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { useEffect, useRef, useState } from 'react'
+import { signIn } from 'next-auth/react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { toast } from 'sonner'
-import { CheckCircle2, LogIn, XCircle } from 'lucide-react'
+import { LogIn, TriangleAlert, XCircle } from 'lucide-react'
 import Loading from './Loading'
+import { SignIn } from 'SignIn'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { authClient } from '@/lib/auth-client'
 
 type Props = {
 	callbackUrl?: string
@@ -22,43 +23,18 @@ export default function Login(props: Props) {
 	const {
 		register,
 		handleSubmit,
-		formState: { errors, isSubmitting },
-	} = useForm()
+		formState: { errors },
+	} = useForm<SignIn>()
 
-	const onSubmit: SubmitHandler = async data => {
+	const onSubmit: SubmitHandler<SignIn> = async data => {
 		setLoading(true)
-		try {
-			const result = await authClient.signIn.email({
-				email: data.email,
-				password: data.password,
-				callbackURL: props.callbackUrl,
-			})
-			if (result.error) {
-				toast(
-					<div className="flex gap-2">
-						<XCircle className="size-5 text-red-500" />
-						<span>{result.error.message || 'Authentication failed'}</span>
-					</div>,
-					{
-						position: 'bottom-left',
-					}
-				)
-			} else {
-				window.location.href = props.callbackUrl || '/'
-			}
-		} catch (error) {
-			toast(
-				<div className="flex gap-2">
-					<XCircle className="size-5 text-red-500" />
-					<span>An error occurred during login</span>
-				</div>,
-				{
-					position: 'bottom-left',
-				}
-			)
-		} finally {
-			setLoading(false)
-		}
+		await signIn('credentials', {
+			email: data.email,
+			password: data.password,
+			redirect: true,
+			callbackUrl: props.callbackUrl,
+		})
+		setLoading(false)
 	}
 
 	useEffect(() => {
@@ -108,6 +84,14 @@ export default function Login(props: Props) {
 					/>
 					<p>Newzio</p>
 				</div>
+				<p className="text-sm pb-4">
+					<TriangleAlert
+						className="me-3 -mt-0.5 inline-flex text-amber-500"
+						size={16}
+						aria-hidden="true"
+					/>
+					You can no longer sign in.
+				</p>
 				<div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 min-[500px]:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
 					<div className="p-6 space-y-4 md:space-y-6 sm:p-8">
 						<h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
@@ -143,6 +127,7 @@ export default function Login(props: Props) {
 									minLength={3}
 									maxLength={320}
 									required
+									disabled
 								/>
 							</div>
 							{errors.email && <p className="text-red-500">{errors.email.message}</p>}
@@ -176,6 +161,7 @@ export default function Login(props: Props) {
 									minLength={8}
 									maxLength={128}
 									required
+									disabled
 								/>
 							</div>
 							{errors.password && (
@@ -190,9 +176,9 @@ export default function Login(props: Props) {
 								</a>
 								</div> */}
 							<Button
-								type="submit"
+								// type="submit"
 								className="w-full flex gap-1 bg-blue-300 hover:bg-blue-200 text-black dark:bg-blue-700 dark:hover:bg-blue-800 dark:text-white"
-								disabled={loading}
+								disabled
 							>
 								{loading ? (
 									<Loading fullscreen={false} background={false} size={16} />
@@ -209,14 +195,10 @@ export default function Login(props: Props) {
 						</div>
 						<div className="flex flex-col sm:flex-row items-center gap-2">
 							<Button
-								onClick={() =>
-									authClient.signIn.social({
-										provider: 'github',
-										callbackURL: props.callbackUrl,
-									})
-								}
+								// onClick={() => signIn('github', { callbackUrl: props.callbackUrl })}
 								className="w-full gap-x-2 hover:dark:bg-slate-900"
 								variant="outline"
+								disabled
 							>
 								<Image
 									width={32}

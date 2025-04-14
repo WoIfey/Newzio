@@ -4,6 +4,14 @@ import { useEffect, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { CommentFields } from 'CommentFields'
 import { toast } from 'sonner'
+import {
+	CheckIcon,
+	XCircleIcon,
+	EllipsisHorizontalIcon,
+	ChatBubbleOvalLeftEllipsisIcon,
+} from '@heroicons/react/24/outline'
+import { HeartIcon as HeartIconOutline } from '@heroicons/react/24/outline'
+import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { formatDistanceToNowStrict } from 'date-fns'
 import {
@@ -38,11 +46,6 @@ import {
 	View,
 	LinkIcon,
 	Pencil,
-	Heart,
-	EllipsisIcon,
-	MessageSquareText,
-	XCircleIcon,
-	CheckIcon,
 } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { AlertCircleIcon } from 'lucide-react'
@@ -121,7 +124,7 @@ export default function Comments({
 				return
 			}
 			data.message = message
-			const user_id = user?.user.id ?? ''
+			const user_id = user?.user.id as unknown as number
 			const user_name = user?.user.name ?? ''
 			const user_image = user?.user.image ?? ''
 			const result = await createComment(
@@ -216,7 +219,7 @@ export default function Comments({
 	}, [comments])
 
 	const handleLike = async (id: string, article_id: string) => {
-		const user_id = user?.user.id ?? ''
+		const user_id = user?.user.id as unknown as number
 		const user_name = user?.user.name ?? ''
 		const user_image = user?.user.image ?? ''
 		setLikeLoading(prev => ({ ...prev, [id]: true }))
@@ -285,7 +288,7 @@ export default function Comments({
 							{isSubmitting ? (
 								<Loading fullscreen={false} background={false} size={16} />
 							) : (
-								<MessageSquareText className="size-6 p-0.5" />
+								<ChatBubbleOvalLeftEllipsisIcon className="size-6 p-0.5" />
 							)}
 							{isSubmitting ? (
 								<p className="ml-1">Sending...</p>
@@ -307,38 +310,38 @@ export default function Comments({
 						<div className="flex items-center gap-3">
 							<Link
 								href={`/author/${encodeURIComponent(
-									comment.userName
-										? comment.userName
+									comment.user_name
+										? comment.user_name
 												.toLowerCase()
 												.replace(/ö/g, 'o')
 												.replace(/ä/g, 'a')
 												.replace(/å/g, 'a')
 												.replace(/\s+/g, '-')
 										: 'unknown'
-								)}/${comment.userId}`}
+								)}/${comment.user_id}`}
 							>
 								<Avatar className="size-8">
-									<AvatarImage src={comment.userImage ?? undefined} />
+									<AvatarImage src={comment.user_image ?? undefined} />
 									<AvatarFallback className="font-normal text-base bg-slate-200 dark:bg-slate-600 dark:text-white text-black">
-										{comment?.userName.charAt(0)}
+										{comment?.user_name.charAt(0)}
 									</AvatarFallback>
 								</Avatar>
 							</Link>
 							<div className="flex sm:flex-row flex-col sm:items-center gap-2 truncate max-w-40 sm:max-w-80">
 								<Link
 									href={`/author/${encodeURIComponent(
-										comment.userName
-											? comment.userName
+										comment.user_name
+											? comment.user_name
 													.toLowerCase()
 													.replace(/ö/g, 'o')
 													.replace(/ä/g, 'a')
 													.replace(/å/g, 'a')
 													.replace(/\s+/g, '-')
 											: 'unknown'
-									)}/${comment.userId}`}
+									)}/${comment.user_id}`}
 									className="truncate"
 								>
-									<p className="text-sm font-bold truncate">{comment.userName}</p>
+									<p className="text-sm font-bold truncate">{comment.user_name}</p>
 								</Link>
 								<span className="text-black dark:text-white text-sm sm:block hidden">{`•`}</span>
 								<time
@@ -357,7 +360,7 @@ export default function Comments({
 								<Menubar className="border-none items-start hover:dark:bg-slate-700 hover:bg-slate-200">
 									<MenubarMenu>
 										<MenubarTrigger className="cursor-pointer items-start px-1 py-1">
-											<EllipsisIcon className="size-6" />
+											<EllipsisHorizontalIcon className="size-6" />
 										</MenubarTrigger>
 										<MenubarContent>
 											<Link
@@ -383,7 +386,7 @@ export default function Comments({
 												className="hover:underline"
 											>
 												<MenubarItem className="gap-x-1">
-													<Heart className="size-4 fill-black" />
+													<HeartIconSolid className="size-4" />
 													<p>Likes</p>
 												</MenubarItem>
 											</Link>
@@ -427,11 +430,11 @@ export default function Comments({
 													</Link>
 												</MenubarSubContent>
 											</MenubarSub>
-											{user?.user.id === comment.userId && <MenubarSeparator />}
-											{currentUserId !== comment.userId &&
+											{user?.user.id === comment.user_id && <MenubarSeparator />}
+											{currentUserId !== comment.user_id &&
 												currentUserId === '87246869' && <MenubarSeparator />}
 											<div>
-												{user?.user.id === comment.userId && (
+												{user?.user.id === comment.user_id && (
 													<>
 														<MenubarItem
 															className="gap-x-1"
@@ -450,7 +453,7 @@ export default function Comments({
 														</AlertDialogTrigger>
 													</>
 												)}
-												{currentUserId !== comment.userId &&
+												{currentUserId !== comment.user_id &&
 													currentUserId === '87246869' && (
 														<>
 															<AlertDialogTrigger asChild>
@@ -544,11 +547,11 @@ export default function Comments({
 											<>
 												{commentLikes.some(
 													(like: any) =>
-														like.comment_id === comment.id && like.userId === currentUserId
+														like.comment_id === comment.id && like.user_id === currentUserId
 												) ? (
-													<Heart className="size-5 fill-black" />
+													<HeartIconSolid className="size-5" />
 												) : (
-													<Heart className="size-5" />
+													<HeartIconOutline className="size-5" />
 												)}
 											</>
 										)}

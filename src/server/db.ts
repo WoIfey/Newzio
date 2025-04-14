@@ -1,75 +1,59 @@
-import { prisma } from "@/lib/prisma"
+import { db } from "@/server/pool"
+import bcrypt from 'bcrypt'
 
 export async function getNews() {
-    return prisma.news.findMany()
+    const res = await db.query("SELECT * FROM news")
+    return res.rows
 }
 
 export async function getPage(id: string) {
-    return prisma.news.findMany({
-        where: { id }
-    })
+    const res = await db.query('SELECT * FROM news WHERE id = $1', [id])
+    return res.rows
 }
 
 export async function getUserNews(user_id: string) {
-    return prisma.news.findMany({
-        where: { userId: user_id }
-    })
+    const res = await db.query('SELECT * FROM news WHERE user_id = $1', [user_id])
+    return res.rows
 }
 
 export async function getTags() {
-    return prisma.news.findMany({
-        select: {
-            tag: true
-        },
-        distinct: ['tag']
-    })
+    const res = await db.query('SELECT * FROM tags')
+    return res.rows
 }
 
 export async function getComments(article_id: string) {
-    return prisma.comment.findMany({
-        where: { articleId: article_id }
-    })
+    const res = await db.query('SELECT * FROM comments WHERE article_id = $1', [article_id])
+    return res.rows
 }
 
 export async function getComment(id: string) {
-    return prisma.comment.findMany({
-        where: { id }
-    })
+    const res = await db.query('SELECT * FROM comments WHERE id = $1', [id])
+    return res.rows
 }
 
 export async function getCommentLikes(comment_id: string) {
-    return prisma.commentLike.findMany({
-        where: { commentId: comment_id }
-    })
+    const res = await db.query('SELECT * FROM commentlikes WHERE comment_id = $1', [comment_id])
+    return res.rows
 }
 
 export async function getCommentLike(article_id: string) {
-    return prisma.commentLike.findMany({
-        where: { articleId: article_id }
-    })
+    const res = await db.query('SELECT * FROM commentlikes WHERE article_id = $1', [article_id])
+    return res.rows
 }
 
 export async function getArticleLikes(article_id: string) {
-    return prisma.articleLike.findMany({
-        where: { articleId: article_id }
-    })
+    const res = await db.query('SELECT * FROM articlelikes WHERE article_id = $1', [article_id])
+    return res.rows
 }
 
 export async function getProfanityWords() {
-    return prisma.profanityWord.findMany()
+    const res = await db.query("SELECT * FROM profanity")
+    return res.rows
 }
 
-export async function saveComment(article_id: string, message: string, user_id: string, user_name: string, user_image: string) {
+export async function saveComment(article_id: string, message: string, user_id: number, user_name: string, user_image: string) {
     try {
-        await prisma.comment.create({
-            data: {
-                articleId: article_id,
-                message,
-                userId: user_id,
-                userName: user_name,
-                userImage: user_image
-            }
-        })
+        await db.query(`INSERT INTO comments(article_id, message, user_id, user_name, user_image) VALUES($1, $2, $3, $4, $5)`, [article_id, message, user_id, user_name, user_image])
         return 'Saved Comment'
     } catch (error) {
         console.log(error)
@@ -77,12 +61,16 @@ export async function saveComment(article_id: string, message: string, user_id: 
     }
 }
 
-export async function updateComment(id: string, message: string) {
+export async function updateComment(
+    id: string, message: string
+) {
     try {
-        await prisma.comment.update({
-            where: { id },
-            data: { message }
-        })
+        await db.query(`
+            UPDATE comments SET 
+                message = $1 
+            WHERE id = $2`,
+            [message, id]
+        )
         return 'Updated Comment'
     } catch (error) {
         console.log(error)
@@ -92,9 +80,7 @@ export async function updateComment(id: string, message: string) {
 
 export async function deleteComment(id: string) {
     try {
-        await prisma.comment.delete({
-            where: { id }
-        })
+        await db.query("DELETE FROM comments WHERE id = $1", [id])
         return 'Deleted Comment'
     } catch (error) {
         console.log(error)
@@ -103,53 +89,42 @@ export async function deleteComment(id: string) {
 }
 
 export async function saveArticle(
-    key: string | undefined,
-    name: string | undefined,
-    size: number | undefined,
-    type: string | undefined,
-    url: string | undefined,
+    key: string,
+    name: string,
+    size: number,
+    type: string,
+    url: string,
     headline: string,
     lead: string,
     body: string,
     tag: string,
-    user_id: string,
+    user_id: number,
     user_name: string,
     user_image: string
 ) {
     try {
-        const article = await prisma.news.create({
-            data: {
-                key: key || '',
-                name: name || '',
-                size: size || 0,
-                type: type || '',
-                url: url || '',
-                headline,
-                lead,
-                body,
-                tag,
-                userId: user_id,
-                userName: user_name,
-                userImage: user_image
-            }
-        })
-        return { success: true, id: article.id }
+        const res = await db.query(`
+        INSERT INTO 
+            news(key, name, size, type, url, headline, lead, body, tag, user_id, user_name, user_image) 
+        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+        RETURNING id`,
+            [key, name, size, type, url, headline, lead, body, tag, user_id, user_name, user_image])
+        return { success: true, id: res.rows[0].id }
     } catch (error) {
-        if ((error as Error).message.includes('String or array length too long')) {
+        if ((error as Error).message.includes('value too long for type character varying(4096)')) {
             console.log(error)
             return { success: false, error: 'The article content exceeds the maximum allowed length.' }
         } else {
             console.log(error)
             return { success: false, error: (`Failed to publish article: ${error}`) }
         }
+
     }
 }
 
 export async function deleteArticle(id: string) {
     try {
-        await prisma.news.delete({
-            where: { id }
-        })
+        await db.query("DELETE FROM news WHERE id = $1", [id])
         return 'Deleted Article'
     } catch (error) {
         console.log(error)
@@ -165,15 +140,15 @@ export async function updateArticle(
     tag: string,
 ) {
     try {
-        await prisma.news.update({
-            where: { id },
-            data: {
-                headline,
-                lead,
-                body,
-                tag
-            }
-        })
+        await db.query(`
+            UPDATE news SET 
+                headline = $1, 
+                lead = $2, 
+                body = $3, 
+                tag = $4
+            WHERE id = $5`,
+            [headline, lead, body, tag, id]
+        )
         return 'Updated Article'
     } catch (error) {
         console.log(error)
@@ -181,102 +156,91 @@ export async function updateArticle(
     }
 }
 
-export async function hasUserLikedComment(comment_id: string, user_id: string) {
-    const like = await prisma.commentLike.findUnique({
-        where: {
-            commentId_userId: {
-                commentId: comment_id,
-                userId: user_id
-            }
-        }
-    })
-    return !!like
+export async function registerUsers(name: string, email: string, password: string) {
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10)
+        await db.query("INSERT INTO users(name, email, password) VALUES ($1, $2, $3)", [name, email, hashedPassword])
+        return 'User Registered'
+    } catch (error) {
+        console.log(error)
+        return 'Failed to register user'
+    }
 }
 
-export async function toggleCommentLike(comment_id: string, article_id: string, user_id: string, user_name: string, user_image: string) {
-    const hasLiked = await hasUserLikedComment(comment_id, user_id)
+export async function findUsers(email: string, password: string) {
+    try {
+        const result = await db.query("SELECT * FROM users WHERE email = $1", [email])
+        if (result.rows.length > 0) {
+            const user = result.rows[0]
 
+            const isPasswordCorrect = await bcrypt.compare(password, user.password)
+            if (isPasswordCorrect) {
+                return user
+            } else {
+                return null
+            }
+        } else {
+            return null
+        }
+    } catch (error) {
+        console.log(error)
+        return null
+    }
+}
+
+export async function findEmail(email: string) {
+    try {
+        const result = await db.query("SELECT * FROM users WHERE email = $1", [email])
+        if (result.rows.length > 0) {
+            return "User Exists"
+        } else {
+            return null
+        }
+    } catch (error) {
+        console.log(error)
+        return null
+    }
+}
+
+export async function hasUserLikedComment(comment_id: string, user_id: number) {
+    const res = await db.query('SELECT * FROM commentlikes WHERE comment_id = $1 AND user_id = $2', [comment_id, user_id])
+    return res.rows.length > 0
+}
+
+export async function toggleCommentLike(comment_id: string, article_id: string, user_id: number, user_name: string, user_image: string) {
+    const hasLiked = await hasUserLikedComment(comment_id, user_id)
     if (hasLiked) {
-        await prisma.$transaction([
-            prisma.commentLike.delete({
-                where: {
-                    commentId_userId: {
-                        commentId: comment_id,
-                        userId: user_id
-                    }
-                }
-            }),
-            prisma.comment.update({
-                where: { id: comment_id },
-                data: { likes: { decrement: 1 } }
-            })
+        await Promise.all([
+            db.query('DELETE FROM commentlikes WHERE comment_id = $1 AND user_id = $2', [comment_id, user_id]),
+            db.query('UPDATE comments SET likes = likes - 1 WHERE id = $1', [comment_id])
         ])
         return 'Unliked'
     } else {
-        await prisma.$transaction([
-            prisma.commentLike.create({
-                data: {
-                    commentId: comment_id,
-                    articleId: article_id,
-                    userId: user_id,
-                    userName: user_name,
-                    userImage: user_image
-                }
-            }),
-            prisma.comment.update({
-                where: { id: comment_id },
-                data: { likes: { increment: 1 } }
-            })
+        await Promise.all([
+            db.query('INSERT INTO commentlikes(comment_id, article_id, user_id, user_name, user_image) VALUES($1, $2, $3, $4, $5)', [comment_id, article_id, user_id, user_name, user_image]),
+            db.query('UPDATE comments SET likes = likes + 1 WHERE id = $1', [comment_id])
         ])
         return 'Liked'
     }
 }
 
-export async function hasUserLikedArticle(article_id: string, user_id: string) {
-    const like = await prisma.articleLike.findUnique({
-        where: {
-            articleId_userId: {
-                articleId: article_id,
-                userId: user_id
-            }
-        }
-    })
-    return !!like
+export async function hasUserLikedArticle(article_id: string, user_id: number) {
+    const res = await db.query('SELECT * FROM articlelikes WHERE article_id = $1 AND user_id = $2', [article_id, user_id])
+    return res.rows.length > 0
 }
 
-export async function toggleArticleLike(article_id: string, user_id: string, user_name: string, user_image: string) {
+export async function toggleArticleLike(article_id: string, user_id: number, user_name: string, user_image: string) {
     const hasLiked = await hasUserLikedArticle(article_id, user_id)
-
     if (hasLiked) {
-        await prisma.$transaction([
-            prisma.articleLike.delete({
-                where: {
-                    articleId_userId: {
-                        articleId: article_id,
-                        userId: user_id
-                    }
-                }
-            }),
-            prisma.news.update({
-                where: { id: article_id },
-                data: { likes: { decrement: 1 } }
-            })
+        await Promise.all([
+            db.query('DELETE FROM articlelikes WHERE article_id = $1 AND user_id = $2', [article_id, user_id]),
+            db.query('UPDATE news SET likes = likes - 1 WHERE id = $1', [article_id])
         ])
         return 'Unliked'
     } else {
-        await prisma.$transaction([
-            prisma.articleLike.create({
-                data: {
-                    articleId: article_id,
-                    userId: user_id,
-                    userName: user_name,
-                    userImage: user_image
-                }
-            }),
-            prisma.news.update({
-                where: { id: article_id },
-                data: { likes: { increment: 1 } }
-            })
+        await Promise.all([
+            db.query('INSERT INTO articlelikes(article_id, user_id, user_name, user_image) VALUES($1, $2, $3, $4)', [article_id, user_id, user_name, user_image]),
+            db.query('UPDATE news SET likes = likes + 1 WHERE id = $1', [article_id])
         ])
         return 'Liked'
     }

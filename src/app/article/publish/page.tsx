@@ -1,12 +1,10 @@
 import Add from '@/components/Add'
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
 import { getProfanityWords, getTags } from '@/server/db'
+import { options } from '@/app/api/auth/[...nextauth]/options'
+import { getServerSession } from 'next-auth/next'
 
 export default async function Create() {
-	const session = await auth.api.getSession({
-		headers: await headers(),
-	})
+	const session = await getServerSession(options)
 	let tags = await getTags()
 	let words = await getProfanityWords()
 

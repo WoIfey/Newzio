@@ -34,9 +34,10 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useSearchParams } from 'next/navigation'
 import Loading from './Loading'
-import { Heart, PencilIcon, Trash2Icon } from 'lucide-react'
+import { PencilIcon, Trash2Icon } from 'lucide-react'
 import NotFound from '@/app/not-found'
 import { formatLikes } from '@/utils/likes'
+import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid'
 
 export default function Profile({
 	userNews,
@@ -121,12 +122,12 @@ export default function Profile({
 		<div>
 			<div className="bg-slate-200 dark:bg-[#242729] p-6 text-xl font-bold flex items-center gap-4">
 				<Avatar className="size-14">
-					<AvatarImage src={session?.user?.image ?? undefined} />
+					<AvatarImage src={userNews[0]?.user_image ?? undefined} />
 					<AvatarFallback className="font-normal text-2xl bg-slate-200 dark:bg-slate-600 dark:text-white text-black">
-						{userNews[0]?.userName.charAt(0) ?? params.author.charAt(0)}
+						{userNews[0]?.user_name.charAt(0) ?? params.author.charAt(0)}
 					</AvatarFallback>
 				</Avatar>
-				{`${userNews[0]?.userName ?? params.author}'s Articles`}
+				{`${userNews[0]?.user_name ?? params.author}'s Articles`}
 			</div>
 			<div className="flex flex-col">
 				<div className="lg:w-auto w-screen grid grid-cols-1 grid-rows-1 sm:grid-cols-2 sm:grid-rows-2 xl:grid-cols-3 xl:grid-rows-3 gap-6 bg-slate-200 dark:bg-[#242729] min-h-dvh px-6 pb-6 items-start">
@@ -139,7 +140,7 @@ export default function Profile({
 								<AlertDialog>
 									<ContextMenu>
 										<ContextMenuTrigger>
-											{currentUserId !== news.userId && currentUserId === '87246869' && (
+											{currentUserId !== news.user_id && currentUserId === '87246869' && (
 												<ContextMenuContent>
 													<ContextMenuItem asChild>
 														<AlertDialogTrigger asChild>
@@ -214,7 +215,7 @@ export default function Profile({
 													</h1>
 													<div className="text-slate-700 dark:text-slate-300 text-xs flex gap-1 items-center">
 														<div className="flex items-center gap-1 truncate w-full">
-															<p className="truncate">By {news.userName}</p>
+															<p className="truncate">By {news.user_name}</p>
 															{new Date(news.createdAt).getTime() !==
 															new Date(news.updatedAt).getTime() ? (
 																<>
@@ -245,7 +246,7 @@ export default function Profile({
 															)}
 														</div>
 														<div className="flex items-center gap-1">
-															<Heart className="size-4 fill-black" />
+															<HeartIconSolid className="size-4" />
 															<p className="text-sm">{formatLikes(news.likes)}</p>
 														</div>
 													</div>
@@ -257,7 +258,7 @@ export default function Profile({
 												</div>
 											</Link>
 
-											{currentUserId === news.userId && (
+											{currentUserId === news.user_id && (
 												<>
 													<ContextMenuContent>
 														<ContextMenuItem asChild>
