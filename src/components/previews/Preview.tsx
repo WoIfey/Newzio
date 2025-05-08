@@ -80,7 +80,7 @@ export default function Preview() {
 								<div className="flex gap-1 truncate max-w-40 sm:max-w-52">
 									<p>By</p>
 									<div className="hover:dark:text-sky-400 hover:text-sky-700 transition-all duration-75 truncate">
-										Anonymous
+										User
 									</div>
 								</div>
 								<div className="flex gap-1 text-xs">

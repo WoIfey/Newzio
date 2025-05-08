@@ -8,7 +8,7 @@ import { profanity } from '@/utils/profanity'
 export default function TinyMCE({ words }: { words: any }) {
 	let [body, setBody] = useAtom(bodyEditInput)
 	const [text, setText] = useState('')
-	const { theme } = useTheme()
+	const { resolvedTheme } = useTheme()
 
 	body = profanity.censor(body, words)
 
@@ -39,8 +39,8 @@ export default function TinyMCE({ words }: { words: any }) {
 						'bullist numlist | outdent indent | ' +
 						'removeformat searchreplace code fullscreen',
 					content_style: 'body { font-family:Helvetica,Arial,sans-serif; }',
-					skin: theme === 'dark' ? 'oxide-dark' : 'oxide',
-					content_css: theme === 'dark' ? 'dark' : 'default',
+					skin: resolvedTheme === 'dark' ? 'oxide-dark' : 'oxide',
+					content_css: resolvedTheme === 'dark' ? 'dark' : 'default',
 					placeholder: 'Write a whole essay...',
 					branding: false,
 					max_height: 720,

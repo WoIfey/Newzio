@@ -102,7 +102,7 @@ export default function MiniPreview() {
 										<div className="flex gap-1">
 											<p>By</p>
 											<div className="hover:dark:text-sky-400 hover:text-sky-700 transition-all duration-75 truncate">
-												Anonymous
+												User
 											</div>
 										</div>
 										<div className="flex gap-1">
