@@ -1,5 +1,9 @@
-import LoadingSkeleton from '@/components/Loading'
+import { Loader2 } from 'lucide-react'
 
 export default function Loading() {
-	return <LoadingSkeleton fullscreen={true} background={true} size={64} />
+	return (
+		<div className="flex justify-center items-center min-h-dvh bg-[#dfdfdf] dark:bg-[#1b1b1b]">
+			<Loader2 className="size-16 animate-spin text-[#4195D1]" />
+		</div>
+	)
 }

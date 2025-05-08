@@ -1,9 +1,9 @@
 > [!WARNING]
-> This repository is no longer being worked on and will be continued under a different repository.
+> This repository is deprecated and is now read-only.
 
 # Newzio
 
-<img src="/public/icon.svg" width="64" height="64" align="right" alt="Newzio" />
+<img src="/public/files/icon.svg" width="64" height="64" align="right" alt="Newzio" />
 
 A news platform designed for users to publish and interact with news articles.
 

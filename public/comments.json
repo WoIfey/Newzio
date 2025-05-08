@@ -1,0 +1,101 @@
+[
+	{
+		"id": "22",
+		"message": "amazing update!",
+		"createdAt": "2024-05-03 11:39:49.943886",
+		"updatedAt": "2024-05-03 11:39:49.943886",
+		"user_id": "87246869",
+		"user_name": "Wolfey",
+		"user_image": "https://avatars.githubusercontent.com/u/87246869?v=4",
+		"article_id": "346",
+		"likes": 3
+	},
+	{
+		"id": "23",
+		"message": "yippee!!",
+		"createdAt": "2024-05-03 11:44:31.553609",
+		"updatedAt": "2024-05-03 11:44:31.553609",
+		"user_id": "87246869",
+		"user_name": "Wolfey",
+		"user_image": "https://avatars.githubusercontent.com/u/87246869?v=4",
+		"article_id": "279",
+		"likes": 0
+	},
+	{
+		"id": "74",
+		"message": "so cool!",
+		"createdAt": "2024-05-06 20:58:24.059394",
+		"updatedAt": "2024-05-06 20:58:24.059394",
+		"user_id": "81053166",
+		"user_name": "ImHer0",
+		"user_image": "https://avatars.githubusercontent.com/u/81053166?v=4",
+		"article_id": "282",
+		"likes": 0
+	},
+	{
+		"id": "75",
+		"message": "Kendrick lamar",
+		"createdAt": "2024-05-06 20:59:10.219279",
+		"updatedAt": "2024-05-06 20:59:10.219279",
+		"user_id": "81053166",
+		"user_name": "ImHer0",
+		"user_image": "https://avatars.githubusercontent.com/u/81053166?v=4",
+		"article_id": "60",
+		"likes": 0
+	},
+	{
+		"id": "76",
+		"message": "AMAZING POST BRO KEEP THE YAPPING MINIMAL",
+		"createdAt": "2024-05-06 20:59:46.93951",
+		"updatedAt": "2024-05-06 20:59:46.93951",
+		"user_id": "87246869",
+		"user_name": "Wolfey",
+		"user_image": "https://avatars.githubusercontent.com/u/87246869?v=4",
+		"article_id": "367",
+		"likes": 2
+	},
+	{
+		"id": "78",
+		"message": "keep buying! 🤑🤑🤑",
+		"createdAt": "2024-05-06 21:34:15.031559",
+		"updatedAt": "2024-05-06 21:34:15.031559",
+		"user_id": "87246869",
+		"user_name": "Wolfey",
+		"user_image": "https://avatars.githubusercontent.com/u/87246869?v=4",
+		"article_id": "368",
+		"likes": 1
+	},
+	{
+		"id": "115",
+		"message": "grimace shake",
+		"createdAt": "2024-05-12 19:27:25.580214",
+		"updatedAt": "2024-05-12 19:27:25.580214",
+		"user_id": "81053166",
+		"user_name": "ImHer0",
+		"user_image": "https://avatars.githubusercontent.com/u/81053166?v=4",
+		"article_id": "369",
+		"likes": 2
+	},
+	{
+		"id": "116",
+		"message": "<p>wow thanks a lot!</p>",
+		"createdAt": "2024-05-12 19:49:26.400032",
+		"updatedAt": "2024-05-21 11:52:44.791957",
+		"user_id": "87246869",
+		"user_name": "Wolfey",
+		"user_image": "https://avatars.githubusercontent.com/u/87246869?v=4",
+		"article_id": "388",
+		"likes": 1
+	},
+	{
+		"id": "208",
+		"message": "<p><span style=\"color: #e67e23;\"><strong>Hello world!&nbsp;</strong></span></p>\n<p><span style=\"color: #236fa1; font-size: 36pt;\"><em><strong>edited</strong></em></span></p>",
+		"createdAt": "2024-05-28 06:14:16.825985",
+		"updatedAt": "2024-05-28 06:15:03.71918",
+		"user_id": "87246869",
+		"user_name": "Wolfey",
+		"user_image": "https://avatars.githubusercontent.com/u/87246869?v=4",
+		"article_id": "445",
+		"likes": 1
+	}
+]

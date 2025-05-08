@@ -3,9 +3,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { formatDistanceToNowStrict } from 'date-fns'
 import { memo, useEffect, useState } from 'react'
-import Loading from './Loading'
 import { formatLikes } from '@/utils/likes'
 import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid'
+import { Loader2 } from 'lucide-react'
 
 const Sidebar = memo(function Sidebar({ news }: { news: any[] }) {
 	const [loading, setLoading] = useState(true)
@@ -21,7 +21,9 @@ const Sidebar = memo(function Sidebar({ news }: { news: any[] }) {
 	if (loading) {
 		return (
 			<div className="md:mx-28 lg:mx-40">
-				<Loading fullscreen={true} background={true} size={64} />
+				<div className="flex justify-center items-center min-h-dvh">
+					<Loader2 className="size-16 animate-spin text-[#4195D1]" />
+				</div>
 			</div>
 		)
 	}

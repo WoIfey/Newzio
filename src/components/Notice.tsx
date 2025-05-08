@@ -9,7 +9,15 @@ export default function Notice() {
 					size={16}
 					aria-hidden="true"
 				/>
-				This version of Newzio is archived and will be continued as a new project.
+				Newzio has been archived and is now read-only. All data is available for
+				download{' '}
+				<a
+					className="text-blue-600 dark:text-blue-400 underline"
+					href="https://github.com/WoIfey/Newzio/tree/main/public"
+				>
+					here
+				</a>
+				.
 			</p>
 		</div>
 	)

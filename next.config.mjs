@@ -10,7 +10,8 @@ const nextConfig = {
                 protocol: 'https',
                 hostname: 'wolfey.s-ul.eu'
             },
-        ]
+        ],
+        minimumCacheTTL: 31536000,
     },
 };
 

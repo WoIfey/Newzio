@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import GitHub from './ui/github'
 
 const navigation = [
 	{
@@ -21,13 +22,7 @@ export default function Footer() {
 							className="text-gray-500 dark:text-gray-300 hover:dark:text-gray-400 hover:text-gray-600"
 						>
 							<span className="sr-only">{item.name}</span>
-							<Image
-								src="/github.svg"
-								width={32}
-								height={32}
-								alt="GitHub"
-								className="size-6 dark:invert dark:bg-slate-200 rounded-full"
-							/>
+							<GitHub className="size-5 invert dark:invert-0" />
 						</Link>
 					))}
 				</div>

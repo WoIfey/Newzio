@@ -30,7 +30,7 @@ import {
 } from '@/components/ui/tooltip'
 import { formatLikes } from '@/utils/likes'
 
-export default function MiniPreview({ user }: { user: any }) {
+export default function MiniPreview() {
 	const [body] = useAtom(bodyInput)
 	const [tagValue] = useAtom(tagInput)
 	const [headline] = useAtom(headlineInput)
@@ -96,14 +96,13 @@ export default function MiniPreview({ user }: { user: any }) {
 									}`}
 								>
 									<Avatar>
-										<AvatarImage src={user?.user?.image ?? undefined} />
-										<AvatarFallback>{user?.user?.name?.charAt(0) ?? ''}</AvatarFallback>
+										<AvatarFallback>N</AvatarFallback>
 									</Avatar>
 									<div className="text-xs flex flex-col gap-1 truncate max-w-40 sm:max-w-52">
 										<div className="flex gap-1">
 											<p>By</p>
 											<div className="hover:dark:text-sky-400 hover:text-sky-700 transition-all duration-75 truncate">
-												{user?.user?.name}
+												Anonymous
 											</div>
 										</div>
 										<div className="flex gap-1">

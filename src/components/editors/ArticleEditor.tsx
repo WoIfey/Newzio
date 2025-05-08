@@ -10,11 +10,7 @@ export default function TinyMCE({ words }: { words: any }) {
 	const [text, setText] = useState('')
 	const { theme } = useTheme()
 
-	profanity.whitelist.addWords(words)
-
-	if (profanity.exists(body)) {
-		body = profanity.censor(body)
-	}
+	body = profanity.censor(body, words)
 
 	return (
 		<>
