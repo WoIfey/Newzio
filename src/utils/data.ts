@@ -1,6 +1,17 @@
+function getBaseUrl() {
+    if (typeof window !== 'undefined') {
+        return process.env.NEXT_PUBLIC_URL || window.location.origin;
+    }
+
+    if (process.env.VERCEL_URL) {
+        return `https://${process.env.VERCEL_URL}`;
+    }
+    return process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
+}
+
 export async function getUserNews(userId: string) {
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/news.json`)
+        const response = await fetch(`${getBaseUrl()}/news.json`)
         const data = await response.json()
         const authorNews = data.filter((item: any) => item.user_id === userId)
         authorNews.sort((a: any, b: any) => b.id - a.id)
@@ -13,7 +24,7 @@ export async function getUserNews(userId: string) {
 
 export async function getPage(articleId: string) {
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/news.json`)
+        const response = await fetch(`${getBaseUrl()}/news.json`)
         const data = await response.json()
         const article = data.filter((item: any) => item.id.toString() === articleId)
         return article
@@ -25,7 +36,7 @@ export async function getPage(articleId: string) {
 
 export async function getComment(commentId: string) {
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/comments.json`)
+        const response = await fetch(`${getBaseUrl()}/comments.json`)
         const data = await response.json()
         const comment = data.filter((item: any) => item.id.toString() === commentId)
         return comment
