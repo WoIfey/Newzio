@@ -18,7 +18,7 @@ import {
 	TooltipTrigger,
 } from '@/components/ui/tooltip'
 
-export default function Preview({ user }: { user: any }) {
+export default function Preview() {
 	const [body] = useAtom(bodyInput)
 	const [tagValue] = useAtom(tagInput)
 	const [headline] = useAtom(headlineInput)
@@ -74,14 +74,13 @@ export default function Preview({ user }: { user: any }) {
 							className={`flex items-center gap-2 mx-8 ${fileType ? 'mb-4' : 'mb-3'}`}
 						>
 							<Avatar>
-								<AvatarImage src={user?.user?.image ?? undefined} />
-								<AvatarFallback>{user?.user?.name?.charAt(0) ?? ''}</AvatarFallback>
+								<AvatarFallback>U</AvatarFallback>
 							</Avatar>
 							<div className="text-xs flex flex-col gap-1">
 								<div className="flex gap-1 truncate max-w-40 sm:max-w-52">
 									<p>By</p>
 									<div className="hover:dark:text-sky-400 hover:text-sky-700 transition-all duration-75 truncate">
-										{user?.user?.name}
+										User
 									</div>
 								</div>
 								<div className="flex gap-1 text-xs">

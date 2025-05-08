@@ -1,19 +1,6 @@
 'use client'
 import Image from 'next/image'
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-	AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { articleLike, fileRemove, removeArticle } from '@/server/actions'
-import { useRouter } from 'next/navigation'
 import {
 	Tooltip,
 	TooltipContent,
@@ -22,14 +9,7 @@ import {
 } from '@/components/ui/tooltip'
 import { toast } from 'sonner'
 import { formatDistanceToNowStrict } from 'date-fns'
-import {
-	Copy,
-	PencilIcon,
-	Share2Icon,
-	Trash2Icon,
-	ClipboardCheckIcon,
-	AlertCircleIcon,
-} from 'lucide-react'
+import { Copy, Share2Icon, ClipboardCheckIcon, Loader2 } from 'lucide-react'
 import {
 	Dialog,
 	DialogClose,
@@ -40,7 +20,6 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '@/components/ui/dialog'
-import { HeartIcon as HeartIconOutline } from '@heroicons/react/24/outline'
 import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -49,53 +28,45 @@ import Sidebar from './Sidebar'
 import Link from 'next/link'
 import Comments from './Comments'
 import NotFound from '@/app/not-found'
-import { useState } from 'react'
-import Loading from './Loading'
+import { useEffect, useState } from 'react'
 import { formatLikes } from '@/utils/likes'
 
 export default function Article({
-	data,
+	articleId,
 	params,
-	news,
-	comments,
-	articleLikes,
-	commentLikes,
-	words,
-	session,
 }: {
-	data: any
+	articleId: string
 	params: any
-	news: any
-	comments: any
-	articleLikes: any
-	commentLikes: any
-	words: any
-	session: any
 }) {
-	const router = useRouter()
-	const [loading, setLoading] = useState(false)
-	const [likeLoading, setLikeLoading] = useState(false)
+	const [data, setData] = useState<any>(null)
+	const [news, setNews] = useState<any[]>([])
+	const [comments, setComments] = useState<any[]>([])
+	const [loading, setLoading] = useState(true)
 
-	const confirm = async () => {
-		try {
-			setLoading(true)
-			await Promise.all([fileRemove(data.key), removeArticle(data.id)])
-			toast.dismiss('delete-begin')
-			router.push('/')
-			toast(
-				<div className="flex gap-2">
-					<Trash2Icon className="size-5 text-red-500" />
-					<span>Article successfully deleted.</span>
-				</div>,
-				{
-					position: 'bottom-left',
-				}
-			)
-			setLoading(false)
-		} catch (error) {
-			console.error('Failed to delete article:', error)
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				const [newsData, commentsData] = await Promise.all([
+					fetch('/news.json').then(res => res.json()),
+					fetch('/comments.json').then(res => res.json()),
+					fetch('/commentlikes.json').then(res => res.json()),
+					fetch('/articlelikes.json').then(res => res.json()),
+				])
+
+				setNews(newsData)
+				setData(newsData.find((item: any) => item.id === articleId))
+				setComments(
+					commentsData.filter((comment: any) => comment.article_id === articleId)
+				)
+				setLoading(false)
+			} catch (error) {
+				console.error('Error fetching data:', error)
+				setLoading(false)
+			}
 		}
-	}
+
+		fetchData()
+	}, [articleId])
 
 	const share = async () => {
 		try {
@@ -115,20 +86,15 @@ export default function Article({
 			console.error('Failed to share article:', error)
 		}
 	}
+
 	if (loading) {
-		toast(
-			<Loading
-				fullscreen={false}
-				background={false}
-				text="Deleting article..."
-				size={16}
-			/>,
-			{
-				position: 'bottom-left',
-				id: 'delete-begin',
-			}
+		return (
+			<div className="flex justify-center items-center min-h-dvh bg-[#dfdfdf] dark:bg-[#1b1b1b]">
+				<Loader2 className="size-16 animate-spin text-[#4195D1]" />
+			</div>
 		)
 	}
+
 	if (!data) {
 		return (
 			<NotFound
@@ -136,17 +102,6 @@ export default function Article({
 				p={'You might have stumbled upon a deleted article or a wrong link! 😅'}
 			/>
 		)
-	}
-	const currentUserId = session?.user?.id
-
-	const handleLike = async (article_id: string) => {
-		const user_id = session?.user.id as unknown as number
-		const user_name = session?.user.name ?? ''
-		const user_image = session?.user.image ?? ''
-		setLikeLoading(true)
-		await articleLike(user_id, user_name, user_image, article_id)
-		router.refresh()
-		setLikeLoading(false)
 	}
 
 	return (
@@ -164,40 +119,9 @@ export default function Article({
 										{data.headline}
 									</h1>
 								)}
-								<button
-									onClick={() => {
-										if (!session) {
-											toast(
-												<div className="flex gap-2">
-													<AlertCircleIcon className="size-5 text-yellow-500" />
-													<span>Please sign in to like this article.</span>
-												</div>,
-												{
-													position: 'bottom-left',
-												}
-											)
-										} else {
-											handleLike(params.article_id)
-										}
-									}}
-									className="hover:text-red-600 flex gap-1 items-center mt-1"
-								>
+								<button className="hover:text-red-600 flex gap-1 items-center mt-1">
 									<div className="flex gap-1 items-center">
-										{likeLoading ? (
-											<div className="mr-1">
-												<Loading fullscreen={false} background={false} size={16} />
-											</div>
-										) : (
-											<>
-												{articleLikes.some(
-													(like: any) => like.user_id === currentUserId
-												) ? (
-													<HeartIconSolid className="size-5" />
-												) : (
-													<HeartIconOutline className="size-5" />
-												)}
-											</>
-										)}
+										<HeartIconSolid className="size-5" />
 										<p className="text-black dark:text-white">
 											{formatLikes(data.likes)}
 										</p>
@@ -359,67 +283,6 @@ export default function Article({
 									</DialogFooter>
 								</DialogContent>
 							</Dialog>
-							{currentUserId === data.user_id && (
-								<AlertDialog>
-									<TooltipProvider delayDuration={100}>
-										<Tooltip>
-											<TooltipTrigger
-												className="bg-red-400 dark:bg-red-700 rounded-full p-1.5 hover:dark:bg-red-800 hover:bg-red-500 transition-all duration-100"
-												asChild
-											>
-												<AlertDialogTrigger disabled={loading}>
-													{loading ? (
-														<div className="px-1">
-															<Loading fullscreen={false} background={false} size={16} />
-														</div>
-													) : (
-														<Trash2Icon className="size-6 p-0.5" />
-													)}
-												</AlertDialogTrigger>
-											</TooltipTrigger>
-
-											<TooltipContent>
-												<p>Delete Article</p>
-											</TooltipContent>
-										</Tooltip>
-										<Tooltip>
-											<TooltipTrigger
-												className="bg-blue-400 dark:bg-blue-700 rounded-full p-1.5 hover:dark:bg-blue-800 hover:bg-blue-500 transition-all duration-100"
-												asChild
-											>
-												<Link href={`/article/edit/${params.article_id}`}>
-													<PencilIcon className="size-6 p-0.5" />
-												</Link>
-											</TooltipTrigger>
-
-											<TooltipContent>
-												<p>Edit Article</p>
-											</TooltipContent>
-										</Tooltip>
-									</TooltipProvider>
-									<AlertDialogContent>
-										<AlertDialogHeader>
-											<AlertDialogTitle className="text-red-600 flex gap-1 items-center sm:flex-row flex-col">
-												<Trash2Icon className="size-6 sm:mr-1" />
-												<p>Permanently delete</p>
-												<span className="line-clamp-1 max-w-60 [overflow-wrap:anywhere]">
-													{data.headline}
-												</span>
-											</AlertDialogTitle>
-											<AlertDialogDescription>
-												This action cannot be undone. This will permanently delete this
-												article and will no longer be viewable.
-											</AlertDialogDescription>
-										</AlertDialogHeader>
-										<AlertDialogFooter>
-											<AlertDialogCancel>Cancel</AlertDialogCancel>
-											<Button variant="destructive" onClick={() => confirm()} asChild>
-												<AlertDialogAction type="submit">Proceed</AlertDialogAction>
-											</Button>
-										</AlertDialogFooter>
-									</AlertDialogContent>
-								</AlertDialog>
-							)}
 						</div>
 						{data.url && (
 							<div className="flex items-center justify-center">
@@ -456,13 +319,7 @@ export default function Article({
 						</div>
 					</div>
 
-					<Comments
-						comments={comments}
-						user={session}
-						params={params}
-						words={words}
-						commentLikes={commentLikes}
-					/>
+					<Comments comments={comments} params={params} />
 				</div>
 			</div>
 			<div className="flex-shrink-0">

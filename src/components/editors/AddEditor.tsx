@@ -5,16 +5,12 @@ import { useTheme } from 'next-themes'
 import { useState } from 'react'
 import { profanity } from '@/utils/profanity'
 
-export default function TinyMCE({ words }: { words: any }) {
+export default function TinyMCE() {
 	let [body, setBody] = useAtom(bodyInput)
 	const [text, setText] = useState('')
-	const { theme } = useTheme()
+	const { resolvedTheme } = useTheme()
 
-	profanity.whitelist.addWords(words)
-
-	if (profanity.exists(body)) {
-		body = profanity.censor(body)
-	}
+	body = profanity.censor(body)
 
 	return (
 		<>
@@ -43,8 +39,8 @@ export default function TinyMCE({ words }: { words: any }) {
 						'bullist numlist | outdent indent | ' +
 						'removeformat searchreplace code fullscreen',
 					content_style: 'body { font-family:Helvetica,Arial,sans-serif; }',
-					skin: theme === 'dark' ? 'oxide-dark' : 'oxide',
-					content_css: theme === 'dark' ? 'dark' : 'default',
+					skin: resolvedTheme === 'dark' ? 'oxide-dark' : 'oxide',
+					content_css: resolvedTheme === 'dark' ? 'dark' : 'default',
 					placeholder: 'Write a whole essay...',
 					branding: false,
 					max_height: 720,

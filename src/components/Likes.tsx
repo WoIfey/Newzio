@@ -12,35 +12,49 @@ import {
 	PaginationPrevious,
 } from '@/components/ui/pagination'
 import { useSearchParams } from 'next/navigation'
-import Loading from './Loading'
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { ArrowLeftIcon } from 'lucide-react'
+import { ArrowLeftIcon, Loader2 } from 'lucide-react'
 
 export default function Likes({
-	commentLikes,
+	commentId,
 	params,
 }: {
-	commentLikes: any
+	commentId: string
 	params: any
 }) {
-	commentLikes.sort((a: any, b: any) => b.id - a.id)
+	const [commentLikes, setCommentLikes] = useState<any[]>([])
 	const [currentPage, setCurrentPage] = useState(1)
 	const [loading, setLoading] = useState(true)
 	const page = useSearchParams()
 
 	useEffect(() => {
-		setLoading(false)
+		const fetchData = async () => {
+			try {
+				const response = await fetch('/commentlikes.json')
+				const data = await response.json()
+				const likes = data.filter((like: any) => like.comment_id === commentId)
+				likes.sort((a: any, b: any) => b.id - a.id)
+				setCommentLikes(likes)
+				setLoading(false)
+			} catch (error) {
+				console.error('Error fetching comment likes:', error)
+				setLoading(false)
+			}
+		}
+
+		fetchData()
+
 		const pageParam = page.get('p') || '1'
 		const pageNumber = parseInt(pageParam, 10)
 		if (!isNaN(pageNumber)) {
 			setCurrentPage(pageNumber)
 		}
-	}, [page])
+	}, [commentId, page])
 
 	const itemsPerPage = 27
 
@@ -50,7 +64,11 @@ export default function Likes({
 	const totalPages = Math.ceil(commentLikes.length / itemsPerPage)
 
 	if (loading) {
-		return <Loading fullscreen={true} background={true} size={64} />
+		return (
+			<div className="flex justify-center items-center min-h-dvh">
+				<Loader2 className="size-16 animate-spin text-[#4195D1]" />
+			</div>
+		)
 	}
 	return (
 		<div className="flex flex-col">

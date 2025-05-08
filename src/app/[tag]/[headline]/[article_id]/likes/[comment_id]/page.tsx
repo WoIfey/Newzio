@@ -1,4 +1,5 @@
-import { getComment, getCommentLikes } from '@/server/db'
+'use server'
+import { getComment } from '@/utils/data'
 import Likes from '@/components/Likes'
 import { Metadata } from 'next'
 
@@ -48,12 +49,10 @@ export const generateMetadata = async ({
 }
 
 export default async function CommentLikes({ params }: Props) {
-	let commentLikes = await getCommentLikes(params.comment_id)
-
 	return (
 		<main className="flex min-h-dvh flex-col items-center bg-[#dfdfdf] dark:bg-[#1b1b1b]">
 			<div className="flex flex-col lg:flex-row-reverse md:pt-16">
-				<Likes commentLikes={commentLikes} params={params} />
+				<Likes commentId={params.comment_id} params={params} />
 			</div>
 		</main>
 	)

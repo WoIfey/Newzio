@@ -1,21 +1,13 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
-import { extractRouterConfig } from 'uploadthing/server'
-import { ourFileRouter } from '@/app/api/uploadthing/core'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
-import AuthProvider from './context/AuthProvider'
 import { Toaster } from '@/components/ui/sonner'
 import { Suspense } from 'react'
-import Loading from '@/components/Loading'
-import { getUserNews } from '@/server/db'
-import { options } from './api/auth/[...nextauth]/options'
-import { getServerSession } from 'next-auth/next'
 import { ThemeProvider } from 'next-themes'
-import Dev from '@/components/Dev'
 import Notice from '@/components/Notice'
+import { Loader2 } from 'lucide-react'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -45,28 +37,23 @@ export default async function RootLayout({
 }: Readonly<{
 	children: React.ReactNode
 }>) {
-	const session = await getServerSession(options)
-	let userNews = []
-	if (session?.user.id) {
-		userNews = await getUserNews(session.user.id)
-	}
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<body className={inter.className}>
 				<ThemeProvider defaultTheme="system" attribute="class">
-					<AuthProvider>
-						<Suspense
-							fallback={<Loading fullscreen={true} background={true} size={64} />}
-						>
-							<Navbar userNews={userNews} session={session} />
-							<NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
-							{children}
-							<Footer />
-							<Toaster />
-							<Notice />
-							<Dev />
-						</Suspense>
-					</AuthProvider>
+					<Suspense
+						fallback={
+							<div className="flex justify-center items-center min-h-dvh">
+								<Loader2 className="size-16 animate-spin text-[#4195D1]" />
+							</div>
+						}
+					>
+						<Navbar />
+						{children}
+						<Footer />
+						<Toaster />
+						<Notice />
+					</Suspense>
 				</ThemeProvider>
 			</body>
 		</html>
