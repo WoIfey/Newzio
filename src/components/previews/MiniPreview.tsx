@@ -96,7 +96,7 @@ export default function MiniPreview() {
 									}`}
 								>
 									<Avatar>
-										<AvatarFallback>N</AvatarFallback>
+										<AvatarFallback>U</AvatarFallback>
 									</Avatar>
 									<div className="text-xs flex flex-col gap-1 truncate max-w-40 sm:max-w-52">
 										<div className="flex gap-1">

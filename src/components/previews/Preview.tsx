@@ -74,7 +74,7 @@ export default function Preview() {
 							className={`flex items-center gap-2 mx-8 ${fileType ? 'mb-4' : 'mb-3'}`}
 						>
 							<Avatar>
-								<AvatarFallback>N</AvatarFallback>
+								<AvatarFallback>U</AvatarFallback>
 							</Avatar>
 							<div className="text-xs flex flex-col gap-1">
 								<div className="flex gap-1 truncate max-w-40 sm:max-w-52">
