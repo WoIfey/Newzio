@@ -1,7 +1,6 @@
 'use client'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
-import { useRouter } from 'next/navigation'
 import {
 	Tooltip,
 	TooltipContent,
@@ -21,7 +20,6 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '@/components/ui/dialog'
-import { HeartIcon as HeartIconOutline } from '@heroicons/react/24/outline'
 import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'

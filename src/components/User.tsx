@@ -1,5 +1,4 @@
 'use client'
-import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { memo, useEffect, useState } from 'react'
 import Link from 'next/link'
@@ -7,7 +6,6 @@ import {
 	ChevronDoubleLeftIcon,
 	ChevronDoubleRightIcon,
 } from '@heroicons/react/24/outline'
-import { LogIn } from 'lucide-react'
 
 const User = memo(function User() {
 	const [loading, setLoading] = useState(true)
