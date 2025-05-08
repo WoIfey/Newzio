@@ -1,18 +1,16 @@
-function getBaseUrl() {
-    if (typeof window !== 'undefined') {
-        return process.env.NEXT_PUBLIC_URL || window.location.origin;
-    }
+"use server"
+import { promises } from 'fs'
+import path from 'path'
 
-    if (process.env.VERCEL_URL) {
-        return `https://${process.env.VERCEL_URL}`;
-    }
-    return process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
+async function readJsonFile(fileName: string) {
+    const filePath = path.join(process.cwd(), 'public', fileName)
+    const fileContent = await promises.readFile(filePath, 'utf8')
+    return JSON.parse(fileContent)
 }
 
 export async function getUserNews(userId: string) {
     try {
-        const response = await fetch(`${getBaseUrl()}/news.json`)
-        const data = await response.json()
+        const data = await readJsonFile('news.json')
         const authorNews = data.filter((item: any) => item.user_id === userId)
         authorNews.sort((a: any, b: any) => b.id - a.id)
         return authorNews
@@ -24,8 +22,7 @@ export async function getUserNews(userId: string) {
 
 export async function getPage(articleId: string) {
     try {
-        const response = await fetch(`${getBaseUrl()}/news.json`)
-        const data = await response.json()
+        const data = await readJsonFile('news.json')
         const article = data.filter((item: any) => item.id.toString() === articleId)
         return article
     } catch (error) {
@@ -36,8 +33,7 @@ export async function getPage(articleId: string) {
 
 export async function getComment(commentId: string) {
     try {
-        const response = await fetch(`${getBaseUrl()}/comments.json`)
-        const data = await response.json()
+        const data = await readJsonFile('comments.json')
         const comment = data.filter((item: any) => item.id.toString() === commentId)
         return comment
     } catch (error) {
